@@ -2,7 +2,7 @@ from pytest_cover import pytest_cover
 from setuptools import setup
 
 setup(name='pytest-cover',
-      version='0.4',
+      version='0.5',
       description='py.test plugin for coverage collection with support for both centralised and distributed testing',
       long_description=pytest_cover.__doc__.strip(),
       author='Meme Dough',

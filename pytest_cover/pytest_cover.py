@@ -13,16 +13,13 @@ annotated source code, HTML and XML reports.
 Installation
 ------------
 
-The `pytest-cover pypi`_ package may be installed / uninstalled with pip::
+This plugin depends on features just added to py and pytest-xdist.
+Until py 1.2.2 and pytest-xdist 1.2 are released you will need to
+install the 'tip' development versions from:
 
-    pip install pytest-cover
-    pip uninstall pytest-cover
+http://bitbucket.org/hpk42/py-trunk/downloads/
 
-Alternatively easy_install can be used::
-
-    easy_install pytest-cover
-
-.. _`pytest-cover pypi`: http://pypi.python.org/pypi/pytest-cover/
+http://bitbucket.org/hpk42/pytest-xdist/downloads/
 
 
 Usage
