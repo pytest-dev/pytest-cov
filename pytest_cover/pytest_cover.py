@@ -123,11 +123,6 @@ Currently the coverage rc file is not rsynced to slaves which can
 result in different behaviour on the slaves.  Use command line options
 for the time being.
 
-This is an initial release developed on python 2.6 and support for
-other python versions needs to be checked and fixed.  Hence for the
-time being distributed testing in each mode may be a bit limited in
-usefulness.
-
 
 Acknowledgements
 ----------------
