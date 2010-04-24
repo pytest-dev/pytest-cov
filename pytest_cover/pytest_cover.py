@@ -63,9 +63,9 @@ The results from the slaves will be combined like so::
 
 Distributed testing in each mode::
 
-    py.test --cover myproj --dist=each \
-            --tx=popen//python=/usr/local/python264/bin/python \
-            --tx=popen//python=/usr/local/python265/bin/python \
+    py.test --cover myproj --dist=each
+            --tx=popen//python=/usr/local/python264/bin/python
+            --tx=popen//python=/usr/local/python265/bin/python
             tests/
 
 Will produce a report for each slave::
@@ -90,9 +90,9 @@ Will produce a report for each slave::
 
 If desired distributed testing in each mode can instead produce a single combined report::
 
-    py.test --cover myproj --cover-combine-each --dist=each \
-            --tx=popen//python=/usr/local/python264/bin/python \
-            --tx=popen//python=/usr/local/python265/bin/python \
+    py.test --cover myproj --cover-combine-each --dist=each
+            --tx=popen//python=/usr/local/python264/bin/python
+            --tx=popen//python=/usr/local/python265/bin/python
             tests/
 
 Which looks like::
