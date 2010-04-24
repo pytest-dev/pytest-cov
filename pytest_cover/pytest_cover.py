@@ -146,6 +146,10 @@ pytest and nose respectively.
 No doubt others have contributed to these tools as well.
 """
 
+try:
+    from functools import reduce
+except ImportError:
+    pass
 import sys
 import os
 
@@ -340,7 +344,7 @@ class CoverController(object):
                 if len(self.covers) > 1:
                     suffix = '_'.join(node_descs)
                     replacements = [(' ', '_'), (',', ''), ('.', ''), ('-', '')]
-                    suffix = reduce(lambda suffix, (old, new): suffix.replace(old, new), replacements, suffix)
+                    suffix = reduce(lambda suffix, oldnew: suffix.replace(oldnew[0], oldnew[1]), replacements, suffix)
 
                 if cover_annotate:
                     dir = '%s_%s' % (cover_annotate_dir, suffix) if suffix else cover_annotate_dir
@@ -475,7 +479,7 @@ class DistSlave(CoverController):
             path_rewrites.append((str(session.config.topdir), str(session.config.slaveinput['coverage_master_topdir'])))
 
             def rewrite_path(filename):
-                return reduce(lambda filename, (slave_path, master_path): filename.replace(slave_path, master_path),
+                return reduce(lambda filename, slavemaster: filename.replace(slavemaster[0], slavemaster[1]),
                               path_rewrites,
                               filename)
             lines = dict((rewrite_path(filename), data) for filename, data in self.cover.data.lines.items())
