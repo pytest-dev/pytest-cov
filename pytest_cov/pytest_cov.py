@@ -331,7 +331,7 @@ class CovController(object):
                     terminalwriter.sep('-', 'coverage: %s' % ''.join(node_descs))
                 else:
                     terminalwriter.sep('-', 'coverage')
-                    for node_desc in node_descs:
+                    for node_desc in sorted(node_descs):
                         terminalwriter.sep(' ', '%s' % node_desc)
                 cov.report(morfs, cov_show_missing, cov_ignore_errors, terminalwriter, cov_omit_prefixes)
 
@@ -344,16 +344,25 @@ class CovController(object):
                     suffix = reduce(lambda suffix, oldnew: suffix.replace(oldnew[0], oldnew[1]), replacements, suffix)
 
                 if cov_annotate:
-                    dir = '%s_%s' % (cov_annotate_dir, suffix) if suffix else cov_annotate_dir
+                    if suffix:
+                        dir = '%s_%s' % (cov_annotate_dir, suffix)
+                    else:
+                        dir = cov_annotate_dir
                     cov.annotate(morfs, dir, cov_ignore_errors, cov_omit_prefixes)
 
                 if cov_html:
-                    dir = '%s_%s' % (cov_html_dir, suffix) if suffix else cov_html_dir
+                    if suffix:
+                        dir = '%s_%s' % (cov_html_dir, suffix)
+                    else:
+                        dir = cov_html_dir
                     cov.html_report(morfs, dir, cov_ignore_errors, cov_omit_prefixes)
 
                 if cov_xml:
-                    root, ext = os.path.splitext(cov_xml_file)
-                    xml_file = '%s_%s%s' % (root, suffix, ext) if suffix else cov_xml_file
+                    if suffix:
+                        root, ext = os.path.splitext(cov_xml_file)
+                        xml_file = '%s_%s%s' % (root, suffix, ext)
+                    else:
+                        xml_file = cov_xml_file
                     cov.xml_report(morfs, xml_file, cov_ignore_errors, cov_omit_prefixes)
 
 
@@ -362,7 +371,10 @@ class Central(CovController):
 
     def sessionstart(self, session):
         import coverage
-        config_file = session.config.getvalue('cov_config_file') if session.config.getvalue('cov_config') else False
+        if session.config.getvalue('cov_config'):
+            config_file = session.config.getvalue('cov_config_file')
+        else:
+            config_file = False
         self.cov = coverage.coverage(data_file=session.config.getvalue('cov_data_file'),
                                      branch=session.config.getvalue('cov_branch'),
                                      cover_pylib=session.config.getvalue('cov_pylib'),
@@ -372,7 +384,7 @@ class Central(CovController):
         self.cov.start()
 
     def sessionfinish(self, session, exitstatus):
-        node_desc = 'platform %s, python %s' % (sys.platform, '%s.%s.%s-%s-%s' % sys.version_info)
+        node_desc = 'platform %s, python %s' % (sys.platform, '%s.%s.%s-%s-%s' % sys.version_info[:5])
         self.cov.stop()
         self.cov.save()
         self.covs = [(self.cov, [node_desc])]
@@ -397,7 +409,10 @@ class DistMaster(CovController):
     def testnodedown(self, node, error):
         if 'cov_slave_data_suffix' in node.slaveoutput:
             import coverage
-            config_file = self.config.getvalue('cov_config_file') if self.config.getvalue('cov_config') else False
+            if self.config.getvalue('cov_config'):
+                config_file = self.config.getvalue('cov_config_file')
+            else:
+                config_file = False
             cov = coverage.coverage(data_file=node.slaveoutput['cov_slave_data_file'],
                                     data_suffix=node.slaveoutput['cov_slave_data_suffix'],
                                     branch=self.config.getvalue('cov_branch'),
@@ -418,7 +433,10 @@ class DistMaster(CovController):
     def sessionfinish(self, session, exitstatus):
         import coverage
         def combine(data_file):
-            config_file = self.config.getvalue('cov_config_file') if self.config.getvalue('cov_config') else False
+            if self.config.getvalue('cov_config'):
+                config_file = self.config.getvalue('cov_config_file')
+            else:
+                config_file = False
             cov = coverage.coverage(data_file=data_file,
                                     branch=self.config.getvalue('cov_branch'),
                                     cover_pylib=self.config.getvalue('cov_pylib'),
@@ -447,14 +465,17 @@ class DistSlave(CovController):
                                   session.config.topdir == session.config.slaveinput['cov_master_topdir'])
 
         if session.config.option.dist == 'each' and not session.config.getvalue('cov_combine_each'):
-            node_desc = 'platform_%s_python_%s' % (sys.platform, '%s%s%s%s%s' % sys.version_info)
+            node_desc = 'platform_%s_python_%s' % (sys.platform, '%s%s%s%s%s' % sys.version_info[:5])
             self.data_file = '%s_%s' % (session.config.getvalue('cov_data_file'), node_desc)
         else:
             self.data_file = session.config.getvalue('cov_data_file')
 
         self.data_suffix = uuid.uuid1().hex
 
-        config_file = session.config.getvalue('cov_config_file') if session.config.getvalue('cov_config') else False
+        if session.config.getvalue('cov_config'):
+            config_file = session.config.getvalue('cov_config_file')
+        else:
+            config_file = False
         self.cov = coverage.coverage(data_file=self.data_file,
                                      data_suffix=self.data_suffix,
                                      branch=session.config.getvalue('cov_branch'),
