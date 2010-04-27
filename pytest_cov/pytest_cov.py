@@ -1,13 +1,11 @@
 """produce code coverage reports using the 'coverage' package, including support for distributed testing.
 
-This plugin supports pytest's distributed testing feature in both load
-and each modes.  Of course it also support centralised testing.
+This plugin produces coverage reports using the coverage package.  It
+supports centralised testing and distributed testing in both load and
+each modes.
 
-It supports pretty much all features offered by the coverage package.
-
-Each test run with coverage activated may produce any combination of
-the four report types.  There is the terminal report output by pytest,
-annotated source code, HTML and XML reports.
+All features offered by the coverage package should be available,
+either through this plugin or through coverage's own config file.
 
 
 Installation
@@ -25,6 +23,9 @@ http://bitbucket.org/hpk42/pytest-xdist/downloads/
 Usage
 -----
 
+Centralised Testing
+~~~~~~~~~~~~~~~~~~~
+
 Running centralised testing::
 
     py.test --cov myproj tests/
@@ -40,6 +41,9 @@ Shows a terminal report::
     --------------------------------------------------
     TOTAL                  353    333    94%
 
+
+Distributed Testing
+~~~~~~~~~~~~~~~~~~~
 
 Distributed testing with dist mode set to load and branch coverage
 enabled::
@@ -109,21 +113,13 @@ Which looks like::
 Limitations
 -----------
 
-Currently for distributed testing the python used by slaves must have
-pytest-cov installed in order to operate.  This is because the
-plugin must be registered through setuptools / distribute for pytest
-to start the plugin on the slave.  Hopefully this will change in the
-not to distant future, such that just like pytest-xdist only python
-and nothing else is required on the slave side.
+For distributed testing the slaves must have the pytest-cov package
+installed.  This is needed since the plugin must be registered through
+setuptools / distribute for pytest to start the plugin on the slave.
 
 Currently the coverage rc file is not rsynced to slaves which can
 result in different behaviour on the slaves.  Use command line options
 for the time being.
-
-This is an initial release developed on python 2.6 and support for
-other python versions needs to be checked and fixed.  Hence for the
-time being distributed testing in each mode may be a bit limited in
-usefulness.
 
 
 Acknowledgements
