@@ -457,7 +457,6 @@ class DistSlave(CovController):
     """Implementation for distributed slaves."""
 
     def sessionstart(self, session):
-        import uuid
         import socket
         import coverage
 
@@ -470,7 +469,7 @@ class DistSlave(CovController):
         else:
             self.data_file = session.config.getvalue('cov_data_file')
 
-        self.data_suffix = uuid.uuid1().hex
+        self.data_suffix = session.nodeid
 
         if session.config.getvalue('cov_config'):
             config_file = session.config.getvalue('cov_config_file')
