@@ -303,6 +303,7 @@ class CovController(object):
 
     def terminal_summary(self, terminalreporter):
         config = terminalreporter.config
+        terminalwriter = terminalreporter._tw
 
         cov_packages = config.getvalue('cov_packages')
         cov_terminal = config.getvalue('cov_terminal')
@@ -326,7 +327,6 @@ class CovController(object):
         for cov, node_descs in self.covs:
 
             if cov_terminal:
-                terminalwriter = terminalreporter._tw
                 if len(node_descs) == 1:
                     terminalwriter.sep('-', 'coverage: %s' % ''.join(node_descs))
                 else:
@@ -365,12 +365,20 @@ class CovController(object):
                         xml_file = cov_xml_file
                     cov.xml_report(morfs, xml_file, cov_ignore_errors, cov_omit_prefixes)
 
+        if self.failed_slaves:
+            terminalwriter.sep('-', 'coverage: failed slaves')
+            terminalwriter.write('The following slaves failed to return coverage data, '
+                                 'ensure that pytest-cov is installed on these slaves.\n')
+            for node in self.failed_slaves:
+                terminalwriter.write('%s\n' % node.gateway.id)
+
 
 class Central(CovController):
     """Implementation for centralised operation."""
 
     def sessionstart(self, session):
         import coverage
+        self.failed_slaves = []
         if session.config.getvalue('cov_config'):
             config_file = session.config.getvalue('cov_config_file')
         else:
@@ -399,6 +407,7 @@ class DistMaster(CovController):
     def sessionstart(self, session):
         self.config = session.config
         self.data_files = {}
+        self.failed_slaves = []
 
     def configure_node(self, node):
         import socket
@@ -407,6 +416,11 @@ class DistMaster(CovController):
         node.slaveinput['cov_master_rsync_roots'] = node.nodemanager.roots
 
     def testnodedown(self, node, error):
+        if not (hasattr(node, 'slaveoutput') and
+                'cov_slave_data_file' in node.slaveoutput):
+            self.failed_slaves.append(node)
+            return
+
         if 'cov_slave_data_suffix' in node.slaveoutput:
             import coverage
             if self.config.getvalue('cov_config'):
