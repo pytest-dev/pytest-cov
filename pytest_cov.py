@@ -117,10 +117,6 @@ For distributed testing the slaves must have the pytest-cov package
 installed.  This is needed since the plugin must be registered through
 setuptools / distribute for pytest to start the plugin on the slave.
 
-Currently the coverage rc file is not rsynced to slaves which can
-result in different behaviour on the slaves.  Use command line options
-for the time being.
-
 
 Acknowledgements
 ----------------
@@ -404,6 +400,11 @@ class DistMaster(CovController):
         self.config = session.config
         self.data_files = {}
         self.failed_slaves = []
+
+        if session.config.getvalue('cov_config'):
+            config_file = os.path.realpath(session.config.getvalue('cov_config_file'))
+            if os.path.exists(config_file):
+                self.config.option.rsyncdir.append(config_file)
 
     def configure_node(self, node):
         import socket
