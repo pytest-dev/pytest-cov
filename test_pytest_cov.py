@@ -45,7 +45,7 @@ def test_central(testdir):
     script = testdir.makepyfile(SCRIPT)
     result = testdir.runpytest(script,
                                '--cov=%s' % script.purebasename)
-    assert result.stdout.fnmatch_lines([
+    result.stdout.fnmatch_lines([
             '*- coverage: platform *, python * -*',
             'test_central * 18 * 5 * 72% *',
             '*10 passed*'
@@ -59,7 +59,7 @@ def test_dist_load_collocated(testdir):
                                '--cov=%s' % script.purebasename,
                                '--dist=load',
                                '--tx=2*popen')
-    assert result.stdout.fnmatch_lines([
+    result.stdout.fnmatch_lines([
             '*- coverage: platform *, python * -*',
             'test_dist_load_collocated * 18 * 5 * 72% *',
             '*10 passed*'
@@ -77,7 +77,7 @@ def test_dist_load_not_collocated(testdir):
                                '--tx=popen//chdir=%s' % dir1,
                                '--tx=popen//chdir=%s' % dir2,
                                '--rsyncdir=%s' % script.basename)
-    assert result.stdout.fnmatch_lines([
+    result.stdout.fnmatch_lines([
             '*- coverage: platform *, python * -*',
             'test_dist_load_not_collocated * 18 * 5 * 72% *',
             '*10 passed*'
@@ -94,7 +94,7 @@ def test_dist_each_many_reports_py2(testdir):
                                '--tx=popen//python=/usr/local/python255/bin/python',
                                '--tx=popen//python=/usr/local/python265/bin/python',
                                '--tx=popen//python=/usr/local/python27b1/bin/python')
-    assert result.stdout.fnmatch_lines([
+    result.stdout.fnmatch_lines([
            '*- coverage: platform *, python 2.4.6-final-0 -*',
            'test_dist_each_many_reports_py2 * 18 * 5 * 72% *',
            '*- coverage: platform *, python 2.5.5-final-0 -*',
@@ -116,7 +116,7 @@ def test_dist_each_many_reports_py3(testdir):
                                '--dist=each',
                                '--tx=popen//python=/usr/local/python301/bin/python3.0',
                                '--tx=popen//python=/usr/local/python312/bin/python3.1')
-    assert result.stdout.fnmatch_lines([
+    result.stdout.fnmatch_lines([
             # coverage under python 3.0 seems to produce incorrect
             # results but ignore for this test as we want to see
             # multiple reports regardless of results.
@@ -139,7 +139,7 @@ def test_dist_each_one_report_py2(testdir):
                                '--tx=popen//python=/usr/local/python255/bin/python',
                                '--tx=popen//python=/usr/local/python265/bin/python',
                                '--tx=popen//python=/usr/local/python27b1/bin/python')
-    assert result.stdout.fnmatch_lines([
+    result.stdout.fnmatch_lines([
             '*- coverage -*',
             '* platform *, python 2.4.6-final-0 *',
             '* platform *, python 2.5.5-final-0 *',
@@ -160,7 +160,7 @@ def test_dist_each_one_report_py3(testdir):
                                '--dist=each',
                                '--tx=popen//python=/usr/local/python301/bin/python3.0',
                                '--tx=popen//python=/usr/local/python312/bin/python3.1')
-    assert result.stdout.fnmatch_lines([
+    result.stdout.fnmatch_lines([
             # coverage under python 3.0 seems to produce incorrect
             # results but ignore for this test as we want to see
             # multiple reports regardless of results.
@@ -179,7 +179,7 @@ def test_dist_missing_data(testdir):
                                '--cov=%s' % script.purebasename,
                                '--dist=load',
                                '--tx=popen//python=/usr/local/env255empty/bin/python')
-    assert result.stdout.fnmatch_lines([
+    result.stdout.fnmatch_lines([
             '*- coverage: failed slaves -*'
             ])
     assert result.ret == 0

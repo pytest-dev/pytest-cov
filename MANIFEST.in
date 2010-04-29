@@ -1,0 +1,5 @@
+include README.txt
+include LICENSE.txt
+include setup.py
+include pytest_cov.py
+include test_pytest_cov.py

@@ -292,7 +292,7 @@ class CovController(object):
     def create_from_session(session):
         name_to_cls = dict(Session=Central,
                            DSession=DistMaster,
-                           SlaveNode=DistSlave)
+                           SlaveSession=DistSlave)
         session_name = session.__class__.__name__
         controller_cls = name_to_cls.get(session_name, Central)
         return controller_cls()
