@@ -40,6 +40,13 @@ def test_foo():
         pass
 '''
 
+SCRIPT_CMATH = '''
+import cmath
+
+def test_foo():
+    pass
+'''
+
 @py.test.mark.xfail('sys.version_info[:2] == (3, 0)')
 def test_central(testdir):
     script = testdir.makepyfile(SCRIPT)
@@ -51,6 +58,20 @@ def test_central(testdir):
             '*10 passed*'
             ])
     assert result.ret == 0
+
+def test_module_selection(testdir):
+    script = testdir.makepyfile(SCRIPT_CMATH)
+    result = testdir.runpytest(script,
+                               '--cov=cmath',
+                               '--cov=%s' % script.purebasename)
+    result.stdout.fnmatch_lines([
+            '*- coverage: platform *, python * -*',
+            'test_module_selection * 3 * 0 * 100% *',
+            '*1 passed*'
+            ])
+    assert result.ret == 0
+    matching_lines = [line for line in result.outlines if 'TokenError' in line]
+    assert not matching_lines
 
 @py.test.mark.xfail('sys.version_info[:2] == (3, 0)')
 def test_dist_load_collocated(testdir):

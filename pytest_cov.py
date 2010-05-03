@@ -314,7 +314,9 @@ class CovController(object):
         morfs = list(set(module.__file__
                          for name, module in sys.modules.items()
                          for package in cov_packages
-                         if hasattr(module, '__file__') and name.startswith(package)))
+                         if hasattr(module, '__file__') and
+                         os.path.splitext(module.__file__)[1] in ('.py', '.pyc', '.pyo') and
+                         name.startswith(package)))
 
         for cov, node_descs in self.covs:
 
