@@ -11,13 +11,16 @@ either through this plugin or through coverage's own config file.
 Installation
 ------------
 
-This plugin depends on features just added to py and pytest-xdist.
-Until py 1.2.2 and pytest-xdist 1.2 are released you will need to
-install the 'tip' development versions from:
+The `pytest-cov pypi`_ package may be installed / uninstalled with pip::
 
-http://bitbucket.org/hpk42/py-trunk/downloads/
+    pip install pytest-cov
+    pip uninstall pytest-cov
 
-http://bitbucket.org/hpk42/pytest-xdist/downloads/
+Alternatively easy_install can be used::
+
+    easy_install pytest-cov
+
+.. _`pytest-cov pypi`: http://pypi.python.org/pypi/pytest-cov/
 
 
 Usage

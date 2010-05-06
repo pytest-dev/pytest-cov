@@ -2,14 +2,14 @@ import pytest_cov
 import setuptools
 
 setuptools.setup(name='pytest-cov',
-                 version='0.10',
+                 version='0.11',
                  description='py.test plugin for coverage reporting with support for both centralised and distributed testing',
                  long_description=open('README.txt').read().strip(),
                  author='Meme Dough',
                  author_email='memedough@gmail.com',
                  url='http://bitbucket.org/memedough/pytest-cov/overview',
                  py_modules=['pytest_cov'],
-                 install_requires=['py>=1.2.2',
+                 install_requires=['py>=1.3.0',
                                    'pytest-xdist>=1.2',
                                    'coverage>=3.3.1'],
                  entry_points={'pytest11': ['pytest_cov = pytest_cov']},
