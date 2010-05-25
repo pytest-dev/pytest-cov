@@ -1,7 +1,7 @@
 import setuptools
 
 setuptools.setup(name='pytest-cov',
-                 version='0.13',
+                 version='0.14',
                  description='py.test plugin for coverage reporting with support for both centralised and distributed testing',
                  long_description=open('README.txt').read().strip(),
                  author='Meme Dough',

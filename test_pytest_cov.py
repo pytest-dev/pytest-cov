@@ -54,7 +54,7 @@ def test_central(testdir):
                                '--cov=%s' % script.purebasename)
     result.stdout.fnmatch_lines([
             '*- coverage: platform *, python * -*',
-            'test_central * 18 * 5 * 72% *',
+            'test_central * 18 * 13 * 72% *',
             '*10 passed*'
             ])
     assert result.ret == 0
@@ -66,7 +66,7 @@ def test_module_selection(testdir):
                                '--cov=%s' % script.purebasename)
     result.stdout.fnmatch_lines([
             '*- coverage: platform *, python * -*',
-            'test_module_selection * 3 * 0 * 100% *',
+            'test_module_selection * 3 * 3 * 100% *',
             '*1 passed*'
             ])
     assert result.ret == 0
@@ -82,7 +82,7 @@ def test_dist_load_collocated(testdir):
                                '--tx=2*popen')
     result.stdout.fnmatch_lines([
             '*- coverage: platform *, python * -*',
-            'test_dist_load_collocated * 18 * 5 * 72% *',
+            'test_dist_load_collocated * 18 * 13 * 72% *',
             '*10 passed*'
             ])
     assert result.ret == 0
@@ -100,7 +100,7 @@ def test_dist_load_not_collocated(testdir):
                                '--rsyncdir=%s' % script.basename)
     result.stdout.fnmatch_lines([
             '*- coverage: platform *, python * -*',
-            'test_dist_load_not_collocated * 18 * 5 * 72% *',
+            'test_dist_load_not_collocated * 18 * 13 * 72% *',
             '*10 passed*'
             ])
     assert result.ret == 0
@@ -117,13 +117,13 @@ def test_dist_each_many_reports_py2(testdir):
                                '--tx=popen//python=/usr/local/python27b1/bin/python')
     result.stdout.fnmatch_lines([
            '*- coverage: platform *, python 2.4.6-final-0 -*',
-           'test_dist_each_many_reports_py2 * 18 * 5 * 72% *',
+           'test_dist_each_many_reports_py2 * 18 * 13 * 72% *',
            '*- coverage: platform *, python 2.5.5-final-0 -*',
-           'test_dist_each_many_reports_py2 * 18 * 5 * 72% *',
+           'test_dist_each_many_reports_py2 * 18 * 13 * 72% *',
             '*- coverage: platform *, python 2.6.5-final-0 -*',
-           'test_dist_each_many_reports_py2 * 18 * 5 * 72% *',
+           'test_dist_each_many_reports_py2 * 18 * 13 * 72% *',
             '*- coverage: platform *, python 2.7.0-beta-1 -*',
-           'test_dist_each_many_reports_py2 * 18 * 5 * 72% *',
+           'test_dist_each_many_reports_py2 * 18 * 13 * 72% *',
             '*40 passed*'
             ])
     assert result.ret == 0
@@ -142,9 +142,9 @@ def test_dist_each_many_reports_py3(testdir):
             # results but ignore for this test as we want to see
             # multiple reports regardless of results.
             '*- coverage: platform *, python 3.0.1-final-0 -*',
-            'test_dist_each_many_reports_py3 * 18 * 1 * 94% *',
+            'test_dist_each_many_reports_py3 * 18 * 17 * 94% *',
             '*- coverage: platform *, python 3.1.2-final-0 -*',
-            'test_dist_each_many_reports_py3 * 18 * 5 * 72% *',
+            'test_dist_each_many_reports_py3 * 18 * 13 * 72% *',
             '*20 passed*'
             ])
     assert result.ret == 0
@@ -166,7 +166,7 @@ def test_dist_each_one_report_py2(testdir):
             '* platform *, python 2.5.5-final-0 *',
             '* platform *, python 2.6.5-final-0 *',
             '* platform *, python 2.7.0-beta-1 *',
-            'test_dist_each_one_report_py2 * 18 * 2 * 88% *',
+            'test_dist_each_one_report_py2 * 18 * 16 * 88% *',
             '*40 passed*'
             ])
     assert result.ret == 0
@@ -188,7 +188,7 @@ def test_dist_each_one_report_py3(testdir):
             '*- coverage -*',
             '* platform *, python 3.0.1-final-0 *',
             '* platform *, python 3.1.2-final-0 *',
-            'test_dist_each_one_report_py3 * 18 * 1 * 94% *',
+            'test_dist_each_one_report_py3 * 18 * 17 * 94% *',
             '*20 passed*'
             ])
     assert result.ret == 0
