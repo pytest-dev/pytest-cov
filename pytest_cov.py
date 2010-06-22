@@ -338,6 +338,9 @@ class CovPlugin(object):
             # Set config option for consistency and for transport to slaves.
             setattr(config.option, option, result)
 
+    def pytest_funcarg__cov(self, request):
+        return self.cov_controller.cov
+
     def pytest_sessionstart(self, session):
         """At session start determine our implementation and delegate to it."""
 
