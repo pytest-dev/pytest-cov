@@ -209,78 +209,26 @@ try:
 except ImportError:
     import ConfigParser as configparser
 
-try:
-    from functools import reduce
-except ImportError:
-    pass
-
 def pytest_addoption(parser):
     """Add options to control coverage."""
 
     group = parser.getgroup('coverage reporting with distributed testing support')
-    group.addoption('--cov-on', action='store_true', default=False,
-                    dest='cov_on',
-                    help='enable coverage, only needed if not specifying any --cov options')
-    group.addoption('--cov', action='append', default=[], metavar='package',
-                    dest='cov_packages',
-                    help='collect coverage for the specified package (multi-allowed)')
-    group.addoption('--cov-no-terminal', action='store_false', default=True,
-                    dest='cov_terminal',
-                    help='disable printing a report on the terminal')
-    group.addoption('--cov-annotate', action='store_true', default=False,
-                    dest='cov_annotate',
-                    help='generate an annotated source code report')
-    group.addoption('--cov-html', action='store_true', default=False,
-                    dest='cov_html',
-                    help='generate a html report')
-    group.addoption('--cov-xml', action='store_true', default=False,
-                    dest='cov_xml',
-                    help='generate an xml report')
-    group.addoption('--cov-annotate-dir', action='store', default='coverage_annotate', metavar='dir',
-                    dest='cov_annotate_dir',
-                    help='directory for the annotate report, default: %default')
-    group.addoption('--cov-html-dir', action='store', default=None, metavar='dir',
-                    dest='cov_html_dir',
-                    help='directory for the html report, default: coverage_html')
-    group.addoption('--cov-xml-file', action='store', default=None, metavar='path',
-                    dest='cov_xml_file',
-                    help='file for the xml report, default: coverage.xml')
-    group.addoption('--cov-data-file', action='store', default=None, metavar='path',
-                    dest='cov_data_file',
-                    help='file containing coverage data, default: .coverage')
-    group.addoption('--cov-combine-each', action='store_true', default=False,
-                    dest='cov_combine_each',
-                    help='for dist=each mode produce a single combined report')
-    group.addoption('--cov-branch', action='store_true', default=None,
-                    dest='cov_branch',
-                    help='enable branch coverage')
-    group.addoption('--cov-pylib', action='store_true', default=None,
-                    dest='cov_pylib',
-                    help='enable python library coverage')
-    group.addoption('--cov-timid', action='store_true', default=None,
-                    dest='cov_timid',
-                    help='enable slower and simpler tracing')
-    group.addoption('--cov-no-missing-lines', action='store_false', default=True,
-                    dest='cov_show_missing',
-                    help='disable showing missing lines, only relevant to the terminal report')
-    group.addoption('--cov-no-missing-files', action='store_true', default=None,
-                    dest='cov_ignore_errors',
-                    help='disable showing message about missing source files')
-    group.addoption('--cov-omit', action='store', default=None, metavar='prefix1,prefix2,...',
-                    dest='cov_omit_prefixes',
-                    help='ignore files with these prefixes')
-    group.addoption('--cov-no-config', action='store_false', default=True,
+    group.addoption('--cov', action='append', default=[], metavar='path',
+                    dest='cov_source',
+                    help='measure coverage for path (multi-allowed)')
+    group.addoption('--cov-report', action='append', default=[], metavar='type',
+                    choices=['term', 'term-missing', 'annotate', 'html', 'xml'],
+                    dest='cov_report',
+                    help='type of report to generate: term, term-missing, annotate, html, xml (multi-allowed)')
+    group.addoption('--cov-config', action='store', default='.coveragerc', metavar='path',
                     dest='cov_config',
-                    help='disable coverage reading its config file')
-    group.addoption('--cov-config-file', action='store', default='.coveragerc', metavar='path',
-                    dest='cov_config_file',
-                    help='config file for coverage, default: %default')
+                    help='config file for coverage, default: .coveragerc')
 
 
 def pytest_configure(config):
     """Activate coverage plugin if appropriate."""
 
-    if config.getvalue('cov_on') or config.getvalue('cov_packages'):
+    if config.getvalue('cov_source'):
         config.pluginmanager.register(CovPlugin(config), '_cov')
 
 
@@ -313,11 +261,9 @@ class CovPlugin(object):
         # file, coverage env vars and our own options in priority
         # order.
         parser = configparser.RawConfigParser()
-        parser.read(config.getvalue('cov_config_file'))
-        for default, section, item, env_var, option in (
-            ('coverage_html', 'html', 'directory', None           , 'cov_html_dir' ),
-            ('coverage.xml' , 'xml' , 'output'   , None           , 'cov_xml_file' ),
-            ('.coverage'    , 'run' , 'data_file', 'COVERAGE_FILE', 'cov_data_file')):
+        parser.read(config.getvalue('cov_config'))
+        for default, section, item, env_var, option in [
+            ('.coverage', 'run', 'data_file', 'COVERAGE_FILE', 'cov_data_file')]:
 
             # Lowest priority is coverage hard coded default.
             result = default
@@ -329,11 +275,6 @@ class CovPlugin(object):
             # Override with coverage env var.
             if env_var:
                 result = os.environ.get(env_var, result)
-
-            # Override with pytest cmd line, env var or conftest file.
-            value = config.getvalue(option)
-            if value:
-                result = value
 
             # Set config option for consistency and for transport to slaves.
             setattr(config.option, option, result)
@@ -385,95 +326,43 @@ class CovController(object):
     def __init__(self, config):
         """Get some common config used by multiple derived classes."""
 
-        self.config = config
-        self.covs = []
+        self.cov = None
+        self.node_descs = set()
         self.failed_slaves = []
-
-        self.cov_data_file = config.getvalue('cov_data_file')
-        self.cov_branch = config.getvalue('cov_branch')
-        self.cov_pylib = config.getvalue('cov_pylib')
-        self.cov_timid = config.getvalue('cov_timid')
-        if self.config.getvalue('cov_config'):
-            self.cov_config_file = os.path.realpath(self.config.getvalue('cov_config_file'))
-        else:
-            self.cov_config_file = False
+        self.config = config
+        self.cov_source = self.config.getvalue('cov_source')
+        self.cov_data_file = self.config.getvalue('cov_data_file')
+        self.cov_config = os.path.realpath(self.config.getvalue('cov_config'))
 
     def terminal_summary(self, terminalreporter):
         """Produce coverage reports."""
 
         # Get terminal writer and config values.
-        config = terminalreporter.config
         terminalwriter = terminalreporter._tw
+        cov_report = self.config.getvalue('cov_report') or ['term']
 
-        cov_packages = config.getvalue('cov_packages')
-        cov_terminal = config.getvalue('cov_terminal')
-        cov_annotate = config.getvalue('cov_annotate')
-        cov_html = config.getvalue('cov_html')
-        cov_xml = config.getvalue('cov_xml')
-        cov_annotate_dir = config.getvalue('cov_annotate_dir')
-        cov_html_dir = config.getvalue('cov_html_dir')
-        cov_xml_file = config.getvalue('cov_xml_file')
-        cov_show_missing = config.getvalue('cov_show_missing')
-        cov_ignore_errors = config.getvalue('cov_ignore_errors')
-        cov_omit_prefixes = config.getvalue('cov_omit_prefixes')
-        if cov_omit_prefixes:
-            cov_omit_prefixes = cov_omit_prefixes.split(',')
+        # Produce terminal report if wanted.
+        if 'term' in cov_report or 'term-missing' in cov_report:
+            if len(self.node_descs) == 1:
+                terminalwriter.sep('-', 'coverage: %s' % ''.join(self.node_descs))
+            else:
+                terminalwriter.sep('-', 'coverage')
+                for node_desc in sorted(self.node_descs):
+                    terminalwriter.sep(' ', '%s' % node_desc)
+            show_missing = 'term-missing' in cov_report
+            self.cov.report(show_missing=show_missing, ignore_errors=True, file=terminalwriter)
 
-        # Determine the modules or files to limit reports on.
-        morfs = list(set(module.__file__
-                         for name, module in sys.modules.items()
-                         for package in cov_packages
-                         if hasattr(module, '__file__') and
-                         os.path.splitext(module.__file__)[1] in ('.py', '.pyc', '.pyo') and
-                         name.startswith(package)))
+        # Produce annotated source code report if wanted.
+        if 'annotate' in cov_report:
+            cov.annotate(ignore_errors=True)
 
-        # Produce a report for each coverage object.
-        for cov, node_descs in self.covs:
+        # Produce html report if wanted.
+        if 'html' in cov_report:
+            cov.html_report(ignore_errors=True)
 
-            # Produce terminal report if wanted.
-            if cov_terminal:
-                if len(node_descs) == 1:
-                    terminalwriter.sep('-', 'coverage: %s' % ''.join(node_descs))
-                else:
-                    terminalwriter.sep('-', 'coverage')
-                    for node_desc in sorted(node_descs):
-                        terminalwriter.sep(' ', '%s' % node_desc)
-                cov.report(morfs, cov_show_missing, cov_ignore_errors, terminalwriter, cov_omit_prefixes)
-
-            # Only determine a suffix if we have more reports to do.
-            if cov_annotate or cov_html or cov_xml:
-
-                # Determine suffix if needed for following reports.
-                suffix = None
-                if len(self.covs) > 1:
-                    suffix = '_'.join(node_descs)
-                    replacements = [(' ', '_'), (',', ''), ('.', ''), ('-', '')]
-                    suffix = reduce(lambda suffix, oldnew: suffix.replace(oldnew[0], oldnew[1]), replacements, suffix)
-
-                # Produce annotated source code report if wanted.
-                if cov_annotate:
-                    if suffix:
-                        dir = '%s_%s' % (cov_annotate_dir, suffix)
-                    else:
-                        dir = cov_annotate_dir
-                    cov.annotate(morfs, dir, cov_ignore_errors, cov_omit_prefixes)
-
-                # Produce html report if wanted.
-                if cov_html:
-                    if suffix:
-                        dir = '%s_%s' % (cov_html_dir, suffix)
-                    else:
-                        dir = cov_html_dir
-                    cov.html_report(morfs, dir, cov_ignore_errors, cov_omit_prefixes)
-
-                # Produce xml report if wanted.
-                if cov_xml:
-                    if suffix:
-                        root, ext = os.path.splitext(cov_xml_file)
-                        xml_file = '%s_%s%s' % (root, suffix, ext)
-                    else:
-                        xml_file = cov_xml_file
-                    cov.xml_report(morfs, xml_file, cov_ignore_errors, cov_omit_prefixes)
+        # Produce xml report if wanted.
+        if 'xml' in cov_report:
+            cov.xml_report(ignore_errors=True)
 
         # Report on any failed slaves.
         if self.failed_slaves:
@@ -490,11 +379,9 @@ class Central(CovController):
     def sessionstart(self, session):
         """Erase any previous coverage data and start coverage."""
 
-        self.cov = coverage.coverage(data_file=self.cov_data_file,
-                                     branch=self.cov_branch,
-                                     cover_pylib=self.cov_pylib,
-                                     timid=self.cov_timid,
-                                     config_file=self.cov_config_file)
+        self.cov = coverage.coverage(source=self.cov_source,
+                                     data_file=self.cov_data_file,
+                                     config_file=self.cov_config)
         self.cov.erase()
         self.cov.start()
 
@@ -504,7 +391,7 @@ class Central(CovController):
         self.cov.stop()
         self.cov.save()
         node_desc = get_node_desc(sys.platform, sys.version_info)
-        self.covs = [(self.cov, [node_desc])]
+        self.node_descs.add(node_desc)
 
     def terminal_summary(self, terminalreporter):
         """Produce coverage reports."""
@@ -518,9 +405,8 @@ class DistMaster(CovController):
     def sessionstart(self, session):
         """Ensure coverage rc file rsynced if appropriate."""
 
-        self.data_files = {}
-        if self.cov_config_file and os.path.exists(self.cov_config_file):
-            self.config.option.rsyncdir.append(self.cov_config_file)
+        if self.cov_config and os.path.exists(self.cov_config):
+            self.config.option.rsyncdir.append(self.cov_config)
 
     def configure_node(self, node):
         """Slaves need to know if they are collocated and what files have moved."""
@@ -534,50 +420,38 @@ class DistMaster(CovController):
 
         # If slave doesn't return any data then it is likely that this
         # plugin didn't get activated on the slave side.
-        if not (hasattr(node, 'slaveoutput') and
-                'cov_slave_data_file' in node.slaveoutput):
+        if not (hasattr(node, 'slaveoutput') and 'cov_slave_data_suffix' in node.slaveoutput):
             self.failed_slaves.append(node)
             return
 
         # If slave is not collocated then we must save the data file
         # that it returns to us.
-        if 'cov_slave_data_suffix' in node.slaveoutput:
-            cov = coverage.coverage(data_file=node.slaveoutput['cov_slave_data_file'],
+        if 'cov_slave_lines' in node.slaveoutput:
+            cov = coverage.coverage(source=self.cov_source,
+                                    data_file=self.cov_data_file,
                                     data_suffix=node.slaveoutput['cov_slave_data_suffix'],
-                                    branch=self.cov_branch,
-                                    cover_pylib=self.cov_pylib,
-                                    timid=self.cov_timid,
-                                    config_file=self.cov_config_file)
+                                    config_file=self.cov_config)
             cov.start()
-            cov.stop()
             cov.data.lines = node.slaveoutput['cov_slave_lines']
             cov.data.arcs = node.slaveoutput['cov_slave_arcs']
+            cov.stop()
             cov.save()
 
-        # For each data file record the set of slave types that contribute.
+        # Record the slave types that contribute to the data file.
         rinfo = node.gateway._rinfo()
         node_desc = get_node_desc(rinfo.platform, rinfo.version_info)
-        node_descs = self.data_files.setdefault(node.slaveoutput['cov_slave_data_file'], set())
-        node_descs.add(node_desc)
+        self.node_descs.add(node_desc)
 
     def sessionfinish(self, session, exitstatus):
         """Combines coverage data and sets the list of coverage objects to report on."""
 
-        # Fn that combines all appropriate suffix files into a data file.
-        def combine(data_file):
-            cov = coverage.coverage(data_file=data_file,
-                                    branch=self.cov_branch,
-                                    cover_pylib=self.cov_pylib,
-                                    timid=self.cov_timid,
-                                    config_file=self.cov_config_file)
-            cov.erase()
-            cov.combine()
-            cov.save()
-            return cov
-
-        # For each data file combine all its suffix files and record
-        # the contributing node types.
-        self.covs = [(combine(data_file), node_descs) for data_file, node_descs in sorted(self.data_files.items())]
+        # Combine all the suffix files into the data file.
+        self.cov = coverage.coverage(source=self.cov_source,
+                                     data_file=self.cov_data_file,
+                                     config_file=self.cov_config)
+        self.cov.erase()
+        self.cov.combine()
+        self.cov.save()
 
     def terminal_summary(self, terminalreporter):
         """Produce coverage reports."""
@@ -595,29 +469,15 @@ class DistSlave(CovController):
         self.is_collocated = bool(socket.gethostname() == session.config.slaveinput['cov_master_host'] and
                                   session.config.topdir == session.config.slaveinput['cov_master_topdir'])
 
-        # Determine what data file to contribute to.
-        if session.config.option.dist == 'each' and not session.config.getvalue('cov_combine_each'):
-            # Contribute to data file specific to this node type,
-            # typically --dist=each and we are the only contributing
-            # slave.
-            node_desc = 'platform_%s_python_%s' % (sys.platform, '%s%s%s%s%s' % sys.version_info[:5])
-            self.data_file = '%s_%s' % (session.config.getvalue('cov_data_file'), node_desc)
-        else:
-            # Contribute to data file which typically is --dist=load
-            # and has all slaves contributing to it.
-            self.data_file = session.config.getvalue('cov_data_file')
-
         # Our suffix makes us unique from all other slaves, master
         # will combine our data later.
         self.data_suffix = session.nodeid
 
         # Erase any previous data and start coverage.
-        self.cov = coverage.coverage(data_file=self.data_file,
+        self.cov = coverage.coverage(source=self.cov_source,
+                                     data_file=self.cov_data_file,
                                      data_suffix=self.data_suffix,
-                                     branch=self.cov_branch,
-                                     cover_pylib=self.cov_pylib,
-                                     timid=self.cov_timid,
-                                     config_file=self.cov_config_file)
+                                     config_file=self.cov_config)
         self.cov.erase()
         self.cov.start()
 
@@ -628,10 +488,10 @@ class DistSlave(CovController):
 
         if self.is_collocated:
             # If we are collocated then save the file ourselves and
-            # inform the master of the data file we are contributing
-            # to.
+            # inform the master of our suffix to indicate that we have
+            # finished.
             self.cov.save()
-            session.config.slaveoutput['cov_slave_data_file'] = self.data_file
+            session.config.slaveoutput['cov_slave_data_suffix'] = self.data_suffix
         else:
             # If we are not collocated then rewrite the filenames from
             # the slave location to the master location.
@@ -641,14 +501,14 @@ class DistSlave(CovController):
             path_rewrites.append((str(session.config.topdir), str(session.config.slaveinput['cov_master_topdir'])))
 
             def rewrite_path(filename):
-                return reduce(lambda filename, slavemaster: filename.replace(slavemaster[0], slavemaster[1]),
-                              path_rewrites,
-                              filename)
+                for slave_path, master_path in path_rewrites:
+                    filename = filename.replace(slave_path, master_path)
+                return filename
+
             lines = dict((rewrite_path(filename), data) for filename, data in self.cov.data.lines.items())
             arcs = dict((rewrite_path(filename), data) for filename, data in self.cov.data.arcs.items())
 
             # Send all the data to the master over the channel.
-            session.config.slaveoutput['cov_slave_data_file'] = self.data_file
             session.config.slaveoutput['cov_slave_data_suffix'] = self.data_suffix
             session.config.slaveoutput['cov_slave_lines'] = lines
             session.config.slaveoutput['cov_slave_arcs'] = arcs
