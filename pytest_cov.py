@@ -276,6 +276,8 @@ class CovPlugin(object):
             setattr(config.option, option, result)
 
     def pytest_funcarg__cov(self, request):
+        """A pytest funcarg that provide access to the underlying coverage object."""
+
         return self.cov_controller.cov
 
     def pytest_sessionstart(self, session):
