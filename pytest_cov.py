@@ -199,18 +199,7 @@ pytest and nose respectively.
 No doubt others have contributed to these tools as well.
 """
 
-import coverage
-import socket
-import sys
-import os
-
-try:
-    import configparser
-except ImportError:
-    import ConfigParser as configparser
-
-from pytest_cov_init import UNIQUE_SEP
-
+import cov_core
 
 def pytest_addoption(parser):
     """Add options to control coverage."""
@@ -254,37 +243,25 @@ class CovPlugin(object):
         # Our implementation is unknown at this time.
         self.cov_controller = None
 
-        # For data file name consider coverage rc file, coverage env
-        # vars in priority order.
-        parser = configparser.RawConfigParser()
-        parser.read(config.getvalue('cov_config'))
-        for default, section, item, env_var, option in [
-            ('.coverage', 'run', 'data_file', 'COVERAGE_FILE', 'cov_data_file')]:
-
-            # Lowest priority is coverage hard coded default.
-            result = default
-
-            # Override with coverage rc file.
-            if parser.has_option(section, item):
-                result = parser.get(section, item)
-
-            # Override with coverage env var.
-            if env_var:
-                result = os.environ.get(env_var, result)
-
-            # Set config option for consistency and for transport to slaves.
-            setattr(config.option, option, result)
-
-    def pytest_funcarg__cov(self, request):
-        """A pytest funcarg that provide access to the underlying coverage object."""
-
-        return self.cov_controller.cov
-
     def pytest_sessionstart(self, session):
         """At session start determine our implementation and delegate to it."""
 
-        self.cov_controller = CovController.create_from_session(session)
-        self.cov_controller.sessionstart(session)
+        cov_source = session.config.getvalue('cov_source')
+        cov_report = session.config.getvalue('cov_report') or ['term']
+        cov_config = session.config.getvalue('cov_config')
+
+        name_to_cls = dict(Session=cov_core.Central,
+                           DSession=cov_core.DistMaster,
+                           SlaveSession=cov_core.DistSlave)
+        session_name = session.__class__.__name__
+        controller_cls = name_to_cls.get(session_name, cov_core.Central)
+        self.cov_controller = controller_cls(cov_source,
+                                             cov_report,
+                                             cov_config,
+                                             session.config,
+                                             getattr(session, 'nodeid', None))
+
+        self.cov_controller.start()
 
     def pytest_configure_node(self, node):
         """Delegate to our implementation."""
@@ -299,253 +276,14 @@ class CovPlugin(object):
     def pytest_sessionfinish(self, session, exitstatus):
         """Delegate to our implementation."""
 
-        self.cov_controller.sessionfinish(session, exitstatus)
+        self.cov_controller.finish()
 
     def pytest_terminal_summary(self, terminalreporter):
         """Delegate to our implementation."""
 
-        self.cov_controller.terminal_summary(terminalreporter)
+        self.cov_controller.summary(terminalreporter._tw)
 
+    def pytest_funcarg__cov(self, request):
+        """A pytest funcarg that provide access to the underlying coverage object."""
 
-class CovController(object):
-    """Base class for different plugin implementations."""
-
-    @staticmethod
-    def create_from_session(session):
-        """Create the appropriate implementation based on the type of session."""
-
-        name_to_cls = dict(Session=Central,
-                           DSession=DistMaster,
-                           SlaveSession=DistSlave)
-        session_name = session.__class__.__name__
-        controller_cls = name_to_cls.get(session_name, Central)
-        return controller_cls(session.config)
-
-    def __init__(self, config):
-        """Get some common config used by multiple derived classes."""
-
-        self.cov = None
-        self.node_descs = set()
-        self.failed_slaves = []
-        self.config = config
-        self.cov_source = self.config.getvalue('cov_source')
-        self.cov_data_file = self.config.getvalue('cov_data_file')
-        self.cov_config = self.config.getvalue('cov_config')
-
-    def set_env(self):
-        """Put info about coverage into the env so that subprocesses can activate coverage."""
-
-        os.environ['PYTEST_COV_SOURCE'] = UNIQUE_SEP.join(self.cov_source)
-        os.environ['PYTEST_COV_DATA_FILE'] = self.cov_data_file
-        os.environ['PYTEST_COV_CONFIG'] = self.cov_config
-
-    @staticmethod
-    def unset_env():
-        """Remove coverage info from env."""
-
-        del os.environ['PYTEST_COV_SOURCE']
-        del os.environ['PYTEST_COV_DATA_FILE']
-        del os.environ['PYTEST_COV_CONFIG']
-
-    @staticmethod
-    def get_node_desc(platform, version_info):
-        """Return a description of this node."""
-
-        return 'platform %s, python %s' % (platform, '%s.%s.%s-%s-%s' % version_info[:5])
-
-    def terminal_summary(self, terminalreporter):
-        """Produce coverage reports."""
-
-        # Get terminal writer and config values.
-        terminalwriter = terminalreporter._tw
-        cov_report = self.config.getvalue('cov_report') or ['term']
-
-        # Produce terminal report if wanted.
-        if 'term' in cov_report or 'term-missing' in cov_report:
-            if len(self.node_descs) == 1:
-                terminalwriter.sep('-', 'coverage: %s' % ''.join(self.node_descs))
-            else:
-                terminalwriter.sep('-', 'coverage')
-                for node_desc in sorted(self.node_descs):
-                    terminalwriter.sep(' ', '%s' % node_desc)
-            show_missing = 'term-missing' in cov_report
-            self.cov.report(show_missing=show_missing, ignore_errors=True, file=terminalwriter)
-
-        # Produce annotated source code report if wanted.
-        if 'annotate' in cov_report:
-            self.cov.annotate(ignore_errors=True)
-
-        # Produce html report if wanted.
-        if 'html' in cov_report:
-            self.cov.html_report(ignore_errors=True)
-
-        # Produce xml report if wanted.
-        if 'xml' in cov_report:
-            self.cov.xml_report(ignore_errors=True)
-
-        # Report on any failed slaves.
-        if self.failed_slaves:
-            terminalwriter.sep('-', 'coverage: failed slaves')
-            terminalwriter.write('The following slaves failed to return coverage data, '
-                                 'ensure that pytest-cov is installed on these slaves.\n')
-            for node in self.failed_slaves:
-                terminalwriter.write('%s\n' % node.gateway.id)
-
-
-class Central(CovController):
-    """Implementation for centralised operation."""
-
-    def sessionstart(self, session):
-        """Erase any previous coverage data and start coverage."""
-
-        self.cov = coverage.coverage(source=self.cov_source,
-                                     data_file=self.cov_data_file,
-                                     config_file=self.cov_config)
-        self.cov.erase()
-        self.cov.start()
-        self.set_env()
-
-    def sessionfinish(self, session, exitstatus):
-        """Stop coverage, save data to file and set the list of coverage objects to report on."""
-
-        self.unset_env()
-        self.cov.stop()
-        self.cov.combine()
-        self.cov.save()
-        node_desc = self.get_node_desc(sys.platform, sys.version_info)
-        self.node_descs.add(node_desc)
-
-    def terminal_summary(self, terminalreporter):
-        """Produce coverage reports."""
-
-        CovController.terminal_summary(self, terminalreporter)
-
-
-class DistMaster(CovController):
-    """Implementation for distributed master."""
-
-    def sessionstart(self, session):
-        """Ensure coverage rc file rsynced if appropriate."""
-
-        if self.cov_config and os.path.exists(self.cov_config):
-            self.config.option.rsyncdir.append(self.cov_config)
-
-    def configure_node(self, node):
-        """Slaves need to know if they are collocated and what files have moved."""
-
-        node.slaveinput['cov_master_host'] = socket.gethostname()
-        node.slaveinput['cov_master_topdir'] = self.config.topdir
-        node.slaveinput['cov_master_rsync_roots'] = node.nodemanager.roots
-
-    def testnodedown(self, node, error):
-        """Collect data file name from slave.  Also save data to file if slave not collocated."""
-
-        # If slave doesn't return any data then it is likely that this
-        # plugin didn't get activated on the slave side.
-        if not (hasattr(node, 'slaveoutput') and 'cov_slave_node_id' in node.slaveoutput):
-            self.failed_slaves.append(node)
-            return
-
-        # If slave is not collocated then we must save the data file
-        # that it returns to us.
-        if 'cov_slave_lines' in node.slaveoutput:
-            cov = coverage.coverage(source=self.cov_source,
-                                    data_file=self.cov_data_file,
-                                    data_suffix=node.slaveoutput['cov_slave_node_id'],
-                                    config_file=self.cov_config)
-            cov.start()
-            cov.data.lines = node.slaveoutput['cov_slave_lines']
-            cov.data.arcs = node.slaveoutput['cov_slave_arcs']
-            cov.stop()
-            cov.save()
-
-        # Record the slave types that contribute to the data file.
-        rinfo = node.gateway._rinfo()
-        node_desc = self.get_node_desc(rinfo.platform, rinfo.version_info)
-        self.node_descs.add(node_desc)
-
-    def sessionfinish(self, session, exitstatus):
-        """Combines coverage data and sets the list of coverage objects to report on."""
-
-        # Combine all the suffix files into the data file.
-        self.cov = coverage.coverage(source=self.cov_source,
-                                     data_file=self.cov_data_file,
-                                     config_file=self.cov_config)
-        self.cov.erase()
-        self.cov.combine()
-        self.cov.save()
-
-    def terminal_summary(self, terminalreporter):
-        """Produce coverage reports."""
-
-        CovController.terminal_summary(self, terminalreporter)
-
-
-class DistSlave(CovController):
-    """Implementation for distributed slaves."""
-
-    def sessionstart(self, session):
-        """Determine what data file and suffix to contribute to and start coverage."""
-
-        # Determine whether we are collocated with master.
-        self.is_collocated = bool(socket.gethostname() == session.config.slaveinput['cov_master_host'] and
-                                  session.config.topdir == session.config.slaveinput['cov_master_topdir'])
-
-        # If we are not collocated then rewrite master paths to slave paths.
-        if not self.is_collocated:
-            master_topdir = str(session.config.slaveinput['cov_master_topdir'])
-            slave_topdir = str(session.config.topdir)
-            self.cov_source = [source.replace(master_topdir, slave_topdir) for source in self.cov_source]
-            self.cov_data_file = self.cov_data_file.replace(master_topdir, slave_topdir)
-            self.cov_config = self.cov_config.replace(master_topdir, slave_topdir)
-
-        # Our slave node id makes us unique from all other slaves so
-        # adjust the data file that we contribute to and the master
-        # will combine our data with other slaves later.
-        self.cov_data_file += '.%s' % session.nodeid
-
-        # Erase any previous data and start coverage.
-        self.cov = coverage.coverage(source=self.cov_source,
-                                     data_file=self.cov_data_file,
-                                     config_file=self.cov_config)
-        self.cov.erase()
-        self.cov.start()
-        self.set_env()
-
-    def sessionfinish(self, session, exitstatus):
-        """Stop coverage and send relevant info back to the master."""
-
-        self.unset_env()
-        self.cov.stop()
-        self.cov.combine()
-        self.cov.save()
-
-        if self.is_collocated:
-            # If we are collocated then just inform the master of our
-            # data file to indicate that we have finished.
-            session.config.slaveoutput['cov_slave_node_id'] = session.nodeid
-        else:
-            # If we are not collocated then rewrite the filenames from
-            # the slave location to the master location.
-            slave_topdir = session.config.topdir
-            path_rewrites = [(str(slave_topdir.join(rsync_root.basename)), str(rsync_root))
-                             for rsync_root in session.config.slaveinput['cov_master_rsync_roots']]
-            path_rewrites.append((str(session.config.topdir), str(session.config.slaveinput['cov_master_topdir'])))
-
-            def rewrite_path(filename):
-                for slave_path, master_path in path_rewrites:
-                    filename = filename.replace(slave_path, master_path)
-                return filename
-
-            lines = dict((rewrite_path(filename), data) for filename, data in self.cov.data.lines.items())
-            arcs = dict((rewrite_path(filename), data) for filename, data in self.cov.data.arcs.items())
-
-            # Send all the data to the master over the channel.
-            session.config.slaveoutput['cov_slave_node_id'] = session.nodeid
-            session.config.slaveoutput['cov_slave_lines'] = lines
-            session.config.slaveoutput['cov_slave_arcs'] = arcs
-
-    def terminal_summary(self, terminalreporter):
-        """Only the master reports so do nothing."""
-
-        pass
+        return self.cov_controller.cov if self.cov_controller else None
