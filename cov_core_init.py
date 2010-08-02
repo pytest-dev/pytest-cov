@@ -44,7 +44,7 @@ def init():
                                             random.randint(0, 999999))
 
                 # Activate coverage for this process.
-                cov = coverage.coverage(source=cov_source,
+                cov = coverage.coverage(#source=cov_source,
                                         data_file=cov_data_file,
                                         data_suffix=data_suffix,
                                         config_file=cov_config,

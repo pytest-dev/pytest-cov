@@ -47,7 +47,7 @@ setuptools.setup(name='cov-core',
 
 if sys.argv[1] in ('install', 'develop'):
     for path in sys.path:
-        if ('site-packages' in path) or ('dist-packages' in path and 'local' in path):
+        if (path.endswith('site-packages')) or (path.endswith('dist-packages') and 'local' in path):
             path = os.path.join(path, PTH_FILE_NAME)
             pth_file = open(path, 'w')
             pth_file.write(PTH_FILE)
