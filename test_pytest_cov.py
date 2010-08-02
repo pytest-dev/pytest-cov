@@ -10,10 +10,13 @@ Known issues:
 
 - For py 3.0 coverage seems to give incorrect results, it reports all
   covered except the one line which it should have actualy covered.
+  Issue reported upstream, also only problem with pass statement and
+  is find with simple assignment statement.
 """
 
 import py
 import sys
+import os
 
 pytest_plugins = 'pytester', 'cov'
 
@@ -27,179 +30,168 @@ def pytest_generate_tests(metafunc):
 def test_foo():
     version = sys.version_info[:2]
     if version == (2, 4):
-        pass
+        a = True
     if version == (2, 5):
-        pass
+        a = True
     if version == (2, 6):
-        pass
+        a = True
     if version == (2, 7):
-        pass
+        a = True
     if version == (3, 0):
-        pass
+        a = True
     if version == (3, 1):
-        pass
+        a = True
 '''
 
-SCRIPT_CMATH = '''
-import cmath
+SCRIPT_CHILD = '''
+import sys
 
-def test_foo():
+idx = int(sys.argv[1])
+
+if idx == 0:
+    pass
+if idx == 1:
     pass
 '''
 
-@py.test.mark.xfail('sys.version_info[:2] == (3, 0)')
+SCRIPT_PARENT = '''
+import subprocess
+import sys
+
+def pytest_generate_tests(metafunc):
+    for i in range(2):
+        metafunc.addcall(funcargs=dict(idx=i))
+
+def test_foo(idx):
+    out, err = subprocess.Popen([sys.executable, 'child_script.py', str(idx)], stdout=subprocess.PIPE, stderr=subprocess.PIPE).communicate()
+'''
+
+
 def test_central(testdir):
     script = testdir.makepyfile(SCRIPT)
+
     result = testdir.runpytest(script,
-                               '--cov=%s' % script.purebasename)
+                               '--cov=%s' % script.dirpath(),
+                               '--cov-report=term-missing')
+
     result.stdout.fnmatch_lines([
             '*- coverage: platform *, python * -*',
-            'test_central * 18 * 13 * 72% *',
+            'test_central * 18 * 72%*',
             '*10 passed*'
             ])
     assert result.ret == 0
 
-def test_module_selection(testdir):
-    script = testdir.makepyfile(SCRIPT_CMATH)
-    result = testdir.runpytest(script,
-                               '--cov=cmath',
-                               '--cov=%s' % script.purebasename)
-    result.stdout.fnmatch_lines([
-            '*- coverage: platform *, python * -*',
-            'test_module_selection * 3 * 3 * 100% *',
-            '*1 passed*'
-            ])
-    assert result.ret == 0
-    matching_lines = [line for line in result.outlines if 'TokenError' in line]
-    assert not matching_lines
 
-@py.test.mark.xfail('sys.version_info[:2] == (3, 0)')
-def test_dist_load_collocated(testdir):
+def test_dist_collocated(testdir):
     script = testdir.makepyfile(SCRIPT)
+
     result = testdir.runpytest(script,
-                               '--cov=%s' % script.purebasename,
+                               '--cov=%s' % script.dirpath(),
+                               '--cov-report=term-missing',
                                '--dist=load',
                                '--tx=2*popen')
+
     result.stdout.fnmatch_lines([
             '*- coverage: platform *, python * -*',
-            'test_dist_load_collocated * 18 * 13 * 72% *',
+            'test_dist_collocated * 18 * 72%*',
             '*10 passed*'
             ])
     assert result.ret == 0
 
-@py.test.mark.xfail('sys.version_info[:2] == (3, 0)')
-def test_dist_load_not_collocated(testdir):
+
+def test_dist_not_collocated(testdir):
     script = testdir.makepyfile(SCRIPT)
     dir1 = testdir.mkdir('dir1')
     dir2 = testdir.mkdir('dir2')
+
     result = testdir.runpytest(script,
-                               '--cov=%s' % script.purebasename,
+                               '--cov=%s' % script.dirpath(),
+                               '--cov-report=term-missing',
                                '--dist=load',
                                '--tx=popen//chdir=%s' % dir1,
                                '--tx=popen//chdir=%s' % dir2,
                                '--rsyncdir=%s' % script.basename)
+
     result.stdout.fnmatch_lines([
             '*- coverage: platform *, python * -*',
-            'test_dist_load_not_collocated * 18 * 13 * 72% *',
+            'test_dist_not_collocated * 18 * 72%*',
             '*10 passed*'
             ])
     assert result.ret == 0
 
-@py.test.mark.skipif('sys.version_info[:2] >= (3, 0)')
-def test_dist_each_many_reports_py2(testdir):
-    script = testdir.makepyfile(SCRIPT)
-    result = testdir.runpytest(script,
-                               '--cov=%s' % script.purebasename,
-                               '--dist=each',
-                               '--tx=popen//python=/usr/local/python246/bin/python',
-                               '--tx=popen//python=/usr/local/python255/bin/python',
-                               '--tx=popen//python=/usr/local/python265/bin/python',
-                               '--tx=popen//python=/usr/local/python27b1/bin/python')
+
+def test_central_subprocess(testdir):
+    scripts = testdir.makepyfile(parent_script=SCRIPT_PARENT, child_script=SCRIPT_CHILD)
+    parent_script = scripts.dirpath().join('parent_script.py')
+
+    result = testdir.runpytest(parent_script,
+                               '--cov=%s' % scripts.dirpath(),
+                               '--cov-report=term-missing')
+
     result.stdout.fnmatch_lines([
-           '*- coverage: platform *, python 2.4.6-final-0 -*',
-           'test_dist_each_many_reports_py2 * 18 * 13 * 72% *',
-           '*- coverage: platform *, python 2.5.5-final-0 -*',
-           'test_dist_each_many_reports_py2 * 18 * 13 * 72% *',
-            '*- coverage: platform *, python 2.6.5-final-0 -*',
-           'test_dist_each_many_reports_py2 * 18 * 13 * 72% *',
-            '*- coverage: platform *, python 2.7.0-beta-1 -*',
-           'test_dist_each_many_reports_py2 * 18 * 13 * 72% *',
-            '*40 passed*'
+            '*- coverage: platform *, python * -*',
+            'child_script * 6 * 100%*',
+            'parent_script * 7 * 100%*',
             ])
     assert result.ret == 0
 
-@py.test.mark.skipif('sys.version_info[:2] < (3, 0)')
-@py.test.mark.xfail('sys.version_info[:2] == (3, 1)')
-def test_dist_each_many_reports_py3(testdir):
-    script = testdir.makepyfile(SCRIPT)
-    result = testdir.runpytest(script,
-                               '--cov=%s' % script.purebasename,
-                               '--dist=each',
-                               '--tx=popen//python=/usr/local/python301/bin/python3.0',
-                               '--tx=popen//python=/usr/local/python312/bin/python3.1')
+
+def test_dist_subprocess_collocated(testdir):
+    scripts = testdir.makepyfile(parent_script=SCRIPT_PARENT, child_script=SCRIPT_CHILD)
+    parent_script = scripts.dirpath().join('parent_script.py')
+
+    result = testdir.runpytest(parent_script,
+                               '--cov=%s' % scripts.dirpath(),
+                               '--cov-report=term-missing',
+                               '--dist=load',
+                               '--tx=2*popen')
+
     result.stdout.fnmatch_lines([
-            # coverage under python 3.0 seems to produce incorrect
-            # results but ignore for this test as we want to see
-            # multiple reports regardless of results.
-            '*- coverage: platform *, python 3.0.1-final-0 -*',
-            'test_dist_each_many_reports_py3 * 18 * 17 * 94% *',
-            '*- coverage: platform *, python 3.1.2-final-0 -*',
-            'test_dist_each_many_reports_py3 * 18 * 13 * 72% *',
-            '*20 passed*'
+            '*- coverage: platform *, python * -*',
+            'child_script * 6 * 100%*',
+            'parent_script * 7 * 100%*',
             ])
     assert result.ret == 0
 
-@py.test.mark.skipif('sys.version_info[:2] >= (3, 0)')
-def test_dist_each_one_report_py2(testdir):
-    script = testdir.makepyfile(SCRIPT)
-    result = testdir.runpytest(script,
-                               '--cov=%s' % script.purebasename,
-                               '--cov-combine-each',
-                               '--dist=each',
-                               '--tx=popen//python=/usr/local/python246/bin/python',
-                               '--tx=popen//python=/usr/local/python255/bin/python',
-                               '--tx=popen//python=/usr/local/python265/bin/python',
-                               '--tx=popen//python=/usr/local/python27b1/bin/python')
+
+def test_dist_subprocess_not_collocated(testdir, tmpdir):
+    scripts = testdir.makepyfile(parent_script=SCRIPT_PARENT, child_script=SCRIPT_CHILD)
+    parent_script = scripts.dirpath().join('parent_script.py')
+    child_script = scripts.dirpath().join('child_script.py')
+
+    dir1 = tmpdir.mkdir('dir1')
+    dir2 = tmpdir.mkdir('dir2')
+
+    result = testdir.runpytest(parent_script,
+                               '--cov=%s' % scripts.dirpath(),
+                               '--cov-report=term-missing',
+                               '--dist=load',
+                               '--tx=popen//chdir=%s' % dir1,
+                               '--tx=popen//chdir=%s' % dir2,
+                               '--rsyncdir=%s' % child_script,
+                               '--rsyncdir=%s' % parent_script)
+
     result.stdout.fnmatch_lines([
-            '*- coverage -*',
-            '* platform *, python 2.4.6-final-0 *',
-            '* platform *, python 2.5.5-final-0 *',
-            '* platform *, python 2.6.5-final-0 *',
-            '* platform *, python 2.7.0-beta-1 *',
-            'test_dist_each_one_report_py2 * 18 * 16 * 88% *',
-            '*40 passed*'
+            '*- coverage: platform *, python * -*',
+            'child_script * 6 * 100%*',
+            'parent_script * 7 * 100%*',
             ])
     assert result.ret == 0
 
-@py.test.mark.skipif('sys.version_info[:2] < (3, 0)')
-@py.test.mark.xfail('sys.version_info[:2] == (3, 1)')
-def test_dist_each_one_report_py3(testdir):
-    script = testdir.makepyfile(SCRIPT)
-    result = testdir.runpytest(script,
-                               '--cov=%s' % script.purebasename,
-                               '--cov-combine-each',
-                               '--dist=each',
-                               '--tx=popen//python=/usr/local/python301/bin/python3.0',
-                               '--tx=popen//python=/usr/local/python312/bin/python3.1')
-    result.stdout.fnmatch_lines([
-            # coverage under python 3.0 seems to produce incorrect
-            # results but ignore for this test as we want to see
-            # multiple reports regardless of results.
-            '*- coverage -*',
-            '* platform *, python 3.0.1-final-0 *',
-            '* platform *, python 3.1.2-final-0 *',
-            'test_dist_each_one_report_py3 * 18 * 17 * 94% *',
-            '*20 passed*'
-            ])
-    assert result.ret == 0
 
 @py.test.mark.skipif('sys.version_info[:2] >= (3, 0)')
 def test_dist_missing_data(testdir):
+    if not os.path.exists('/usr/local/python255-empty/bin/python'):
+        py.test.skip('this test needs python without pytest-cov installed in /usr/local/python255-empty/bin/python')
+
     script = testdir.makepyfile(SCRIPT)
+
     result = testdir.runpytest(script,
-                               '--cov=%s' % script.purebasename,
+                               '--cov=%s' % script.dirpath(),
+                               '--cov-report=term-missing',
                                '--dist=load',
-                               '--tx=popen//python=/usr/local/env255empty/bin/python')
+                               '--tx=popen//python=/usr/local/python255-empty/bin/python')
+
     result.stdout.fnmatch_lines([
             '*- coverage: failed slaves -*'
             ])
