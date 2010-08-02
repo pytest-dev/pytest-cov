@@ -11,7 +11,7 @@ PTH_FILE = '''\
 import cov_core_init; cov_core_init.init()
 '''
 
-UNKNOWN_SITE_PACKAGES_DIR ='''\
+UNKNOWN_SITE_PACKAGES_DIR ='''
 Failed to find site-packages or dist-packages dir to put pth file in.
 Sub processes will not have coverage collected.
 
@@ -20,15 +20,15 @@ To measure sub processes put the following in a file called %s:
 ''' % (PTH_FILE_NAME, PTH_FILE)
 
 setuptools.setup(name='cov-core',
-                 version='1.0a2',
-                 description='plugin core for use by pytest-cov and nose-cov',
+                 version='1.0',
+                 description='plugin core for use by pytest-cov, nose-cov and unittest2-cov',
                  long_description=open('README.txt').read().strip(),
                  author='Meme Dough',
                  author_email='memedough@gmail.com',
                  url='http://bitbucket.org/memedough/cov-core/overview',
                  py_modules=['cov_core',
                              'cov_core_init'],
-                 install_requires=['coverage>=3.4a1'],
+                 install_requires=['coverage>=3.3.1'],
                  license='MIT License',
                  zip_safe=False,
                  keywords='cover coverage',
@@ -47,12 +47,12 @@ setuptools.setup(name='cov-core',
 
 if sys.argv[1] in ('install', 'develop'):
     for path in sys.path:
-        if 'site-packages' in path or 'dist-packages' in path:
-            path = os.path.dirname(path)
-            pth_file = open(os.path.join(path, PTH_FILE_NAME), 'w')
+        if ('site-packages' in path) or ('dist-packages' in path and 'local' in path):
+            path = os.path.join(path, PTH_FILE_NAME)
+            pth_file = open(path, 'w')
             pth_file.write(PTH_FILE)
             pth_file.close()
+            sys.stdout.write('\nWrote pth file for subprocess measurement to %s\n' % path)
             break
     else:
         sys.stdout.write(UNKNOWN_SITE_PACKAGES_DIR)
-        sys.stdout.write(PTH_FILE)
