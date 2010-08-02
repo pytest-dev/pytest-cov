@@ -76,7 +76,7 @@ def test_central(testdir):
 
     result.stdout.fnmatch_lines([
             '*- coverage: platform *, python * -*',
-            'test_central * 18 * 5 * 72%*',
+            'test_central * 18 * 72%*',
             '*10 passed*'
             ])
     assert result.ret == 0
@@ -93,7 +93,7 @@ def test_dist_collocated(testdir):
 
     result.stdout.fnmatch_lines([
             '*- coverage: platform *, python * -*',
-            'test_dist_collocated * 18 * 5 * 72%*',
+            'test_dist_collocated * 18 * 72%*',
             '*10 passed*'
             ])
     assert result.ret == 0
@@ -114,7 +114,7 @@ def test_dist_not_collocated(testdir):
 
     result.stdout.fnmatch_lines([
             '*- coverage: platform *, python * -*',
-            'test_dist_not_collocated * 18 * 5 * 72%*',
+            'test_dist_not_collocated * 18 * 72%*',
             '*10 passed*'
             ])
     assert result.ret == 0
@@ -130,8 +130,8 @@ def test_central_subprocess(testdir):
 
     result.stdout.fnmatch_lines([
             '*- coverage: platform *, python * -*',
-            'child_script * 6 * 0 * 100%*',
-            'parent_script * 7 * 0 * 100%*',
+            'child_script * 6 * 100%*',
+            'parent_script * 7 * 100%*',
             ])
     assert result.ret == 0
 
@@ -148,8 +148,8 @@ def test_dist_subprocess_collocated(testdir):
 
     result.stdout.fnmatch_lines([
             '*- coverage: platform *, python * -*',
-            'child_script * 6 * 0 * 100%*',
-            'parent_script * 7 * 0 * 100%*',
+            'child_script * 6 * 100%*',
+            'parent_script * 7 * 100%*',
             ])
     assert result.ret == 0
 
@@ -173,8 +173,8 @@ def test_dist_subprocess_not_collocated(testdir, tmpdir):
 
     result.stdout.fnmatch_lines([
             '*- coverage: platform *, python * -*',
-            'child_script * 6 * 0 * 100%*',
-            'parent_script * 7 * 0 * 100%*',
+            'child_script * 6 * 100%*',
+            'parent_script * 7 * 100%*',
             ])
     assert result.ret == 0
 
