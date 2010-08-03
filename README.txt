@@ -200,12 +200,16 @@ started.
 Acknowledgements
 ----------------
 
-Holger Krekel for pytest with its distributed testing support.
+Whilst this plugin has been built fresh from the ground up it has been influenced by the work done
+on pytest-coverage (Ross Lawley, James Mills, Holger Krekel) and nose-cover (Jason Pellerin) which are
+other coverage plugins.
 
 Ned Batchelder for coverage and its ability to combine the coverage results of parallel runs.
 
-Whilst this plugin has been built fresh from the ground up to support distributed testing it has
-been influenced by the work done on pytest-coverage (Ross Lawley, James Mills, Holger Krekel) and
-nose-cover (Jason Pellerin) which are other coverage plugins for pytest and nose respectively.
+Holger Krekel for pytest with its distributed testing support.
+
+Jason Pellerin for nose.
+
+Michael Foord for unittest2.
 
 No doubt others have contributed to these tools as well.
