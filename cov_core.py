@@ -84,40 +84,52 @@ class CovController(object):
     def summary(self, stream):
         """Produce coverage reports."""
 
-        # Determine the modules or files to limit reports on.
-        morfs = list(set(module.__file__
-                         for name, module in sys.modules.items()
-                         for package in self.cov_source
-                         if hasattr(module, '__file__') and
-                         os.path.splitext(module.__file__)[1] in ('.py', '.pyc', '.pyo') and
-                         name.startswith(package)))
+        # Output coverage section header.
+        if len(self.node_descs) == 1:
+            self.sep(stream, '-', 'coverage: %s' % ''.join(self.node_descs))
+        else:
+            self.sep(stream, '-', 'coverage')
+            for node_desc in sorted(self.node_descs):
+                self.sep(stream, ' ', '%s' % node_desc)
 
-        # Produce terminal report if wanted.
-        if 'term' in self.cov_report or 'term-missing' in self.cov_report:
-            if len(self.node_descs) == 1:
-                self.sep(stream, '-', 'coverage: %s' % ''.join(self.node_descs))
-            else:
-                self.sep(stream, '-', 'coverage')
-                for node_desc in sorted(self.node_descs):
-                    self.sep(stream, ' ', '%s' % node_desc)
-            show_missing = 'term-missing' in self.cov_report
-            #self.cov.report(show_missing=show_missing, ignore_errors=True, file=stream)
-            self.cov.report(morfs, show_missing=show_missing, ignore_errors=True, file=stream)
+        # Determine the files to limit reports on.
+        morfs = list(set(filename
+                         for filename in self.cov.data.executed_files()
+                         for source in self.cov_source
+                         if os.path.realpath(filename).startswith(os.path.realpath(source))))
 
-        # Produce annotated source code report if wanted.
-        if 'annotate' in self.cov_report:
-            #self.cov.annotate(ignore_errors=True)
-            self.cov.annotate(morfs, ignore_errors=True)
+        if morfs:
+            # Produce terminal report if wanted.
+            if 'term' in self.cov_report or 'term-missing' in self.cov_report:
+                show_missing = 'term-missing' in self.cov_report
+                #self.cov.report(show_missing=show_missing, ignore_errors=True, file=stream)
+                self.cov.report(morfs, show_missing=show_missing, ignore_errors=True, file=stream)
 
-        # Produce html report if wanted.
-        if 'html' in self.cov_report:
-            #self.cov.html_report(ignore_errors=True)
-            self.cov.html_report(morfs, ignore_errors=True)
+            # Produce annotated source code report if wanted.
+            if 'annotate' in self.cov_report:
+                #self.cov.annotate(ignore_errors=True)
+                self.cov.annotate(morfs, ignore_errors=True)
+                stream.write('Coverage annotated source written next to source\n')
 
-        # Produce xml report if wanted.
+            # Produce html report if wanted.
+            if 'html' in self.cov_report:
+                #self.cov.html_report(ignore_errors=True)
+                self.cov.html_report(morfs, ignore_errors=True)
+                stream.write('Coverage HTML written to dir %s\n' % self.cov.config.html_dir)
+
+        else:
+            # Output warning that there is nothing to report on.
+            stream.write('Nothing to report on with specified cov options: %s\n' % ', '.join(self.cov_source))
+
+        # Produce xml report if wanted.  Produce empty reports in case CI server is expecting one.
         if 'xml' in self.cov_report:
+            xml_morfs = morfs or ['BOGUS_TO_PRODUCE_EMPTY_REPORT']
             #self.cov.xml_report(ignore_errors=True)
-            self.cov.xml_report(morfs, ignore_errors=True)
+            self.cov.xml_report(xml_morfs, ignore_errors=True)
+            if morfs:
+                stream.write('Coverage XML written to file %s\n' % self.cov.config.xml_output)
+            else:
+                stream.write('Coverage XML written to file %s: empty coverage report\n' % self.cov.config.xml_output)
 
         # Report on any failed slaves.
         if self.failed_slaves:
