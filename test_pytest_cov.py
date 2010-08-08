@@ -179,6 +179,22 @@ def test_dist_subprocess_not_collocated(testdir, tmpdir):
     assert result.ret == 0
 
 
+def test_empty_report(testdir):
+    script = testdir.makepyfile(SCRIPT)
+
+    result = testdir.runpytest(script,
+                               '--cov=non_existent_module',
+                               '--cov-report=term-missing')
+
+    result.stdout.fnmatch_lines([
+            '*- coverage: platform *, python * -*',
+            '*10 passed*'
+            ])
+    assert result.ret == 0
+    matching_lines = [line for line in result.outlines if '%' in line]
+    assert not matching_lines
+
+
 @py.test.mark.skipif('sys.version_info[:2] >= (3, 0)')
 def test_dist_missing_data(testdir):
     if not os.path.exists('/usr/local/python255-empty/bin/python'):

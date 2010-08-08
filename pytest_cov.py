@@ -210,15 +210,13 @@ nose-cover (Jason Pellerin) which are other coverage plugins for pytest and nose
 No doubt others have contributed to these tools as well.
 """
 
-import cov_core
-
 def pytest_addoption(parser):
     """Add options to control coverage."""
 
     group = parser.getgroup('coverage reporting with distributed testing support')
     group.addoption('--cov', action='append', default=[], metavar='path',
                     dest='cov_source',
-                    help='measure coverage for path (multi-allowed)')
+                    help='measure coverage for filesystem path (multi-allowed)')
     group.addoption('--cov-report', action='append', default=[], metavar='type',
                     choices=['term', 'term-missing', 'annotate', 'html', 'xml'],
                     dest='cov_report',
@@ -256,6 +254,8 @@ class CovPlugin(object):
 
     def pytest_sessionstart(self, session):
         """At session start determine our implementation and delegate to it."""
+
+        import cov_core
 
         cov_source = session.config.getvalue('cov_source')
         cov_report = session.config.getvalue('cov_report') or ['term']
