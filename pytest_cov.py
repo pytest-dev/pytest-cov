@@ -171,7 +171,10 @@ The terminal report with line numbers::
 The remaining three reports output to files without showing anything on the terminal (useful for
 when the output is going to a continuous integration server)::
 
-    py.test --cov-report html --cov-report xml --cov-report annotate --cov myproj tests/
+    py.test --cov-report html
+            --cov-report xml
+            --cov-report annotate
+            --cov myproj tests/
 
 
 Coverage Data File
@@ -199,13 +202,17 @@ started.
 Acknowledgements
 ----------------
 
-Holger Krekel for pytest with its distributed testing support.
+Whilst this plugin has been built fresh from the ground up it has been influenced by the work done
+on pytest-coverage (Ross Lawley, James Mills, Holger Krekel) and nose-cover (Jason Pellerin) which are
+other coverage plugins.
 
 Ned Batchelder for coverage and its ability to combine the coverage results of parallel runs.
 
-Whilst this plugin has been built fresh from the ground up to support distributed testing it has
-been influenced by the work done on pytest-coverage (Ross Lawley, James Mills, Holger Krekel) and
-nose-cover (Jason Pellerin) which are other coverage plugins for pytest and nose respectively.
+Holger Krekel for pytest with its distributed testing support.
+
+Jason Pellerin for nose.
+
+Michael Foord for unittest2.
 
 No doubt others have contributed to these tools as well.
 """
@@ -297,4 +304,7 @@ class CovPlugin(object):
     def pytest_funcarg__cov(self, request):
         """A pytest funcarg that provide access to the underlying coverage object."""
 
-        return self.cov_controller.cov if self.cov_controller else None
+        if self.cov_controller:
+            return self.cov_controller.cov
+        else:
+            return None
