@@ -20,7 +20,7 @@ To measure sub processes put the following in a file called %s:
 ''' % (PTH_FILE_NAME, PTH_FILE)
 
 setuptools.setup(name='cov-core',
-                 version='1.1',
+                 version='1.2',
                  description='plugin core for use by pytest-cov, nose-cov and unittest2-cov',
                  long_description=open('README.txt').read().strip(),
                  author='Meme Dough',
@@ -28,7 +28,7 @@ setuptools.setup(name='cov-core',
                  url='http://bitbucket.org/memedough/cov-core/overview',
                  py_modules=['cov_core',
                              'cov_core_init'],
-                 install_requires=['coverage>=3.3.1'],
+                 install_requires=['coverage>=3.4'],
                  license='MIT License',
                  zip_safe=False,
                  keywords='cover coverage',

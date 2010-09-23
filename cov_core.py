@@ -92,44 +92,25 @@ class CovController(object):
             for node_desc in sorted(self.node_descs):
                 self.sep(stream, ' ', '%s' % node_desc)
 
-        # Determine the files to limit reports on.
-        morfs = list(set(filename
-                         for filename in self.cov.data.executed_files()
-                         for source in self.cov_source
-                         if os.path.realpath(filename).startswith(os.path.realpath(source))))
+        # Produce terminal report if wanted.
+        if 'term' in self.cov_report or 'term-missing' in self.cov_report:
+            show_missing = 'term-missing' in self.cov_report
+            self.cov.report(show_missing=show_missing, ignore_errors=True, file=stream)
 
-        if morfs:
-            # Produce terminal report if wanted.
-            if 'term' in self.cov_report or 'term-missing' in self.cov_report:
-                show_missing = 'term-missing' in self.cov_report
-                #self.cov.report(show_missing=show_missing, ignore_errors=True, file=stream)
-                self.cov.report(morfs, show_missing=show_missing, ignore_errors=True, file=stream)
+        # Produce annotated source code report if wanted.
+        if 'annotate' in self.cov_report:
+            self.cov.annotate(ignore_errors=True)
+            stream.write('Coverage annotated source written next to source\n')
 
-            # Produce annotated source code report if wanted.
-            if 'annotate' in self.cov_report:
-                #self.cov.annotate(ignore_errors=True)
-                self.cov.annotate(morfs, ignore_errors=True)
-                stream.write('Coverage annotated source written next to source\n')
+        # Produce html report if wanted.
+        if 'html' in self.cov_report:
+            self.cov.html_report(ignore_errors=True)
+            stream.write('Coverage HTML written to dir %s\n' % self.cov.config.html_dir)
 
-            # Produce html report if wanted.
-            if 'html' in self.cov_report:
-                #self.cov.html_report(ignore_errors=True)
-                self.cov.html_report(morfs, ignore_errors=True)
-                stream.write('Coverage HTML written to dir %s\n' % self.cov.config.html_dir)
-
-        else:
-            # Output warning that there is nothing to report on.
-            stream.write('Nothing to report on with specified cov options: %s\n' % ', '.join(self.cov_source))
-
-        # Produce xml report if wanted.  Produce empty reports in case CI server is expecting one.
+        # Produce xml report if wanted.
         if 'xml' in self.cov_report:
-            xml_morfs = morfs or ['BOGUS_TO_PRODUCE_EMPTY_REPORT']
-            #self.cov.xml_report(ignore_errors=True)
-            self.cov.xml_report(xml_morfs, ignore_errors=True)
-            if morfs:
-                stream.write('Coverage XML written to file %s\n' % self.cov.config.xml_output)
-            else:
-                stream.write('Coverage XML written to file %s: empty coverage report\n' % self.cov.config.xml_output)
+            self.cov.xml_report(ignore_errors=True)
+            stream.write('Coverage XML written to file %s\n' % self.cov.config.xml_output)
 
         # Report on any failed slaves.
         if self.failed_slaves:
@@ -146,7 +127,7 @@ class Central(CovController):
     def start(self):
         """Erase any previous coverage data and start coverage."""
 
-        self.cov = coverage.coverage(#source=self.cov_source,
+        self.cov = coverage.coverage(source=self.cov_source,
                                      data_file=self.cov_data_file,
                                      config_file=self.cov_config)
         self.cov.erase()
@@ -197,7 +178,7 @@ class DistMaster(CovController):
         # If slave is not collocated then we must save the data file
         # that it returns to us.
         if 'cov_slave_lines' in node.slaveoutput:
-            cov = coverage.coverage(#source=self.cov_source,
+            cov = coverage.coverage(source=self.cov_source,
                                     data_file=self.cov_data_file,
                                     data_suffix=node.slaveoutput['cov_slave_node_id'],
                                     config_file=self.cov_config)
@@ -216,7 +197,7 @@ class DistMaster(CovController):
         """Combines coverage data and sets the list of coverage objects to report on."""
 
         # Combine all the suffix files into the data file.
-        self.cov = coverage.coverage(#source=self.cov_source,
+        self.cov = coverage.coverage(source=self.cov_source,
                                      data_file=self.cov_data_file,
                                      config_file=self.cov_config)
         self.cov.erase()
@@ -253,7 +234,7 @@ class DistSlave(CovController):
         self.cov_data_file += '.%s' % self.nodeid
 
         # Erase any previous data and start coverage.
-        self.cov = coverage.coverage(#source=self.cov_source,
+        self.cov = coverage.coverage(source=self.cov_source,
                                      data_file=self.cov_data_file,
                                      config_file=self.cov_config)
         self.cov.erase()
