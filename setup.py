@@ -1,9 +1,15 @@
 import setuptools
+import pytest_cov
+
+doc = pytest_cov.__doc__
+pos = doc.find('\n\n')
+doc = "pytest-cov\n==========" + doc[pos:]
+doc = doc.strip()
 
 setuptools.setup(name='pytest-cov',
                  version='1.3',
                  description='py.test plugin for coverage reporting with support for both centralised and distributed testing, including subprocesses',
-                 long_description=open('README.txt').read().strip(),
+                 long_description=doc,
                  author='Meme Dough',
                  author_email='memedough@gmail.com',
                  url='http://bitbucket.org/memedough/pytest-cov/overview',
