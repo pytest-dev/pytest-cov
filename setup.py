@@ -7,11 +7,12 @@ import os
 # imported.
 PTH_FILE_NAME = 'init_cov_core.pth'
 
+# The line in the path file must begin with "import" so that site.py will exec it.
 PTH_FILE = '''\
-import cov_core_init; cov_core_init.init()
+import os; os.environ.get('COV_CORE_SOURCE') and __import__('cov_core_init').init()
 '''
 
-UNKNOWN_SITE_PACKAGES_DIR ='''
+UNKNOWN_SITE_PACKAGES_DIR = '''
 Failed to find site-packages or dist-packages dir to put pth file in.
 Sub processes will not have coverage collected.
 
