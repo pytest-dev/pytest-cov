@@ -190,14 +190,14 @@ Coverage Config File
 --------------------
 
 This plugin provides a clean minimal set of command line options that are added to pytest.  For
-further control of coverage specify a coverage config file.
+further control of coverage use a coverage config file.
 
 For example if tests are contained within the directory tree being measured the tests may be
 excluded if desired by using a .coveragerc file with the omit option set::
 
     py.test --cov-config .coveragerc
             --cov myproj
-            myproj/tests
+            myproj/tests/
 
 Where the .coveragerc file contains file globs::
 
