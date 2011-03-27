@@ -70,9 +70,10 @@ def test_foo(idx):
 def test_central(testdir):
     script = testdir.makepyfile(SCRIPT)
 
-    result = testdir.runpytest(script,
+    result = testdir.runpytest('-v',
                                '--cov=%s' % script.dirpath(),
-                               '--cov-report=term-missing')
+                               '--cov-report=term-missing',
+                               script)
 
     result.stdout.fnmatch_lines([
             '*- coverage: platform *, python * -*',
@@ -85,11 +86,12 @@ def test_central(testdir):
 def test_dist_collocated(testdir):
     script = testdir.makepyfile(SCRIPT)
 
-    result = testdir.runpytest(script,
+    result = testdir.runpytest('-v',
                                '--cov=%s' % script.dirpath(),
                                '--cov-report=term-missing',
                                '--dist=load',
-                               '--tx=2*popen')
+                               '--tx=2*popen',
+                               script)
 
     result.stdout.fnmatch_lines([
             '*- coverage: platform *, python * -*',
@@ -104,13 +106,14 @@ def test_dist_not_collocated(testdir):
     dir1 = testdir.mkdir('dir1')
     dir2 = testdir.mkdir('dir2')
 
-    result = testdir.runpytest(script,
+    result = testdir.runpytest('-v',
                                '--cov=%s' % script.dirpath(),
                                '--cov-report=term-missing',
                                '--dist=load',
                                '--tx=popen//chdir=%s' % dir1,
                                '--tx=popen//chdir=%s' % dir2,
-                               '--rsyncdir=%s' % script.basename)
+                               '--rsyncdir=%s' % script.basename,
+                               script)
 
     result.stdout.fnmatch_lines([
             '*- coverage: platform *, python * -*',
@@ -124,9 +127,10 @@ def test_central_subprocess(testdir):
     scripts = testdir.makepyfile(parent_script=SCRIPT_PARENT, child_script=SCRIPT_CHILD)
     parent_script = scripts.dirpath().join('parent_script.py')
 
-    result = testdir.runpytest(parent_script,
+    result = testdir.runpytest('-v',
                                '--cov=%s' % scripts.dirpath(),
-                               '--cov-report=term-missing')
+                               '--cov-report=term-missing',
+                               parent_script)
 
     result.stdout.fnmatch_lines([
             '*- coverage: platform *, python * -*',
@@ -140,11 +144,12 @@ def test_dist_subprocess_collocated(testdir):
     scripts = testdir.makepyfile(parent_script=SCRIPT_PARENT, child_script=SCRIPT_CHILD)
     parent_script = scripts.dirpath().join('parent_script.py')
 
-    result = testdir.runpytest(parent_script,
+    result = testdir.runpytest('-v',
                                '--cov=%s' % scripts.dirpath(),
                                '--cov-report=term-missing',
                                '--dist=load',
-                               '--tx=2*popen')
+                               '--tx=2*popen',
+                               parent_script)
 
     result.stdout.fnmatch_lines([
             '*- coverage: platform *, python * -*',
@@ -162,14 +167,15 @@ def test_dist_subprocess_not_collocated(testdir, tmpdir):
     dir1 = tmpdir.mkdir('dir1')
     dir2 = tmpdir.mkdir('dir2')
 
-    result = testdir.runpytest(parent_script,
+    result = testdir.runpytest('-v',
                                '--cov=%s' % scripts.dirpath(),
                                '--cov-report=term-missing',
                                '--dist=load',
                                '--tx=popen//chdir=%s' % dir1,
                                '--tx=popen//chdir=%s' % dir2,
                                '--rsyncdir=%s' % child_script,
-                               '--rsyncdir=%s' % parent_script)
+                               '--rsyncdir=%s' % parent_script,
+                               parent_script)
 
     result.stdout.fnmatch_lines([
             '*- coverage: platform *, python * -*',
@@ -182,9 +188,10 @@ def test_dist_subprocess_not_collocated(testdir, tmpdir):
 def test_empty_report(testdir):
     script = testdir.makepyfile(SCRIPT)
 
-    result = testdir.runpytest(script,
+    result = testdir.runpytest('-v',
                                '--cov=non_existent_module',
-                               '--cov-report=term-missing')
+                               '--cov-report=term-missing',
+                               script)
 
     result.stdout.fnmatch_lines([
             '*- coverage: platform *, python * -*',
@@ -202,11 +209,12 @@ def test_dist_missing_data(testdir):
 
     script = testdir.makepyfile(SCRIPT)
 
-    result = testdir.runpytest(script,
+    result = testdir.runpytest('-v',
                                '--cov=%s' % script.dirpath(),
                                '--cov-report=term-missing',
                                '--dist=load',
-                               '--tx=popen//python=/usr/local/python255-empty/bin/python')
+                               '--tx=popen//python=/usr/local/python255-empty/bin/python',
+                               script)
 
     result.stdout.fnmatch_lines([
             '*- coverage: failed slaves -*'

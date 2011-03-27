@@ -268,16 +268,26 @@ class CovPlugin(object):
         cov_report = session.config.getvalue('cov_report') or ['term']
         cov_config = session.config.getvalue('cov_config')
 
-        name_to_cls = dict(Session=cov_core.Central,
-                           DSession=cov_core.DistMaster,
-                           SlaveSession=cov_core.DistSlave)
         session_name = session.__class__.__name__
-        controller_cls = name_to_cls.get(session_name, cov_core.Central)
+        is_master = (session.config.pluginmanager.hasplugin('dsession') or
+                     session_name == 'DSession')
+        is_slave = (hasattr(session.config, 'slaveinput') or
+                    session_name == 'SlaveSession')
+        nodeid = None
+
+        if is_master:
+            controller_cls = cov_core.DistMaster
+        elif is_slave:
+            controller_cls = cov_core.DistSlave
+            nodeid = session.config.slaveinput.get('slaveid', getattr(session, 'nodeid'))
+        else:
+            controller_cls = cov_core.Central
+
         self.cov_controller = controller_cls(cov_source,
                                              cov_report,
                                              cov_config,
                                              session.config,
-                                             getattr(session, 'nodeid', None))
+                                             nodeid)
 
         self.cov_controller.start()
 
