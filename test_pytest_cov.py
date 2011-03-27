@@ -15,7 +15,6 @@ Known issues:
 """
 
 import py
-import sys
 import os
 
 pytest_plugins = 'pytester', 'cov'
@@ -64,6 +63,18 @@ def pytest_generate_tests(metafunc):
 
 def test_foo(idx):
     out, err = subprocess.Popen([sys.executable, 'child_script.py', str(idx)], stdout=subprocess.PIPE, stderr=subprocess.PIPE).communicate()
+'''
+
+SCRIPT_FUNCARG = '''
+import coverage
+
+def test_foo(cov):
+    assert isinstance(cov, coverage.control.coverage)
+'''
+
+SCRIPT_FUNCARG_NOT_ACTIVE = '''
+def test_foo(cov):
+    assert cov is None
 '''
 
 
@@ -218,5 +229,33 @@ def test_dist_missing_data(testdir):
 
     result.stdout.fnmatch_lines([
             '*- coverage: failed slaves -*'
+            ])
+    assert result.ret == 0
+
+
+def test_funcarg(testdir):
+    script = testdir.makepyfile(SCRIPT_FUNCARG)
+
+    result = testdir.runpytest('-v',
+                               '--cov=%s' % script.dirpath(),
+                               '--cov-report=term-missing',
+                               script)
+
+    result.stdout.fnmatch_lines([
+            '*- coverage: platform *, python * -*',
+            'test_funcarg * 3 * 100%*',
+            '*1 passed*'
+            ])
+    assert result.ret == 0
+
+
+def test_funcarg_not_active(testdir):
+    script = testdir.makepyfile(SCRIPT_FUNCARG_NOT_ACTIVE)
+
+    result = testdir.runpytest('-v',
+                               script)
+
+    result.stdout.fnmatch_lines([
+            '*1 passed*'
             ])
     assert result.ret == 0

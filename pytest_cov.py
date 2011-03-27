@@ -217,6 +217,7 @@ Michael Foord for unittest2.
 No doubt others have contributed to these tools as well.
 """
 
+
 def pytest_addoption(parser):
     """Add options to control coverage."""
 
@@ -237,7 +238,7 @@ def pytest_configure(config):
     """Activate coverage plugin if appropriate."""
 
     if config.getvalue('cov_source'):
-        config.pluginmanager.register(CovPlugin(config), '_cov')
+        config.pluginmanager.register(CovPlugin(), '_cov')
 
 
 class CovPlugin(object):
@@ -248,7 +249,7 @@ class CovPlugin(object):
     distributed slave.
     """
 
-    def __init__(self, config):
+    def __init__(self):
         """Creates a coverage pytest plugin.
 
         We read the rc file that coverage uses to get the data file
@@ -311,10 +312,13 @@ class CovPlugin(object):
 
         self.cov_controller.summary(terminalreporter._tw)
 
-    def pytest_funcarg__cov(self, request):
-        """A pytest funcarg that provide access to the underlying coverage object."""
 
-        if self.cov_controller:
-            return self.cov_controller.cov
-        else:
-            return None
+def pytest_funcarg__cov(request):
+    """A pytest funcarg that provides access to the underlying coverage object."""
+
+    # Check with hasplugin to avoid getplugin exception in older pytest.
+    if request.config.pluginmanager.hasplugin('_cov'):
+        plugin = request.config.pluginmanager.getplugin('_cov')
+        if plugin.cov_controller:
+            return plugin.cov_controller.cov
+    return None
