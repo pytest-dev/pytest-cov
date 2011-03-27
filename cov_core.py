@@ -5,11 +5,6 @@ import socket
 import sys
 import os
 
-try:
-    import configparser
-except ImportError:
-    import ConfigParser as configparser
-
 from cov_core_init import UNIQUE_SEP
 
 class CovController(object):
@@ -27,27 +22,8 @@ class CovController(object):
         self.cov = None
         self.node_descs = set()
         self.failed_slaves = []
-
-        # For data file name consider coverage rc file, coverage env
-        # vars in priority order.
-        parser = configparser.RawConfigParser()
-        parser.read(self.cov_config)
-        for default, section, item, env_var, option in [
-            ('.coverage', 'run', 'data_file', 'COVERAGE_FILE', 'cov_data_file')]:
-
-            # Lowest priority is coverage hard coded default.
-            result = default
-
-            # Override with coverage rc file.
-            if parser.has_option(section, item):
-                result = parser.get(section, item)
-
-            # Override with coverage env var.
-            if env_var:
-                result = os.environ.get(env_var, result)
-
-            # Set config option on ourselves.
-            setattr(self, option, result)
+        self.topdir = os.getcwd()
+        self.cov_data_file = '.coverage'
 
     def set_env(self):
         """Put info about coverage into the env so that subprocesses can activate coverage."""
@@ -163,8 +139,8 @@ class DistMaster(CovController):
         """Slaves need to know if they are collocated and what files have moved."""
 
         node.slaveinput['cov_master_host'] = socket.gethostname()
-        node.slaveinput['cov_master_topdir'] = self.config.topdir
-        node.slaveinput['cov_master_rsync_roots'] = node.nodemanager.roots
+        node.slaveinput['cov_master_topdir'] = self.topdir
+        node.slaveinput['cov_master_rsync_roots'] = [str(root) for root in node.nodemanager.roots]
 
     def testnodedown(self, node, error):
         """Collect data file name from slave.  Also save data to file if slave not collocated."""
@@ -218,12 +194,12 @@ class DistSlave(CovController):
 
         # Determine whether we are collocated with master.
         self.is_collocated = bool(socket.gethostname() == self.config.slaveinput['cov_master_host'] and
-                                  self.config.topdir == self.config.slaveinput['cov_master_topdir'])
+                                  self.topdir == self.config.slaveinput['cov_master_topdir'])
 
         # If we are not collocated then rewrite master paths to slave paths.
         if not self.is_collocated:
-            master_topdir = str(self.config.slaveinput['cov_master_topdir'])
-            slave_topdir = str(self.config.topdir)
+            master_topdir = self.config.slaveinput['cov_master_topdir']
+            slave_topdir = self.topdir
             self.cov_source = [source.replace(master_topdir, slave_topdir) for source in self.cov_source]
             self.cov_data_file = self.cov_data_file.replace(master_topdir, slave_topdir)
             self.cov_config = self.cov_config.replace(master_topdir, slave_topdir)
@@ -256,10 +232,10 @@ class DistSlave(CovController):
         else:
             # If we are not collocated then rewrite the filenames from
             # the slave location to the master location.
-            slave_topdir = self.config.topdir
-            path_rewrites = [(str(slave_topdir.join(rsync_root.basename)), str(rsync_root))
+            slave_topdir = self.topdir
+            path_rewrites = [(os.path.join(slave_topdir, os.path.basename(rsync_root)), rsync_root)
                              for rsync_root in self.config.slaveinput['cov_master_rsync_roots']]
-            path_rewrites.append((str(self.config.topdir), str(self.config.slaveinput['cov_master_topdir'])))
+            path_rewrites.append((slave_topdir, self.config.slaveinput['cov_master_topdir']))
 
             def rewrite_path(filename):
                 for slave_path, master_path in path_rewrites:
