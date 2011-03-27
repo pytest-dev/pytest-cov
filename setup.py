@@ -7,7 +7,7 @@ doc = "pytest-cov\n==========" + doc[pos:]
 doc = doc.strip()
 
 setuptools.setup(name='pytest-cov',
-                 version='1.3',
+                 version='1.4',
                  description='py.test plugin for coverage reporting with support for both centralised and distributed testing, including subprocesses',
                  long_description=doc,
                  author='Meme Dough',
@@ -16,7 +16,7 @@ setuptools.setup(name='pytest-cov',
                  py_modules=['pytest_cov'],
                  install_requires=['py>=1.3.4',
                                    'pytest-xdist>=1.4',
-                                   'cov-core>=1.2'],
+                                   'cov-core>=1.3'],
                  entry_points={'pytest11': ['pytest_cov = pytest_cov']},
                  license='MIT License',
                  zip_safe=False,
