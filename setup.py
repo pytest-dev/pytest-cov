@@ -1,21 +1,14 @@
 import setuptools
-import pytest_cov
-
-doc = pytest_cov.__doc__
-pos = doc.find('\n\n')
-doc = "pytest-cov\n==========" + doc[pos:]
-doc = doc.strip()
 
 setuptools.setup(name='pytest-cov',
-                 version='1.4',
+                 version='1.5',
                  description='py.test plugin for coverage reporting with support for both centralised and distributed testing, including subprocesses',
-                 long_description=doc,
+                 long_description=open('README.txt').read().strip(),
                  author='Meme Dough',
                  author_email='memedough@gmail.com',
                  url='http://bitbucket.org/memedough/pytest-cov/overview',
                  py_modules=['pytest_cov'],
                  install_requires=['py>=1.3.4',
-                                   'pytest-xdist>=1.4',
                                    'cov-core>=1.3'],
                  entry_points={'pytest11': ['pytest_cov = pytest_cov']},
                  license='MIT License',
