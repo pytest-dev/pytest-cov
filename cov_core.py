@@ -52,7 +52,7 @@ class CovController(object):
             stream.sep(s, txt)
         else:
             sep_total = max((70 - 2 - len(txt)), 2)
-            sep_len = sep_total / 2
+            sep_len = sep_total // 2
             sep_extra = sep_total % 2
             out = '%s %s %s\n' % (s * sep_len, txt, s * (sep_len + sep_extra))
             stream.write(out)
