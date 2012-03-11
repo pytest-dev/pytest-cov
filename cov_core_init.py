@@ -55,5 +55,7 @@ def init():
             cov.erase()
             cov.start()
 
+            return cov
+
     except Exception:
         pass

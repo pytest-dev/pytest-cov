@@ -1,11 +1,27 @@
 """Coverage controllers for use by pytest-cov and nose-cov."""
 
+from cov_core_init import UNIQUE_SEP
+import cov_core_init
 import coverage
+import multiprocessing.util
 import socket
 import sys
 import os
 
-from cov_core_init import UNIQUE_SEP
+
+def multiprocessing_start(obj):
+    cov = cov_core_init.init()
+    if cov:
+        multiprocessing.util.Finalize(None,
+                                      multiprocessing_finish,
+                                      args=(cov,),
+                                      exitpriority=1000)
+
+
+def multiprocessing_finish(cov):
+    cov.stop()
+    cov.save()
+
 
 class CovController(object):
     """Base class for different plugin implementations."""
@@ -31,6 +47,7 @@ class CovController(object):
         os.environ['COV_CORE_SOURCE'] = UNIQUE_SEP.join(self.cov_source)
         os.environ['COV_CORE_DATA_FILE'] = self.cov_data_file
         os.environ['COV_CORE_CONFIG'] = self.cov_config
+        multiprocessing.util.register_after_fork(multiprocessing_start, multiprocessing_start)
 
     @staticmethod
     def unset_env():
