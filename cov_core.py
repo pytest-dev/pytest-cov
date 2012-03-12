@@ -3,15 +3,24 @@
 from cov_core_init import UNIQUE_SEP
 import cov_core_init
 import coverage
-import multiprocessing.util
 import socket
 import sys
 import os
 
 
+def multiprocessing_hook():
+    try:
+        import multiprocessing.util
+        multiprocessing.util.register_after_fork(multiprocessing_start,
+                                                 multiprocessing_start)
+    except ImportError:
+        pass
+
+
 def multiprocessing_start(obj):
     cov = cov_core_init.init()
     if cov:
+        import multiprocessing.util
         multiprocessing.util.Finalize(None,
                                       multiprocessing_finish,
                                       args=(cov,),
@@ -47,7 +56,7 @@ class CovController(object):
         os.environ['COV_CORE_SOURCE'] = UNIQUE_SEP.join(self.cov_source)
         os.environ['COV_CORE_DATA_FILE'] = self.cov_data_file
         os.environ['COV_CORE_CONFIG'] = self.cov_config
-        multiprocessing.util.register_after_fork(multiprocessing_start, multiprocessing_start)
+        multiprocessing_hook()
 
     @staticmethod
     def unset_env():
