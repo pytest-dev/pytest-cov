@@ -19,11 +19,6 @@ For distributed testing support install pytest-xdist::
 
     pip install pytest-xdist
 
-For backward compatability there is no dependancy on the new pytest package name, install pytest if
-you don't already have it::
-
-    pip install pytest
-
 .. NOTE::
 
     Ensure you use pip instead of easy_install as the latter does not correctly install the

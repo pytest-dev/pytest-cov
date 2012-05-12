@@ -9,13 +9,14 @@ Known issues:
 - If py 3.1 then can have tx for py 3.1, but problems if tx for py 2 or py 3.0.
 
 - For py 3.0 coverage seems to give incorrect results, it reports all
-  covered except the one line which it should have actualy covered.
+  covered except the one line which it should have actually covered.
   Issue reported upstream, also only problem with pass statement and
-  is find with simple assignment statement.
+  is fine with simple assignment statement.
 """
 
 import py
 import os
+import sys
 
 pytest_plugins = 'pytester', 'cov'
 
@@ -39,6 +40,8 @@ def test_foo():
     if version == (3, 0):
         a = True
     if version == (3, 1):
+        a = True
+    if version == (3, 2):
         a = True
 '''
 
@@ -77,6 +80,19 @@ def test_foo(cov):
     assert cov is None
 '''
 
+MULTIPROCESSING_SCRIPT = '''
+import multiprocessing
+
+def target_fn():
+    a = True
+    return a
+
+def test_run_target():
+    p = multiprocessing.Process(target=target_fn)
+    p.start()
+    p.join()
+'''
+
 
 def test_central(testdir):
     script = testdir.makepyfile(SCRIPT)
@@ -88,7 +104,7 @@ def test_central(testdir):
 
     result.stdout.fnmatch_lines([
             '*- coverage: platform *, python * -*',
-            'test_central * 18 * 72%*',
+            'test_central * 20 * 70%*',
             '*10 passed*'
             ])
     assert result.ret == 0
@@ -106,7 +122,7 @@ def test_dist_collocated(testdir):
 
     result.stdout.fnmatch_lines([
             '*- coverage: platform *, python * -*',
-            'test_dist_collocated * 18 * 72%*',
+            'test_dist_collocated * 20 * 70%*',
             '*10 passed*'
             ])
     assert result.ret == 0
@@ -128,7 +144,7 @@ def test_dist_not_collocated(testdir):
 
     result.stdout.fnmatch_lines([
             '*- coverage: platform *, python * -*',
-            'test_dist_not_collocated * 18 * 72%*',
+            'test_dist_not_collocated * 20 * 70%*',
             '*10 passed*'
             ])
     assert result.ret == 0
@@ -213,10 +229,22 @@ def test_empty_report(testdir):
     assert not matching_lines
 
 
-@py.test.mark.skipif('sys.version_info[:2] >= (3, 0)')
 def test_dist_missing_data(testdir):
-    if not os.path.exists('/usr/local/python255-empty/bin/python'):
-        py.test.skip('this test needs python without pytest-cov installed in /usr/local/python255-empty/bin/python')
+    version = sys.version_info[:2]
+    if version == (2, 4):
+        exe = '/usr/local/py24/bin/python'
+    if version == (2, 5):
+        exe = '/usr/local/py25/bin/python'
+    if version == (2, 6):
+        exe = '/usr/local/py26/bin/python'
+    if version == (2, 7):
+        exe = '/usr/local/py27/bin/python'
+    if version == (3, 0):
+        exe = '/usr/local/py30/bin/python3.0'
+    if version == (3, 1):
+        exe = '/usr/local/py31/bin/python3.1'
+    if version == (3, 2):
+        exe = '/usr/local/py32/bin/python3.2'
 
     script = testdir.makepyfile(SCRIPT)
 
@@ -224,7 +252,7 @@ def test_dist_missing_data(testdir):
                                '--cov=%s' % script.dirpath(),
                                '--cov-report=term-missing',
                                '--dist=load',
-                               '--tx=popen//python=/usr/local/python255-empty/bin/python',
+                               '--tx=popen//python=%s' % exe,
                                script)
 
     result.stdout.fnmatch_lines([
@@ -256,6 +284,24 @@ def test_funcarg_not_active(testdir):
                                script)
 
     result.stdout.fnmatch_lines([
+            '*1 passed*'
+            ])
+    assert result.ret == 0
+
+
+def test_multiprocessing_subprocess(testdir):
+    py.test.importorskip('multiprocessing.util')
+
+    script = testdir.makepyfile(MULTIPROCESSING_SCRIPT)
+
+    result = testdir.runpytest('-v',
+                               '--cov=%s' % script.dirpath(),
+                               '--cov-report=term-missing',
+                               script)
+
+    result.stdout.fnmatch_lines([
+            '*- coverage: platform *, python * -*',
+            'test_multiprocessing_subprocess * 8 * 100%*',
             '*1 passed*'
             ])
     assert result.ret == 0
