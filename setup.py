@@ -50,10 +50,14 @@ if sys.argv[1] in ('install', 'develop'):
     for path in sys.path:
         if (path.endswith('site-packages')) or (path.endswith('dist-packages') and 'local' in path):
             path = os.path.join(path, PTH_FILE_NAME)
-            pth_file = open(path, 'w')
-            pth_file.write(PTH_FILE)
-            pth_file.close()
-            sys.stdout.write('\nWrote pth file for subprocess measurement to %s\n' % path)
-            break
+            try:
+                pth_file = open(path, 'w')
+                pth_file.write(PTH_FILE)
+                pth_file.close()
+            except:
+                sys.stdout.write('\nFailed to write pth file for subprocess measurement to %s\n' % path)
+            else:
+                sys.stdout.write('\nWrote pth file for subprocess measurement to %s\n' % path)
+                break
     else:
         sys.stdout.write(UNKNOWN_SITE_PACKAGES_DIR)
