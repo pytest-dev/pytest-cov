@@ -12,11 +12,10 @@ PTH_FILE = '''\
 import os; os.environ.get('COV_CORE_SOURCE') and __import__('cov_core_init').init()
 '''
 
-UNKNOWN_SITE_PACKAGES_DIR = '''
-Failed to find site-packages or dist-packages dir to put pth file in.
-Sub processes will not have coverage collected.
+PTH_FILE_FAILURE = '''
+Subprocesses WILL NOT have coverage collected.
 
-To measure sub processes put the following in a file called %s:
+To measure subprocesses put the following in a pth file called %s:
 %s
 ''' % (PTH_FILE_NAME, PTH_FILE)
 
@@ -54,10 +53,12 @@ if sys.argv[1] in ('install', 'develop'):
                 pth_file = open(path, 'w')
                 pth_file.write(PTH_FILE)
                 pth_file.close()
-            except:
-                sys.stdout.write('\nFailed to write pth file for subprocess measurement to %s\n' % path)
-            else:
                 sys.stdout.write('\nWrote pth file for subprocess measurement to %s\n' % path)
                 break
+            except Exception:
+                sys.stdout.write('\nFailed to write pth file for subprocess measurement to %s\n' % path)
+                sys.stdout.write(PTH_FILE_FAILURE)
+                break
     else:
-        sys.stdout.write(UNKNOWN_SITE_PACKAGES_DIR)
+        sys.stdout.write('\nFailed to find site-packages or dist-packages dir to put pth file in.\n')
+        sys.stdout.write(PTH_FILE_FAILURE)
