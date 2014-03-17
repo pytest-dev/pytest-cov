@@ -30,21 +30,9 @@ def pytest_generate_tests(metafunc):
         metafunc.addcall()
 
 def test_foo():
-    version = sys.version_info[:2]
-    if version == (2, 4):
-        a = True
-    if version == (2, 5):
-        a = True
-    if version == (2, 6):
-        a = True
-    if version == (2, 7):
-        a = True
-    if version == (3, 0):
-        a = True
-    if version == (3, 1):
-        a = True
-    if version == (3, 2):
-        a = True
+    assert True
+    if sys.version_info[0] > 5:
+        assert False
 '''
 
 SCRIPT_CHILD = '''
@@ -67,7 +55,14 @@ def pytest_generate_tests(metafunc):
         metafunc.addcall(funcargs=dict(idx=i))
 
 def test_foo(idx):
-    out, err = subprocess.Popen([sys.executable, 'child_script.py', str(idx)], stdout=subprocess.PIPE, stderr=subprocess.PIPE).communicate()
+    out, err = subprocess.Popen(
+        [sys.executable, 'child_script.py', str(idx)],
+        stdout=subprocess.PIPE,
+        stderr=subprocess.PIPE).communicate()
+
+# there is a issue in coverage.py with multiline statements at
+# end of file: https://bitbucket.org/ned/coveragepy/issue/293
+pass
 '''
 
 SCRIPT_FUNCARG = '''
@@ -95,6 +90,10 @@ def test_run_target():
     p.join()
 '''
 
+SCRIPT_RESULT = '8 * 88%'
+CHILD_SCRIPT_RESULT = '6 * 100%'
+PARENT_SCRIPT_RESULT = '8 * 100%'
+
 
 def test_central(testdir):
     script = testdir.makepyfile(SCRIPT)
@@ -105,10 +104,10 @@ def test_central(testdir):
                                script)
 
     result.stdout.fnmatch_lines([
-            '*- coverage: platform *, python * -*',
-            'test_central * 20 * 70%*',
-            '*10 passed*'
-            ])
+        '*- coverage: platform *, python * -*',
+        'test_central * %s *' % SCRIPT_RESULT,
+        '*10 passed*'
+        ])
     assert result.ret == 0
 
 
@@ -123,13 +122,15 @@ def test_dist_collocated(testdir):
                                script)
 
     result.stdout.fnmatch_lines([
-            '*- coverage: platform *, python * -*',
-            'test_dist_collocated * 20 * 70%*',
-            '*10 passed*'
-            ])
+        '*- coverage: platform *, python * -*',
+        'test_dist_collocated * %s *' % SCRIPT_RESULT,
+        '*10 passed*'
+        ])
     assert result.ret == 0
 
 
+@pytest.mark.xfail(sys.platform == 'win32' and sys.version_info[:2] < (3, 4),
+                   reason='path rewrite in cov_core is somehow broken')
 def test_dist_not_collocated(testdir):
     script = testdir.makepyfile(SCRIPT)
     dir1 = testdir.mkdir('dir1')
@@ -145,15 +146,16 @@ def test_dist_not_collocated(testdir):
                                script)
 
     result.stdout.fnmatch_lines([
-            '*- coverage: platform *, python * -*',
-            '*test_dist_not_collocated * 20 * 70%*',
-            '*10 passed*'
-            ])
+        '*- coverage: platform *, python * -*',
+        'test_dist_not_collocated * %s *' % SCRIPT_RESULT,
+        '*10 passed*'
+        ])
     assert result.ret == 0
 
 
 def test_central_subprocess(testdir):
-    scripts = testdir.makepyfile(parent_script=SCRIPT_PARENT, child_script=SCRIPT_CHILD)
+    scripts = testdir.makepyfile(parent_script=SCRIPT_PARENT,
+                                 child_script=SCRIPT_CHILD)
     parent_script = scripts.dirpath().join('parent_script.py')
 
     result = testdir.runpytest('-v',
@@ -162,15 +164,16 @@ def test_central_subprocess(testdir):
                                parent_script)
 
     result.stdout.fnmatch_lines([
-            '*- coverage: platform *, python * -*',
-            'child_script * 6 * 100%*',
-            'parent_script * 7 * 100%*',
-            ])
+        '*- coverage: platform *, python * -*',
+        'child_script * %s *' % CHILD_SCRIPT_RESULT,
+        'parent_script * %s *' % PARENT_SCRIPT_RESULT,
+        ])
     assert result.ret == 0
 
 
 def test_dist_subprocess_collocated(testdir):
-    scripts = testdir.makepyfile(parent_script=SCRIPT_PARENT, child_script=SCRIPT_CHILD)
+    scripts = testdir.makepyfile(parent_script=SCRIPT_PARENT,
+                                 child_script=SCRIPT_CHILD)
     parent_script = scripts.dirpath().join('parent_script.py')
 
     result = testdir.runpytest('-v',
@@ -181,17 +184,18 @@ def test_dist_subprocess_collocated(testdir):
                                parent_script)
 
     result.stdout.fnmatch_lines([
-            '*- coverage: platform *, python * -*',
-            'child_script * 6 * 100%*',
-            'parent_script * 7 * 100%*',
-            ])
+        '*- coverage: platform *, python * -*',
+        'child_script * %s *' % CHILD_SCRIPT_RESULT,
+        'parent_script * %s *' % PARENT_SCRIPT_RESULT,
+        ])
     assert result.ret == 0
 
 
-@pytest.mark.xfail(sys.platform == 'win32',
-                   reason='figure out why it fails on Windows')
+@pytest.mark.xfail(sys.platform == 'win32' and sys.version_info[:2] < (3, 4),
+                   reason='path rewrite in cov_core is somehow broken')
 def test_dist_subprocess_not_collocated(testdir, tmpdir):
-    scripts = testdir.makepyfile(parent_script=SCRIPT_PARENT, child_script=SCRIPT_CHILD)
+    scripts = testdir.makepyfile(parent_script=SCRIPT_PARENT,
+                                 child_script=SCRIPT_CHILD)
     parent_script = scripts.dirpath().join('parent_script.py')
     child_script = scripts.dirpath().join('child_script.py')
 
@@ -209,10 +213,10 @@ def test_dist_subprocess_not_collocated(testdir, tmpdir):
                                parent_script)
 
     result.stdout.fnmatch_lines([
-            '*- coverage: platform *, python * -*',
-            'child_script * 6 * 100%*',
-            'parent_script * 7 * 100%*',
-            ])
+        '*- coverage: platform *, python * -*',
+        'child_script * %s *' % CHILD_SCRIPT_RESULT,
+        'parent_script * %s *' % PARENT_SCRIPT_RESULT,
+        ])
     assert result.ret == 0
 
 
@@ -225,15 +229,17 @@ def test_empty_report(testdir):
                                script)
 
     result.stdout.fnmatch_lines([
-            '*- coverage: platform *, python * -*',
-            '*10 passed*'
-            ])
+        '*- coverage: platform *, python * -*',
+        '*10 passed*'
+        ])
     assert result.ret == 0
     matching_lines = [line for line in result.outlines if '%' in line]
     assert not matching_lines
 
 
-@pytest.mark.xfail
+@pytest.mark.xfail(reason='This tests expects a Python installation without '
+                          'pytest-cov installed. Maybe we can simulate this '
+                          'with a virtualenv')
 def test_dist_missing_data(testdir):
     script = testdir.makepyfile(SCRIPT)
 
@@ -245,8 +251,8 @@ def test_dist_missing_data(testdir):
                                script)
 
     result.stdout.fnmatch_lines([
-            '*- coverage: failed slaves -*'
-            ])
+        '*- coverage: failed slaves -*'
+        ])
     assert result.ret == 0
 
 
@@ -259,10 +265,10 @@ def test_funcarg(testdir):
                                script)
 
     result.stdout.fnmatch_lines([
-            '*- coverage: platform *, python * -*',
-            'test_funcarg * 3 * 100%*',
-            '*1 passed*'
-            ])
+        '*- coverage: platform *, python * -*',
+        'test_funcarg * 3 * 100%*',
+        '*1 passed*'
+        ])
     assert result.ret == 0
 
 
@@ -273,13 +279,14 @@ def test_funcarg_not_active(testdir):
                                script)
 
     result.stdout.fnmatch_lines([
-            '*1 passed*'
-            ])
+        '*1 passed*'
+        ])
     assert result.ret == 0
 
 
-@pytest.mark.skipif(sys.platform == 'win32',
-                    reason='raises MemoryError')
+@pytest.mark.xfail(sys.platform == 'win32' and sys.version_info[0] < 3,
+                   reason='multiprocessing coverage does not work '
+                          'right now on Windows with Python 2')
 def test_multiprocessing_subprocess(testdir):
     py.test.importorskip('multiprocessing.util')
 
@@ -291,8 +298,8 @@ def test_multiprocessing_subprocess(testdir):
                                script)
 
     result.stdout.fnmatch_lines([
-            '*- coverage: platform *, python * -*',
-            'test_multiprocessing_subprocess * 8 * 100%*',
-            '*1 passed*'
-            ])
+        '*- coverage: platform *, python * -*',
+        'test_multiprocessing_subprocess * 8 * 100%*',
+        '*1 passed*'
+        ])
     assert result.ret == 0
