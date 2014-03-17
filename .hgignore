@@ -7,3 +7,4 @@ syntax: glob
 build
 dist
 env*
+.tox
