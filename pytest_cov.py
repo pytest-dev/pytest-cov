@@ -14,6 +14,10 @@ def pytest_addoption(parser):
     group.addoption('--cov-config', action='store', default='.coveragerc', metavar='path',
                     dest='cov_config',
                     help='config file for coverage, default: .coveragerc')
+    group.addoption('--no-cov-on-fail', action='store_true', default=False,
+                    dest='no_cov_on_fail',
+                    help='do not report coverage if test run fails, '
+                         'default: False')
 
 
 def pytest_configure(config):
@@ -41,6 +45,8 @@ class CovPlugin(object):
 
         # Our implementation is unknown at this time.
         self.cov_controller = None
+        self.no_cov_on_fail = None
+        self.failed = False
 
     def pytest_sessionstart(self, session):
         """At session start determine our implementation and delegate to it."""
@@ -50,6 +56,7 @@ class CovPlugin(object):
         cov_source = session.config.getvalue('cov_source')
         cov_report = session.config.getvalue('cov_report') or ['term']
         cov_config = session.config.getvalue('cov_config')
+        self.no_cov_on_fail = session.config.getvalue('no_cov_on_fail')
 
         session_name = session.__class__.__name__
         is_master = (session.config.pluginmanager.hasplugin('dsession') or
@@ -94,13 +101,13 @@ class CovPlugin(object):
 
     def pytest_sessionfinish(self, session, exitstatus):
         """Delegate to our implementation."""
-
+        self.failed = exitstatus != 0
         self.cov_controller.finish()
 
     def pytest_terminal_summary(self, terminalreporter):
         """Delegate to our implementation."""
-
-        self.cov_controller.summary(terminalreporter._tw)
+        if not (self.failed and self.no_cov_on_fail):
+            self.cov_controller.summary(terminalreporter._tw)
 
 
 def pytest_funcarg__cov(request):

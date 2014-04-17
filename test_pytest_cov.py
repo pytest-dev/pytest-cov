@@ -90,6 +90,13 @@ def test_run_target():
     p.join()
 '''
 
+
+SCRIPT_FAIL = '''
+def test_fail():
+    assert False
+
+'''
+
 SCRIPT_RESULT = '8 * 88%'
 CHILD_SCRIPT_RESULT = '6 * 100%'
 PARENT_SCRIPT_RESULT = '8 * 100%'
@@ -109,6 +116,19 @@ def test_central(testdir):
         '*10 passed*'
         ])
     assert result.ret == 0
+
+
+def test_no_cov_on_fail(testdir):
+    script = testdir.makepyfile(SCRIPT_FAIL)
+
+    result = testdir.runpytest('-v',
+                               '--cov=%s' % script.dirpath(),
+                               '--cov-report=term-missing',
+                               '--no-cov-on-fail',
+                               script)
+
+    assert 'coverage: platform' not in result.stdout.str()
+    result.stdout.fnmatch_lines(['*1 failed*'])
 
 
 def test_dist_collocated(testdir):
