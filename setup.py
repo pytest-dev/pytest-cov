@@ -2,11 +2,13 @@ import setuptools
 
 setuptools.setup(name='pytest-cov',
                  version='1.6',
-                 description='py.test plugin for coverage reporting with support for both centralised and distributed testing, including subprocesses and multiprocessing',
-                 long_description=open('README.txt').read().strip(),
-                 author='Meme Dough',
-                 author_email='memedough@gmail.com',
-                 url='http://bitbucket.org/memedough/pytest-cov/overview',
+                 description='py.test plugin for coverage reporting with '
+                 'support for both centralised and distributed testing, '
+                 'including subprocesses and multiprocessing',
+                 long_description=open('README.rst').read().strip(),
+                 author='Marc Schlaich',
+                 author_email='marc.schlaich@gmail.com',
+                 url='https://github.com/schlamar/pytest-cov',
                  py_modules=['pytest_cov'],
                  install_requires=['pytest>=2.2.3',
                                    'cov-core>=1.6'],
