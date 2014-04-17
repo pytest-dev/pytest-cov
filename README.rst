@@ -1,6 +1,9 @@
 pytest-cov
 ==========
 
+.. image:: https://travis-ci.org/schlamar/pytest-cov.svg   
+   :target: https://travis-ci.org/schlamar/pytest-cov
+
 This plugin produces coverage reports.  It supports centralised testing and distributed testing in
 both load and each modes.  It also supports coverage of subprocesses.
 
