@@ -1,18 +1,23 @@
 """Coverage plugin for pytest."""
 
+
 def pytest_addoption(parser):
     """Add options to control coverage."""
 
-    group = parser.getgroup('coverage reporting with distributed testing support')
+    group = parser.getgroup('coverage reporting with distributed testing '
+                            'support')
     group.addoption('--cov', action='append', default=[], metavar='path',
                     dest='cov_source',
-                    help='measure coverage for filesystem path (multi-allowed)')
-    group.addoption('--cov-report', action='append', default=[], metavar='type',
-                    choices=['term', 'term-missing', 'annotate', 'html', 'xml'],
-                    dest='cov_report',
-                    help='type of report to generate: term, term-missing, annotate, html, xml (multi-allowed)')
-    group.addoption('--cov-config', action='store', default='.coveragerc', metavar='path',
-                    dest='cov_config',
+                    help='measure coverage for filesystem path '
+                    '(multi-allowed)')
+    group.addoption('--cov-report', action='append', default=[],
+                    metavar='type', dest='cov_report',
+                    choices=['term', 'term-missing', 'annotate', 'html',
+                             'xml'],
+                    help='type of report to generate: term, term-missing, '
+                    'annotate, html, xml (multi-allowed)')
+    group.addoption('--cov-config', action='store', default='.coveragerc',
+                    metavar='path', dest='cov_config',
                     help='config file for coverage, default: .coveragerc')
     group.addoption('--no-cov-on-fail', action='store_true', default=False,
                     dest='no_cov_on_fail',
@@ -69,7 +74,8 @@ class CovPlugin(object):
             controller_cls = cov_core.DistMaster
         elif is_slave:
             controller_cls = cov_core.DistSlave
-            nodeid = session.config.slaveinput.get('slaveid', getattr(session, 'nodeid'))
+            nodeid = session.config.slaveinput.get('slaveid',
+                                                   getattr(session, 'nodeid'))
         else:
             controller_cls = cov_core.Central
 
@@ -111,7 +117,9 @@ class CovPlugin(object):
 
 
 def pytest_funcarg__cov(request):
-    """A pytest funcarg that provides access to the underlying coverage object."""
+    """A pytest funcarg that provides access to the underlying coverage
+    object.
+    """
 
     # Check with hasplugin to avoid getplugin exception in older pytest.
     if request.config.pluginmanager.hasplugin('_cov'):
