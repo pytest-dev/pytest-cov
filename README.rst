@@ -1,7 +1,7 @@
 pytest-cov
 ==========
 
-.. image:: https://travis-ci.org/schlamar/pytest-cov.svg   
+.. image:: https://travis-ci.org/schlamar/pytest-cov.svg?branch=master   
    :target: https://travis-ci.org/schlamar/pytest-cov
 
 This plugin produces coverage reports.  It supports centralised testing and distributed testing in
