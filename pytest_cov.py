@@ -25,11 +25,23 @@ def pytest_addoption(parser):
                          'default: False')
 
 
-def pytest_configure(config):
+def pytest_load_initial_conftests(args, early_config, parser):
     """Activate coverage plugin if appropriate."""
+    exists = getattr(early_config, "known_args_namespace", None) is not None
+    if not exists: # pragma: no cover
+        # this if is a hacky thing for versions of pytest that do not include
+        # commit 083d8d0b. once that commit is in latest pytest, this hack can
+        # be removed.
+        early_config.known_args_namespace = parser.parse_known_args(args)
+    ns = early_config.known_args_namespace
 
-    if config.getvalue('cov_source'):
-        config.pluginmanager.register(CovPlugin(), '_cov')
+    is_dist = getattr(ns, "dist", "no") != "no"
+
+    if ns.cov_source:
+        plugin = CovPlugin(dist=is_dist)
+        if not is_dist:
+            plugin.nondist_start(ns)
+        early_config.pluginmanager.register(plugin, '_cov')
 
 
 class CovPlugin(object):
@@ -40,7 +52,7 @@ class CovPlugin(object):
     distributed slave.
     """
 
-    def __init__(self):
+    def __init__(self, dist):
         """Creates a coverage pytest plugin.
 
         We read the rc file that coverage uses to get the data file
@@ -52,16 +64,20 @@ class CovPlugin(object):
         self.cov_controller = None
         self.no_cov_on_fail = None
         self.failed = False
+        self.dist = dist
 
     def pytest_sessionstart(self, session):
         """At session start determine our implementation and delegate to it."""
+        # coverage will not be measured on conftests correctly when in
+        # distributed testing. to fix this, xdist needs to provide us with a
+        # reliable way of determining if we're in it and whether we're master
+        # or slave, and said reliable way must be available in
+        # pytest_load_initial_conftests.
+
+        if not self.dist:
+            return
 
         import cov_core
-
-        cov_source = session.config.getvalue('cov_source')
-        cov_report = session.config.getvalue('cov_report') or ['term']
-        cov_config = session.config.getvalue('cov_config')
-        self.no_cov_on_fail = session.config.getvalue('no_cov_on_fail')
 
         session_name = session.__class__.__name__
         is_master = (session.config.pluginmanager.hasplugin('dsession') or
@@ -72,18 +88,32 @@ class CovPlugin(object):
 
         if is_master:
             controller_cls = cov_core.DistMaster
-        elif is_slave:
+        else:
+            assert is_slave
             controller_cls = cov_core.DistSlave
             nodeid = session.config.slaveinput.get('slaveid',
                                                    getattr(session, 'nodeid'))
-        else:
-            controller_cls = cov_core.Central
 
-        self.cov_controller = controller_cls(cov_source,
-                                             cov_report,
-                                             cov_config,
-                                             session.config,
-                                             nodeid)
+        self.start(
+            session.config.options,
+            controller_cls,
+            session.config,
+            nodeid
+        )
+
+    def nondist_start(self, options):
+        import cov_core
+        self.start(options, cov_core.Central)
+
+    def start(self, options, controller_cls, config=None, nodeid=None):
+        self.no_cov_on_fail = options.no_cov_on_fail
+        self.cov_controller = controller_cls(
+            options.cov_source,
+            options.cov_report or ['term'],
+            options.cov_config,
+            config,
+            nodeid
+        )
 
         self.cov_controller.start()
 
