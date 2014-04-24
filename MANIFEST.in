@@ -1,4 +1,4 @@
-include README.txt
+include README.rst
 include LICENSE.txt
 include setup.py
 include pytest_cov.py
