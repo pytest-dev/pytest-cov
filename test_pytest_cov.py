@@ -14,7 +14,10 @@ Known issues:
   is fine with simple assignment statement.
 """
 
+import os
 import sys
+
+import virtualenv
 
 import py
 import pytest
@@ -257,17 +260,17 @@ def test_empty_report(testdir):
     assert not matching_lines
 
 
-@pytest.mark.xfail(reason='This tests expects a Python installation without '
-                          'pytest-cov installed. Maybe we can simulate this '
-                          'with a virtualenv')
 def test_dist_missing_data(testdir):
+    venv_path = os.path.join(str(testdir.tmpdir), 'venv')
+    virtualenv.create_environment(venv_path)
+    exe = os.path.join(venv_path, 'bin', 'python')
     script = testdir.makepyfile(SCRIPT)
 
     result = testdir.runpytest('-v',
                                '--cov=%s' % script.dirpath(),
                                '--cov-report=term-missing',
                                '--dist=load',
-                               '--tx=popen//python=%s' % sys.executable,
+                               '--tx=popen//python=%s' % exe,
                                script)
 
     result.stdout.fnmatch_lines([
