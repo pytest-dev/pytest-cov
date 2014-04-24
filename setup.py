@@ -24,7 +24,7 @@ setuptools.setup(name='cov-core',
                  version='1.7',
                  description='plugin core for use by pytest-cov, '
                  'nose-cov and nose2-cov',
-                 long_description=open('README.txt').read().strip(),
+                 long_description=open('README.rst').read().strip(),
                  author='Marc Schlaich',
                  author_email='marc.schlaich@gmail.com',
                  url='https://github.com/schlamar/cov-core',
