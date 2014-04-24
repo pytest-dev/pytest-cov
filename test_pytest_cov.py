@@ -326,3 +326,52 @@ def test_multiprocessing_subprocess(testdir):
         '*1 passed*'
         ])
     assert result.ret == 0
+
+
+MODULE = '''
+def func():
+    return 1
+
+'''
+
+CONFTEST = '''
+
+import mod
+mod.func()
+
+'''
+
+BASIC_TEST = '''
+
+def test_basic():
+    assert True
+
+'''
+
+CONF_RESULT = 'mod * 2 * 100% *'
+
+
+def test_cover_conftest(testdir):
+    testdir.makepyfile(mod=MODULE)
+    testdir.makeconftest(CONFTEST)
+    script = testdir.makepyfile(BASIC_TEST)
+    result = testdir.runpytest('-v',
+                               '--cov=%s' % script.dirpath(),
+                               '--cov-report=term-missing',
+                               script)
+    assert result.ret == 0
+    result.stdout.fnmatch_lines([CONF_RESULT])
+
+
+def test_cover_conftest_dist(testdir):
+    testdir.makepyfile(mod=MODULE)
+    testdir.makeconftest(CONFTEST)
+    script = testdir.makepyfile(BASIC_TEST)
+    result = testdir.runpytest('-v',
+                               '--cov=%s' % script.dirpath(),
+                               '--cov-report=term-missing',
+                               '--dist=load',
+                               '--tx=2*popen',
+                               script)
+    assert result.ret == 0
+    result.stdout.fnmatch_lines([CONF_RESULT])

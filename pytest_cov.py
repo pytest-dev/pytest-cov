@@ -1,6 +1,11 @@
 """Coverage plugin for pytest."""
 
 
+import pytest
+
+import cov_core
+
+
 def pytest_addoption(parser):
     """Add options to control coverage."""
 
@@ -25,11 +30,21 @@ def pytest_addoption(parser):
                          'default: False')
 
 
+@pytest.mark.try_last
+def pytest_load_initial_conftests(early_config, parser, args):
+    ns = parser.parse_known_args(args)
+    if ns.cov_source:
+        plugin = CovPlugin(ns, early_config.pluginmanager)
+        early_config.pluginmanager.register(plugin, '_cov')
+
+
 def pytest_configure(config):
     """Activate coverage plugin if appropriate."""
-
     if config.getvalue('cov_source'):
-        config.pluginmanager.register(CovPlugin(), '_cov')
+        if not config.pluginmanager.hasplugin('_cov'):
+            plugin = CovPlugin(config.option, config.pluginmanager,
+                               start=False)
+            config.pluginmanager.register(plugin, '_cov')
 
 
 class CovPlugin(object):
@@ -40,7 +55,7 @@ class CovPlugin(object):
     distributed slave.
     """
 
-    def __init__(self):
+    def __init__(self, options, pluginmanager, start=True):
         """Creates a coverage pytest plugin.
 
         We read the rc file that coverage uses to get the data file
@@ -50,49 +65,42 @@ class CovPlugin(object):
 
         # Our implementation is unknown at this time.
         self.cov_controller = None
-        self.no_cov_on_fail = None
         self.failed = False
+        self.options = options
+
+        is_dist = (getattr(options, 'numprocesses', False) or
+                   getattr(options, 'distload', False) or
+                   getattr(options, 'dist', 'no') != 'no')
+        if is_dist and start:
+            self.start(cov_core.DistMaster)
+        elif start:
+            self.start(cov_core.Central)
+
+        # slave is started in pytest hook
+
+    def start(self, controller_cls, config=None, nodeid=None):
+        self.cov_controller = controller_cls(
+            self.options.cov_source,
+            self.options.cov_report or ['term'],
+            self.options.cov_config,
+            config,
+            nodeid
+        )
+        self.cov_controller.start()
 
     def pytest_sessionstart(self, session):
         """At session start determine our implementation and delegate to it."""
-
-        import cov_core
-
-        cov_source = session.config.getvalue('cov_source')
-        cov_report = session.config.getvalue('cov_report') or ['term']
-        cov_config = session.config.getvalue('cov_config')
-        self.no_cov_on_fail = session.config.getvalue('no_cov_on_fail')
-
-        session_name = session.__class__.__name__
-        is_master = (session.config.pluginmanager.hasplugin('dsession') or
-                     session_name == 'DSession')
-        is_slave = (hasattr(session.config, 'slaveinput') or
-                    session_name == 'SlaveSession')
-        nodeid = None
-
-        if is_master:
-            controller_cls = cov_core.DistMaster
-        elif is_slave:
-            controller_cls = cov_core.DistSlave
+        is_slave = hasattr(session.config, 'slaveinput')
+        if is_slave:
             nodeid = session.config.slaveinput.get('slaveid',
                                                    getattr(session, 'nodeid'))
-        else:
-            controller_cls = cov_core.Central
-
-        self.cov_controller = controller_cls(cov_source,
-                                             cov_report,
-                                             cov_config,
-                                             session.config,
-                                             nodeid)
-
-        self.cov_controller.start()
+            self.start(cov_core.DistSlave, session.config, nodeid)
 
     def pytest_configure_node(self, node):
         """Delegate to our implementation.
 
         Mark this hook as optional in case xdist is not installed.
         """
-
         self.cov_controller.configure_node(node)
     pytest_configure_node.optionalhook = True
 
@@ -101,7 +109,6 @@ class CovPlugin(object):
 
         Mark this hook as optional in case xdist is not installed.
         """
-
         self.cov_controller.testnodedown(node, error)
     pytest_testnodedown.optionalhook = True
 
@@ -112,7 +119,7 @@ class CovPlugin(object):
 
     def pytest_terminal_summary(self, terminalreporter):
         """Delegate to our implementation."""
-        if not (self.failed and self.no_cov_on_fail):
+        if not (self.failed and self.options.no_cov_on_fail):
             self.cov_controller.summary(terminalreporter._tw)
 
 
