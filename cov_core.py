@@ -161,6 +161,12 @@ class DistMaster(CovController):
         if self.cov_config and os.path.exists(self.cov_config):
             self.config.option.rsyncdir.append(self.cov_config)
 
+        self.cov = coverage.coverage(source=self.cov_source,
+                                     data_file=self.cov_data_file,
+                                     config_file=self.cov_config)
+        self.cov.erase()
+        self.cov.start()
+
     def configure_node(self, node):
         """Slaves need to know if they are collocated and what files have moved."""
 
@@ -199,10 +205,6 @@ class DistMaster(CovController):
         """Combines coverage data and sets the list of coverage objects to report on."""
 
         # Combine all the suffix files into the data file.
-        self.cov = coverage.coverage(source=self.cov_source,
-                                     data_file=self.cov_data_file,
-                                     config_file=self.cov_config)
-        self.cov.erase()
         self.cov.combine()
         self.cov.save()
 
