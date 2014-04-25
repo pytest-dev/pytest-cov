@@ -263,7 +263,10 @@ def test_empty_report(testdir):
 def test_dist_missing_data(testdir):
     venv_path = os.path.join(str(testdir.tmpdir), 'venv')
     virtualenv.create_environment(venv_path)
-    exe = os.path.join(venv_path, 'bin', 'python')
+    if sys.platform == 'win32':
+        exe = os.path.join(venv_path, 'Scripts', 'python.exe')
+    else:
+        exe = os.path.join(venv_path, 'bin', 'python')
     script = testdir.makepyfile(SCRIPT)
 
     result = testdir.runpytest('-v',
