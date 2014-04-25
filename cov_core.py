@@ -166,6 +166,7 @@ class DistMaster(CovController):
                                      config_file=self.cov_config)
         self.cov.erase()
         self.cov.start()
+        self.cov.config.paths['source'] = [self.topdir]
 
     def configure_node(self, node):
         """Slaves need to know if they are collocated and what files have moved."""
@@ -195,6 +196,8 @@ class DistMaster(CovController):
             cov.data.arcs = node.slaveoutput['cov_slave_arcs']
             cov.stop()
             cov.save()
+            path = node.slaveoutput['cov_slave_path']
+            self.cov.config.paths['source'].append(path)
 
         # Record the slave types that contribute to the data file.
         rinfo = node.gateway._rinfo()
@@ -259,25 +262,15 @@ class DistSlave(CovController):
             # data file to indicate that we have finished.
             self.config.slaveoutput['cov_slave_node_id'] = self.nodeid
         else:
-            # If we are not collocated then rewrite the filenames from
-            # the slave location to the master location.
-            slave_topdir = self.topdir
-            path_rewrites = [(os.path.join(slave_topdir, os.path.basename(rsync_root)), rsync_root)
-                             for rsync_root in self.config.slaveinput['cov_master_rsync_roots']]
-            path_rewrites.append((slave_topdir, self.config.slaveinput['cov_master_topdir']))
-
-            def rewrite_path(filename):
-                for slave_path, master_path in path_rewrites:
-                    filename = filename.replace(slave_path, master_path)
-                return filename
-
-            lines = dict((rewrite_path(filename), data) for filename, data in self.cov.data.lines.items())
-            arcs = dict((rewrite_path(filename), data) for filename, data in self.cov.data.arcs.items())
+            # If we are not collocated then add the current path
+            # and coverage data to the output so we can combine
+            # it on the master node.
 
             # Send all the data to the master over the channel.
+            self.config.slaveoutput['cov_slave_path'] = self.topdir
             self.config.slaveoutput['cov_slave_node_id'] = self.nodeid
-            self.config.slaveoutput['cov_slave_lines'] = lines
-            self.config.slaveoutput['cov_slave_arcs'] = arcs
+            self.config.slaveoutput['cov_slave_lines'] = self.cov.data.lines
+            self.config.slaveoutput['cov_slave_arcs'] = self.cov.data.arcs
 
     def summary(self, stream):
         """Only the master reports so do nothing."""
