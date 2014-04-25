@@ -79,6 +79,13 @@ class CovPlugin(object):
         # slave is started in pytest hook
 
     def start(self, controller_cls, config=None, nodeid=None):
+        if config is None:
+            # fake config option for cov_core
+            class Config(object):
+                option = self.options
+
+            config = Config()
+
         self.cov_controller = controller_cls(
             self.options.cov_source,
             self.options.cov_report or ['term'],
