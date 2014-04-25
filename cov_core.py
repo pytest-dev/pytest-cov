@@ -205,6 +205,7 @@ class DistMaster(CovController):
         """Combines coverage data and sets the list of coverage objects to report on."""
 
         # Combine all the suffix files into the data file.
+        self.cov.stop()
         self.cov.combine()
         self.cov.save()
 
