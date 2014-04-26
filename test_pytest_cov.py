@@ -375,3 +375,50 @@ def test_cover_conftest_dist(testdir):
                                script)
     assert result.ret == 0
     result.stdout.fnmatch_lines([CONF_RESULT])
+
+
+COVERAGERC = '''
+[report]
+# Regexes for lines to exclude from consideration
+exclude_lines =
+    raise NotImplementedError
+
+'''
+
+EXCLUDED_TEST = '''
+
+def func():
+    raise NotImplementedError
+
+def test_basic():
+    assert True
+
+'''
+
+EXCLUDED_RESULT = '3 * 100% *'
+
+
+def test_coveragerc(testdir):
+    testdir.makefile('', coveragerc=COVERAGERC)
+    script = testdir.makepyfile(EXCLUDED_TEST)
+    result = testdir.runpytest('-v',
+                               '--cov-config=coveragerc',
+                               '--cov=%s' % script.dirpath(),
+                               '--cov-report=term-missing',
+                               script)
+    assert result.ret == 0
+    result.stdout.fnmatch_lines(['test_coveragerc * %s' % EXCLUDED_RESULT])
+
+
+def test_coveragerc_dist(testdir):
+    testdir.makefile('', coveragerc=COVERAGERC)
+    script = testdir.makepyfile(EXCLUDED_TEST)
+    result = testdir.runpytest('-v',
+                               '--cov-config=coveragerc',
+                               '--cov=%s' % script.dirpath(),
+                               '--cov-report=term-missing',
+                               '-n', '2',
+                               script)
+    assert result.ret == 0
+    result.stdout.fnmatch_lines(
+        ['test_coveragerc_dist * %s' % EXCLUDED_RESULT])
