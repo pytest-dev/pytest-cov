@@ -422,3 +422,22 @@ def test_coveragerc_dist(testdir):
     assert result.ret == 0
     result.stdout.fnmatch_lines(
         ['test_coveragerc_dist * %s' % EXCLUDED_RESULT])
+
+
+CLEAR_ENVIRON_TEST = '''
+
+import os
+
+def test_basic():
+    os.environ.clear()
+
+'''
+
+
+def test_clear_environ(testdir):
+    script = testdir.makepyfile(CLEAR_ENVIRON_TEST)
+    result = testdir.runpytest('-v',
+                               '--cov=%s' % script.dirpath(),
+                               '--cov-report=term-missing',
+                               script)
+    assert result.ret == 0
