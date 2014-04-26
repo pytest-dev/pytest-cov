@@ -61,10 +61,9 @@ class CovController(object):
     @staticmethod
     def unset_env():
         """Remove coverage info from env."""
-
-        del os.environ['COV_CORE_SOURCE']
-        del os.environ['COV_CORE_DATA_FILE']
-        del os.environ['COV_CORE_CONFIG']
+        os.environ.pop('COV_CORE_SOURCE', None)
+        os.environ.pop('COV_CORE_DATA_FILE', None)
+        os.environ.pop('COV_CORE_CONFIG', None)
 
     @staticmethod
     def get_node_desc(platform, version_info):
