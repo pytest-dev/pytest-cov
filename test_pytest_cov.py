@@ -20,7 +20,6 @@ import sys
 import virtualenv
 
 import py
-import pytest
 
 
 pytest_plugins = 'pytester', 'cov'
@@ -306,9 +305,6 @@ def test_funcarg_not_active(testdir):
     assert result.ret == 0
 
 
-@pytest.mark.xfail(sys.platform == 'win32' and sys.version_info[0] < 3,
-                   reason='multiprocessing coverage does not work '
-                          'right now on Windows with Python 2')
 def test_multiprocessing_subprocess(testdir):
     py.test.importorskip('multiprocessing.util')
 
