@@ -152,8 +152,6 @@ def test_dist_collocated(testdir):
     assert result.ret == 0
 
 
-@pytest.mark.xfail(sys.platform == 'win32' and sys.version_info[:2] < (3, 4),
-                   reason='path rewrite in cov_core is somehow broken')
 def test_dist_not_collocated(testdir):
     script = testdir.makepyfile(SCRIPT)
     dir1 = testdir.mkdir('dir1')
@@ -214,8 +212,6 @@ def test_dist_subprocess_collocated(testdir):
     assert result.ret == 0
 
 
-@pytest.mark.xfail(sys.platform == 'win32' and sys.version_info[:2] < (3, 4),
-                   reason='path rewrite in cov_core is somehow broken')
 def test_dist_subprocess_not_collocated(testdir, tmpdir):
     scripts = testdir.makepyfile(parent_script=SCRIPT_PARENT,
                                  child_script=SCRIPT_CHILD)
