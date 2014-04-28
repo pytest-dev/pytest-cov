@@ -14,7 +14,10 @@ that code coverage is being collected we activate coverage based on
 info passed via env vars.
 """
 
+
 UNIQUE_SEP = '084031f3d2994d40a88c8b699b69e148'
+
+import cov_core
 
 
 def init():
@@ -55,7 +58,14 @@ def init():
             cov.erase()
             cov.start()
 
-            return cov
+            try:
+                import multiprocessing.util
+                multiprocessing.util.Finalize(None,
+                                              cov_core.multiprocessing_finish,
+                                              args=(cov,),
+                                              exitpriority=1000)
+            except ImportError:
+                pass
 
     except Exception:
         pass

@@ -8,23 +8,8 @@ import sys
 import os
 
 
-def multiprocessing_hook():
-    try:
-        import multiprocessing.util
-        multiprocessing.util.register_after_fork(multiprocessing_start,
-                                                 multiprocessing_start)
-    except ImportError:
-        pass
-
-
 def multiprocessing_start(obj):
-    cov = cov_core_init.init()
-    if cov:
-        import multiprocessing.util
-        multiprocessing.util.Finalize(None,
-                                      multiprocessing_finish,
-                                      args=(cov,),
-                                      exitpriority=1000)
+    cov_core_init.init()
 
 
 def multiprocessing_finish(cov):
@@ -32,12 +17,19 @@ def multiprocessing_finish(cov):
     cov.save()
 
 
+try:
+    import multiprocessing.util
+    multiprocessing.util.register_after_fork(multiprocessing_start,
+                                             multiprocessing_start)
+except ImportError:
+    pass
+
+
 class CovController(object):
     """Base class for different plugin implementations."""
 
     def __init__(self, cov_source, cov_report, cov_config, config=None, nodeid=None):
         """Get some common config used by multiple derived classes."""
-
         self.cov_source = cov_source
         self.cov_report = cov_report
         self.cov_config = cov_config
@@ -56,7 +48,6 @@ class CovController(object):
         os.environ['COV_CORE_SOURCE'] = UNIQUE_SEP.join(self.cov_source)
         os.environ['COV_CORE_DATA_FILE'] = self.cov_data_file
         os.environ['COV_CORE_CONFIG'] = self.cov_config
-        multiprocessing_hook()
 
     @staticmethod
     def unset_env():
