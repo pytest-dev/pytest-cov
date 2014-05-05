@@ -67,5 +67,7 @@ def init():
             except ImportError:
                 pass
 
+            return cov
+
     except Exception:
         pass

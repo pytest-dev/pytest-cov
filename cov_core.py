@@ -13,7 +13,8 @@ def multiprocessing_start(obj):
 
 
 def multiprocessing_finish(cov):
-    cov.stop()
+    if cov._started:
+        cov.stop()
     cov.save()
 
 
