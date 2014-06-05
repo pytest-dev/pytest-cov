@@ -20,6 +20,7 @@ import sys
 import virtualenv
 
 import py
+import pytest
 
 
 pytest_plugins = 'pytester', 'cov'
@@ -435,4 +436,32 @@ def test_clear_environ(testdir):
                                '--cov=%s' % script.dirpath(),
                                '--cov-report=term-missing',
                                script)
+    assert result.ret == 0
+
+
+SCRIPT_SIMPLE = '''
+
+def test_foo():
+    assert 1 == 1
+    assert True
+
+'''
+
+SCRIPT_SIMPLE_RESULT = '3 * 100%'
+
+
+@pytest.mark.skipif('sys.platform == "win32"')
+def test_dist_boxed(testdir):
+    script = testdir.makepyfile(SCRIPT_SIMPLE)
+
+    result = testdir.runpytest('-v',
+                               '--cov=%s' % script.dirpath(),
+                               '--boxed',
+                               script)
+
+    result.stdout.fnmatch_lines([
+        '*- coverage: platform *, python * -*',
+        'test_dist_boxed * %s*' % SCRIPT_SIMPLE_RESULT,
+        '*1 passed*'
+        ])
     assert result.ret == 0
