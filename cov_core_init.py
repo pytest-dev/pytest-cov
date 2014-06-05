@@ -17,7 +17,7 @@ info passed via env vars.
 
 UNIQUE_SEP = '084031f3d2994d40a88c8b699b69e148'
 
-import cov_core
+import cov_core  # noqa: register multiprocessing handler
 
 
 def init():
@@ -57,16 +57,6 @@ def init():
                                     auto_data=True)
             cov.erase()
             cov.start()
-
-            try:
-                import multiprocessing.util
-                multiprocessing.util.Finalize(None,
-                                              cov_core.multiprocessing_finish,
-                                              args=(cov,),
-                                              exitpriority=1000)
-            except ImportError:
-                pass
-
             return cov
 
     except Exception:
