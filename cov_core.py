@@ -28,6 +28,27 @@ except ImportError:
     pass
 
 
+_cov_data = dict()
+
+
+def on_py_fork_starts(proc):
+    cov = cov_core_init.init()
+    _cov_data[proc] = cov
+
+
+def on_py_fork_exits(proc):
+    cov = _cov_data.pop(proc)
+    multiprocessing_finish(cov)
+
+
+try:
+    import py
+    py.process.ForkedFunc.register_on_start(on_py_fork_starts)
+    py.process.ForkedFunc.register_on_exit(on_py_fork_exits)
+except (ImportError, AttributeError):
+    pass
+
+
 class CovController(object):
     """Base class for different plugin implementations."""
 
