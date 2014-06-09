@@ -3,6 +3,19 @@ pytest-cov
 
 .. image:: https://travis-ci.org/schlamar/pytest-cov.svg?branch=master   
    :target: https://travis-ci.org/schlamar/pytest-cov
+   :alt: Build status
+   
+.. image:: https://pypip.in/download/pytest-cov/badge.png
+    :target: https://pypi.python.org/pypi//pytest-cov/
+    :alt: Downloads
+
+.. image:: https://pypip.in/version/pytest-cov/badge.png
+    :target: https://pypi.python.org/pypi/pytest-cov/
+    :alt: Latest Version
+
+.. image:: https://pypip.in/license/pytest-cov/badge.png
+    :target: https://pypi.python.org/pypi/pytest-cov/
+    :alt: License
 
 This plugin produces coverage reports.  It supports centralised testing and distributed testing in
 both load and each modes.  It also supports coverage of subprocesses.
