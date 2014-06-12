@@ -21,7 +21,7 @@ To measure subprocesses put the following in a pth file called %s:
 ''' % (PTH_FILE_NAME, PTH_FILE)
 
 setuptools.setup(name='cov-core',
-                 version='1.12',
+                 version='1.13.0',
                  description='plugin core for use by pytest-cov, '
                  'nose-cov and nose2-cov',
                  long_description=open('README.rst').read().strip(),
