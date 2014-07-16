@@ -35,6 +35,11 @@ For distributed testing support install pytest-xdist::
 
     pip install pytest-xdist
 
+On Debian (Testing and Unstable) systems::
+
+    sudo apt-get install python-pytest-cov
+    sudo apt-get install python-pytest-xdist  # for distributed testing
+    
 .. NOTE::
 
     Ensure you use pip instead of easy_install as the latter does not correctly install the
