@@ -2,7 +2,9 @@
 
 
 import pytest
+import os
 
+import py
 import cov_core
 
 
@@ -65,8 +67,10 @@ class CovPlugin(object):
 
         # Our implementation is unknown at this time.
         self.cov_controller = None
+        self.save_on_teardown = False
         self.failed = False
         self.options = options
+        self.pid = None
 
         is_dist = (getattr(options, 'numprocesses', False) or
                    getattr(options, 'distload', False) or
@@ -97,11 +101,22 @@ class CovPlugin(object):
 
     def pytest_sessionstart(self, session):
         """At session start determine our implementation and delegate to it."""
+        self.pid = os.getpid()
+
         is_slave = hasattr(session.config, 'slaveinput')
         if is_slave:
             nodeid = session.config.slaveinput.get('slaveid',
                                                    getattr(session, 'nodeid'))
             self.start(cov_core.DistSlave, session.config, nodeid)
+
+    def pytest_runtest_setup(self, item):
+        if os.getpid() != self.pid and not hasattr(py.process.ForkedFunc, 'register_on_start'):
+            cov_core.on_py_fork_starts('fork.%d' % (os.getpid(), ))
+            self.save_on_teardown = True
+
+    def pytest_runtest_teardown(self, item):
+        if self.save_on_teardown:
+            cov_core.on_py_fork_exits('fork.%d' % (os.getpid(), ))
 
     def pytest_configure_node(self, node):
         """Delegate to our implementation.
