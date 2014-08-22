@@ -1,18 +1,3 @@
-"""Tests for pytest-cov.
-
-Known issues:
-
-- If py 2 then can have tx for any py 2, but problems if tx for py 3.
-
-- If py 3.0 then can have tx for py 3.0 / 3.1, but problems if tx for py 2.
-
-- If py 3.1 then can have tx for py 3.1, but problems if tx for py 2 or py 3.0.
-
-- For py 3.0 coverage seems to give incorrect results, it reports all
-  covered except the one line which it should have actually covered.
-  Issue reported upstream, also only problem with pass statement and
-  is fine with simple assignment statement.
-"""
 
 import os
 import sys
@@ -21,6 +6,7 @@ import virtualenv
 
 import py
 import pytest
+import pytest_cov
 
 
 pytest_plugins = 'pytester', 'cov'
@@ -465,3 +451,9 @@ def test_dist_boxed(testdir):
         '*1 passed*'
         ])
     assert result.ret == 0
+
+
+def test_not_started_plugin_does_not_fail(testdir):
+    plugin = pytest_cov.CovPlugin(None, None, start=False)
+    plugin.pytest_sessionfinish(None, None)
+    plugin.pytest_terminal_summary(None)

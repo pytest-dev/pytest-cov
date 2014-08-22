@@ -122,10 +122,13 @@ class CovPlugin(object):
     def pytest_sessionfinish(self, session, exitstatus):
         """Delegate to our implementation."""
         self.failed = exitstatus != 0
-        self.cov_controller.finish()
+        if self.cov_controller is not None:
+            self.cov_controller.finish()
 
     def pytest_terminal_summary(self, terminalreporter):
         """Delegate to our implementation."""
+        if self.cov_controller is None:
+            return
         if not (self.failed and self.options.no_cov_on_fail):
             self.cov_controller.summary(terminalreporter._tw)
 
