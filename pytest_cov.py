@@ -1,9 +1,11 @@
 """Coverage plugin for pytest."""
 
+import os
 
 import pytest
 
 import cov_core
+import cov_core_init
 
 
 def pytest_addoption(parser):
@@ -64,6 +66,8 @@ class CovPlugin(object):
         """
 
         # Our implementation is unknown at this time.
+        self.pid = None
+        self.cov = None
         self.cov_controller = None
         self.failed = False
         self.options = options
@@ -97,6 +101,7 @@ class CovPlugin(object):
 
     def pytest_sessionstart(self, session):
         """At session start determine our implementation and delegate to it."""
+        self.pid = os.getpid()
         is_slave = hasattr(session.config, 'slaveinput')
         if is_slave:
             nodeid = session.config.slaveinput.get('slaveid',
@@ -131,6 +136,17 @@ class CovPlugin(object):
             return
         if not (self.failed and self.options.no_cov_on_fail):
             self.cov_controller.summary(terminalreporter._tw)
+
+    def pytest_runtest_setup(self, item):
+        if os.getpid() != self.pid:
+            # test is run in another process than session, run
+            # coverage manually
+            self.cov = cov_core_init.init()
+
+    def pytest_runtest_teardown(self, item):
+        if self.cov is not None:
+            cov_core.multiprocessing_finish(self.cov)
+            self.cov = None
 
 
 def pytest_funcarg__cov(request):
