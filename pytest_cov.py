@@ -20,7 +20,7 @@ def pytest_addoption(parser):
     group.addoption('--cov-report', action='append', default=[],
                     metavar='type', dest='cov_report',
                     choices=['term', 'term-missing', 'annotate', 'html',
-                             'xml'],
+                             'xml', ''],
                     help='type of report to generate: term, term-missing, '
                     'annotate, html, xml (multi-allowed)')
     group.addoption('--cov-config', action='store', default='.coveragerc',
