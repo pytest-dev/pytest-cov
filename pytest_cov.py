@@ -88,7 +88,7 @@ class CovPlugin(object):
 
         self.cov_controller = controller_cls(
             self.options.cov_source,
-            self.options.cov_report or ['term'],
+            self.options.cov_report,
             self.options.cov_config,
             config,
             nodeid
