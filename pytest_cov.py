@@ -16,7 +16,10 @@ def pytest_addoption(parser):
     group.addoption('--cov', action='append', default=[], metavar='path',
                     dest='cov_source',
                     help='measure coverage for filesystem path '
-                    '(multi-allowed)')
+                    '(multi-allowed, implies --cov-enabled)')
+    group.addoption('--cov-enabled', action='store_true', default=False,
+                    dest='cov_enabled',
+                    help='enable coverage measurements')
     group.addoption('--cov-report', action='append', default=[],
                     metavar='type', dest='cov_report',
                     choices=['term', 'term-missing', 'annotate', 'html',
@@ -32,17 +35,25 @@ def pytest_addoption(parser):
                          'default: False')
 
 
+def postprocess(options):
+    """Avoid making a custom action by editing options after parsing."""
+    if options.cov_source:
+        options.cov_enabled = True
+
+
 @pytest.mark.try_last
 def pytest_load_initial_conftests(early_config, parser, args):
-    ns = parser.parse_known_args(args)
-    if ns.cov_source:
-        plugin = CovPlugin(ns, early_config.pluginmanager)
+    options = parser.parse_known_args(args)
+    postprocess(options)
+    if options.cov_enabled:
+        plugin = CovPlugin(options, early_config.pluginmanager)
         early_config.pluginmanager.register(plugin, '_cov')
 
 
 def pytest_configure(config):
     """Activate coverage plugin if appropriate."""
-    if config.getvalue('cov_source'):
+    postprocess(config.option)
+    if config.getvalue('cov_enabled'):
         if not config.pluginmanager.hasplugin('_cov'):
             plugin = CovPlugin(config.option, config.pluginmanager,
                                start=False)
@@ -91,7 +102,7 @@ class CovPlugin(object):
             config = Config()
 
         self.cov_controller = controller_cls(
-            self.options.cov_source,
+            self.options.cov_source or None,
             self.options.cov_report or ['term'],
             self.options.cov_config,
             config,
