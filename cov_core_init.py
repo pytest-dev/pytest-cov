@@ -33,7 +33,7 @@ def init():
         cov_source = os.environ.get('COV_CORE_SOURCE')
         cov_data_file = os.environ.get('COV_CORE_DATA_FILE')
         cov_config = os.environ.get('COV_CORE_CONFIG')
-        if cov_source and cov_data_file and cov_config:
+        if cov_data_file and cov_config:
 
             # Import what we need to activate coverage.
             import socket
@@ -41,7 +41,10 @@ def init():
             import coverage
 
             # Determine all source roots.
-            cov_source = cov_source.split(UNIQUE_SEP)
+            if cov_source == '':
+                cov_source = None
+            else:
+                cov_source = cov_source.split(UNIQUE_SEP)
 
             # Produce a unique suffix for this process in the same
             # manner as coverage.

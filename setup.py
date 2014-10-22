@@ -10,7 +10,7 @@ PTH_FILE_NAME = 'init_cov_core.pth'
 # The line in the path file must begin with "import"
 # so that site.py will exec it.
 PTH_FILE = '''\
-import os; os.environ.get('COV_CORE_SOURCE') and __import__('cov_core_init').init()
+import os; 'COV_CORE_SOURCE' in os.environ and __import__('cov_core_init').init()
 '''
 
 PTH_FILE_FAILURE = '''
