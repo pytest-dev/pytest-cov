@@ -32,7 +32,7 @@ def pytest_addoption(parser):
                          'default: False')
 
 
-@pytest.mark.try_last
+@pytest.mark.tryfirst
 def pytest_load_initial_conftests(early_config, parser, args):
     ns = parser.parse_known_args(args)
     if ns.cov_source:
