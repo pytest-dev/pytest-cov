@@ -1,7 +1,7 @@
 import setuptools
 
 setuptools.setup(name='pytest-cov',
-                 version='1.8.0',
+                 version='1.8.1',
                  description='py.test plugin for coverage reporting with '
                  'support for both centralised and distributed testing, '
                  'including subprocesses and multiprocessing',
