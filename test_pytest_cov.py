@@ -19,7 +19,8 @@ def pytest_generate_tests(metafunc):
         metafunc.addcall()
 
 def test_foo():
-    assert True
+    x = True
+    assert x
     if sys.version_info[0] > 5:
         assert False
 '''
@@ -86,7 +87,7 @@ def test_fail():
 
 '''
 
-SCRIPT_RESULT = '8 * 88%'
+SCRIPT_RESULT = '9 * 89%'
 CHILD_SCRIPT_RESULT = '6 * 100%'
 PARENT_SCRIPT_RESULT = '8 * 100%'
 
@@ -326,7 +327,8 @@ mod.func()
 BASIC_TEST = '''
 
 def test_basic():
-    assert True
+    x = True
+    assert x
 
 '''
 
@@ -373,11 +375,12 @@ def func():
     raise NotImplementedError
 
 def test_basic():
-    assert True
+    x = True
+    assert x
 
 '''
 
-EXCLUDED_RESULT = '3 * 100% *'
+EXCLUDED_RESULT = '4 * 100% *'
 
 
 def test_coveragerc(testdir):
@@ -429,11 +432,12 @@ SCRIPT_SIMPLE = '''
 
 def test_foo():
     assert 1 == 1
-    assert True
+    x = True
+    assert x
 
 '''
 
-SCRIPT_SIMPLE_RESULT = '3 * 100%'
+SCRIPT_SIMPLE_RESULT = '4 * 100%'
 
 
 @pytest.mark.skipif('sys.platform == "win32"')
