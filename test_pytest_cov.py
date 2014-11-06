@@ -58,7 +58,7 @@ SCRIPT_FUNCARG = '''
 import coverage
 
 def test_foo(cov):
-    assert isinstance(cov, coverage.control.coverage)
+    assert isinstance(cov, coverage.coverage)
 '''
 
 SCRIPT_FUNCARG_NOT_ACTIVE = '''
