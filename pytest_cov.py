@@ -14,7 +14,7 @@ def pytest_addoption(parser):
     group = parser.getgroup('coverage reporting with distributed testing '
                             'support')
     group.addoption('--cov', action='append', default=[], metavar='path',
-                    dest='cov_source',
+                    dest='cov_source', nargs='?', const=True,
                     help='measure coverage for filesystem path '
                     '(multi-allowed)')
     group.addoption('--cov-report', action='append', default=[],
@@ -90,8 +90,14 @@ class CovPlugin(object):
 
             config = Config()
 
+        source = list(self.options.cov_source)
+        while True in source:
+            source.remove(True)
+        if not source:
+            source = None
+
         self.cov_controller = controller_cls(
-            self.options.cov_source,
+            source,
             self.options.cov_report or ['term'],
             self.options.cov_config,
             config,
