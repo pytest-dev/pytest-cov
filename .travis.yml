@@ -2,17 +2,29 @@ language: python
 python: 2.7
 env:
   - TOX_ENV=flake8
-  - TOX_ENV=pypy
-  - TOX_ENV=pypy3
-  - TOX_ENV=py26
-  - TOX_ENV=py27
-  - TOX_ENV=py32
-  - TOX_ENV=py33
-  - TOX_ENV=py34
+
+  - TOX_ENV=pypy   COV_CORE_DEP=cov-core
+  - TOX_ENV=pypy3  COV_CORE_DEP=cov-core
+  - TOX_ENV=py26   COV_CORE_DEP=cov-core
+  - TOX_ENV=py27   COV_CORE_DEP=cov-core
+  - TOX_ENV=py32   COV_CORE_DEP=cov-core
+  - TOX_ENV=py33   COV_CORE_DEP=cov-core
+  - TOX_ENV=py34   COV_CORE_DEP=cov-core
+
+  - TOX_ENV=pypy   COV_CORE_DEP=../cov-core
+  - TOX_ENV=pypy3  COV_CORE_DEP=../cov-core
+  - TOX_ENV=py26   COV_CORE_DEP=../cov-core
+  - TOX_ENV=py27   COV_CORE_DEP=../cov-core
+  - TOX_ENV=py32   COV_CORE_DEP=../cov-core
+  - TOX_ENV=py33   COV_CORE_DEP=../cov-core
+  - TOX_ENV=py34   COV_CORE_DEP=../cov-core
+
 install:
   - pip install tox
+
 script:
   - cd pytest-cov && tox -e $TOX_ENV
+
 notifications:
   email:
     on_success: never
