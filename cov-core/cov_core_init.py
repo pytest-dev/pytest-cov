@@ -36,8 +36,6 @@ def init():
         if cov_data_file and cov_config:
 
             # Import what we need to activate coverage.
-            import socket
-            import random
             import coverage
 
             # Determine all source roots.
@@ -46,16 +44,10 @@ def init():
             else:
                 cov_source = cov_source.split(UNIQUE_SEP)
 
-            # Produce a unique suffix for this process in the same
-            # manner as coverage.
-            data_suffix = '%s.%s.%s' % (socket.gethostname(),
-                                        os.getpid(),
-                                        random.randint(0, 999999))
-
             # Activate coverage for this process.
             cov = coverage.coverage(source=cov_source,
                                     data_file=cov_data_file,
-                                    data_suffix=data_suffix,
+                                    data_suffix=True,
                                     config_file=cov_config,
                                     auto_data=True)
             cov.erase()
