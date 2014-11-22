@@ -43,7 +43,6 @@ class CovController(object):
         self.node_descs = set()
         self.failed_slaves = []
         self.topdir = os.getcwd()
-        self.cov_data_file = '.coverage'
 
     def set_env(self):
         """Put info about coverage into the env so that subprocesses can activate coverage."""
@@ -52,14 +51,12 @@ class CovController(object):
             os.environ['COV_CORE_SOURCE'] = ''
         else:
             os.environ['COV_CORE_SOURCE'] = UNIQUE_SEP.join(self.cov_source)
-        os.environ['COV_CORE_DATA_FILE'] = self.cov_data_file
         os.environ['COV_CORE_CONFIG'] = self.cov_config
 
     @staticmethod
     def unset_env():
         """Remove coverage info from env."""
         os.environ.pop('COV_CORE_SOURCE', None)
-        os.environ.pop('COV_CORE_DATA_FILE', None)
         os.environ.pop('COV_CORE_CONFIG', None)
 
     @staticmethod
@@ -126,7 +123,6 @@ class Central(CovController):
         """Erase any previous coverage data and start coverage."""
 
         self.cov = coverage.coverage(source=self.cov_source,
-                                     data_file=self.cov_data_file,
                                      config_file=self.cov_config)
         self.cov.erase()
         self.cov.start()
@@ -158,7 +154,6 @@ class DistMaster(CovController):
             self.config.option.rsyncdir.append(self.cov_config)
 
         self.cov = coverage.coverage(source=self.cov_source,
-                                     data_file=self.cov_data_file,
                                      config_file=self.cov_config)
         self.cov.erase()
         self.cov.start()
@@ -184,7 +179,6 @@ class DistMaster(CovController):
         # that it returns to us.
         if 'cov_slave_lines' in node.slaveoutput:
             cov = coverage.coverage(source=self.cov_source,
-                                    data_file=self.cov_data_file,
                                     data_suffix=True,
                                     config_file=self.cov_config)
             cov.start()
@@ -230,12 +224,10 @@ class DistSlave(CovController):
             slave_topdir = self.topdir
             self.cov_source = [source.replace(master_topdir, slave_topdir)
                                for source in self.cov_source]
-            self.cov_data_file = self.cov_data_file.replace(master_topdir, slave_topdir)
             self.cov_config = self.cov_config.replace(master_topdir, slave_topdir)
 
         # Erase any previous data and start coverage.
         self.cov = coverage.coverage(source=self.cov_source,
-                                     data_file=self.cov_data_file,
                                      data_suffix=True,
                                      config_file=self.cov_config)
         self.cov.erase()

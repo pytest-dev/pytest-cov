@@ -30,23 +30,22 @@ def init():
         # Only continue if ancestor process has set everything needed in
         # the env.
         import os
+
         cov_source = os.environ.get('COV_CORE_SOURCE')
-        cov_data_file = os.environ.get('COV_CORE_DATA_FILE')
         cov_config = os.environ.get('COV_CORE_CONFIG')
-        if cov_data_file and cov_config:
+        if cov_config:
 
             # Import what we need to activate coverage.
             import coverage
 
             # Determine all source roots.
-            if cov_source == '':
+            if not cov_source:
                 cov_source = None
             else:
                 cov_source = cov_source.split(UNIQUE_SEP)
 
             # Activate coverage for this process.
             cov = coverage.coverage(source=cov_source,
-                                    data_file=cov_data_file,
                                     data_suffix=True,
                                     config_file=cov_config,
                                     auto_data=True)
