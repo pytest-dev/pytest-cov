@@ -185,7 +185,7 @@ class DistMaster(CovController):
         if 'cov_slave_lines' in node.slaveoutput:
             cov = coverage.coverage(source=self.cov_source,
                                     data_file=self.cov_data_file,
-                                    data_suffix=node.slaveoutput['cov_slave_node_id'],
+                                    data_suffix=True,
                                     config_file=self.cov_config)
             cov.start()
             cov.data.lines = node.slaveoutput['cov_slave_lines']
@@ -233,14 +233,10 @@ class DistSlave(CovController):
             self.cov_data_file = self.cov_data_file.replace(master_topdir, slave_topdir)
             self.cov_config = self.cov_config.replace(master_topdir, slave_topdir)
 
-        # Our slave node id makes us unique from all other slaves so
-        # adjust the data file that we contribute to and the master
-        # will combine our data with other slaves later.
-        self.cov_data_file += '.%s' % self.nodeid
-
         # Erase any previous data and start coverage.
         self.cov = coverage.coverage(source=self.cov_source,
                                      data_file=self.cov_data_file,
+                                     data_suffix=True,
                                      config_file=self.cov_config)
         self.cov.erase()
         self.cov.start()
