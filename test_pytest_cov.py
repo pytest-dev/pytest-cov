@@ -25,6 +25,11 @@ def test_foo():
         assert False
 '''
 
+COVERAGERC_SOURCE = '''\
+[run]
+source = .
+'''
+
 SCRIPT_CHILD = '''
 import sys
 
@@ -105,6 +110,47 @@ def test_central(testdir):
         'test_central * %s *' % SCRIPT_RESULT,
         '*10 passed*'
         ])
+    assert result.ret == 0
+
+
+def test_central_nonspecific(testdir):
+    script = testdir.makepyfile(SCRIPT)
+
+    result = testdir.runpytest('-v',
+                               '--cov',
+                               '--cov-report=term-missing',
+                               script)
+
+    result.stdout.fnmatch_lines([
+        '*- coverage: platform *, python * -*',
+        'test_central_nonspecific * %s *' % SCRIPT_RESULT,
+        '*10 passed*'
+        ])
+
+    # multi-module coverage report
+    assert result.stdout.lines[-3].startswith('TOTAL ')
+
+    assert result.ret == 0
+
+
+def test_central_coveragerc(testdir):
+    script = testdir.makepyfile(SCRIPT)
+    testdir.tmpdir.join('.coveragerc').write(COVERAGERC_SOURCE)
+
+    result = testdir.runpytest('-v',
+                               '--cov',
+                               '--cov-report=term-missing',
+                               script)
+
+    result.stdout.fnmatch_lines([
+        '*- coverage: platform *, python * -*',
+        'test_central_coveragerc * %s *' % SCRIPT_RESULT,
+        '*10 passed*',
+        ])
+
+    # single-module coverage report
+    assert not result.stdout.lines[-3].startswith('test_central_coveragerc\t')
+
     assert result.ret == 0
 
 
