@@ -221,14 +221,15 @@ class DistSlave(CovController):
         """Determine what data file and suffix to contribute to and start coverage."""
 
         # Determine whether we are collocated with master.
-        self.is_collocated = bool(socket.gethostname() == self.config.slaveinput['cov_master_host'] and
-                                  self.topdir == self.config.slaveinput['cov_master_topdir'])
+        self.is_collocated = (socket.gethostname() == self.config.slaveinput['cov_master_host'] and
+                              self.topdir == self.config.slaveinput['cov_master_topdir'])
 
         # If we are not collocated then rewrite master paths to slave paths.
         if not self.is_collocated:
             master_topdir = self.config.slaveinput['cov_master_topdir']
             slave_topdir = self.topdir
-            self.cov_source = [source.replace(master_topdir, slave_topdir) for source in self.cov_source]
+            self.cov_source = [source.replace(master_topdir, slave_topdir)
+                               for source in self.cov_source]
             self.cov_data_file = self.cov_data_file.replace(master_topdir, slave_topdir)
             self.cov_config = self.cov_config.replace(master_topdir, slave_topdir)
 
