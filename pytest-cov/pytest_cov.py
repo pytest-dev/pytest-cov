@@ -135,7 +135,7 @@ class CovPlugin(object):
         if self.cov_controller is None:
             return
         if not (self.failed and self.options.no_cov_on_fail):
-            self.cov_controller.summary(terminalreporter._tw)
+            self.cov_controller.summary(terminalreporter.writer)
 
     def pytest_runtest_setup(self, item):
         if os.getpid() != self.pid:
