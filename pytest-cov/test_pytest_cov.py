@@ -507,3 +507,16 @@ def test_not_started_plugin_does_not_fail(testdir):
     plugin = pytest_cov.CovPlugin(None, None, start=False)
     plugin.pytest_sessionfinish(None, None)
     plugin.pytest_terminal_summary(None)
+
+
+def test_deprecation_warning(testdir):
+    script = testdir.makepyfile(SCRIPT)
+
+    result = testdir.runpytest('-v',
+                               '--cov=%s' % script.dirpath(),
+                               script)
+
+    result.stdout.fnmatch_lines([
+        'Deprecation warning: * --cov-source instead*'
+    ])
+    assert result.ret == 0
