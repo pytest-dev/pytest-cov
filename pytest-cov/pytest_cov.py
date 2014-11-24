@@ -15,10 +15,14 @@ class CoverageError(Exception):
 def pytest_addoption(parser):
     """Add options to control coverage."""
 
-    group = parser.getgroup('coverage reporting with distributed testing '
-                            'support')
-    group.addoption('--cov', action='append', default=[], metavar='path',
-                    dest='cov_source',
+    group = parser.getgroup(
+        'cov', 'coverage reporting with distributed testing support')
+
+    group.addoption('--cov', action='append', nargs='?', dest='cov',
+                    const=True, default=[],
+                    help='Enable coverage plugin.')
+    group.addoption('--cov-source', action='append', default=[],
+                    metavar='path', dest='cov_source',
                     help='measure coverage for filesystem path '
                     '(multi-allowed)')
     group.addoption('--cov-report', action='append', default=[],
@@ -41,14 +45,23 @@ def pytest_addoption(parser):
 @pytest.mark.tryfirst
 def pytest_load_initial_conftests(early_config, parser, args):
     ns = parser.parse_known_args(args)
-    if ns.cov_source:
+    if ns.cov and ns.cov != [True]:
+        print ('Deprecation warning: --cov shouldn\'t be used '
+               'with additional source arguments anymore. Use '
+               '--cov-source instead.')
+        ns.cov_source.extend(ns.cov)
+
+    if not ns.cov_source:
+        ns.cov_source = None
+
+    if ns.cov:
         plugin = CovPlugin(ns, early_config.pluginmanager)
         early_config.pluginmanager.register(plugin, '_cov')
 
 
 def pytest_configure(config):
     """Activate coverage plugin if appropriate."""
-    if config.getvalue('cov_source'):
+    if config.getvalue('cov'):
         if not config.pluginmanager.hasplugin('_cov'):
             plugin = CovPlugin(config.option, config.pluginmanager,
                                start=False)
@@ -141,7 +154,7 @@ class CovPlugin(object):
         if self.cov_controller is None:
             return
         if not (self.failed and self.options.no_cov_on_fail):
-            total = self.cov_controller.summary(terminalreporter._tw)
+            total = self.cov_controller.summary(terminalreporter.writer)
             if total < self.options.cov_min:
                 raise CoverageError(('Required test coverage of %d%% not '
                                      'reached. Total coverage: %.2f%%')
