@@ -155,7 +155,8 @@ class CovPlugin(object):
             return
         if not (self.failed and self.options.no_cov_on_fail):
             total = self.cov_controller.summary(terminalreporter.writer)
-            if total < self.options.cov_min:
+            cov_min = self.options.cov_min
+            if cov_min is not None and total < cov_min:
                 raise CoverageError(('Required test coverage of %d%% not '
                                      'reached. Total coverage: %.2f%%')
                                     % (self.options.cov_min, total))
