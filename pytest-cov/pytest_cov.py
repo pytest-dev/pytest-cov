@@ -38,7 +38,6 @@ def pytest_addoption(parser):
                     help='Fail if the total coverage is less than MIN.')
 
 
-
 @pytest.mark.tryfirst
 def pytest_load_initial_conftests(early_config, parser, args):
     ns = parser.parse_known_args(args)

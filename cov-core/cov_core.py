@@ -144,6 +144,7 @@ class Central(CovController):
         node_desc = self.get_node_desc(sys.platform, sys.version_info)
         self.node_descs.add(node_desc)
 
+
 class DistMaster(CovController):
     """Implementation for distributed master."""
 
