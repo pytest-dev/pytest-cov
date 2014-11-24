@@ -113,6 +113,30 @@ def test_central(testdir):
     assert result.ret == 0
 
 
+def test_central_cov_min_100(testdir):
+    script = testdir.makepyfile(SCRIPT)
+
+    result = testdir.runpytest('-v',
+                               '--cov', '--cov-source=%s' % script.dirpath(),
+                               '--cov-report=term-missing',
+                               '--cov-min=100',
+                               script)
+
+    assert result.ret == 1
+
+
+def test_central_cov_min_50(testdir):
+    script = testdir.makepyfile(SCRIPT)
+
+    result = testdir.runpytest('-v',
+                               '--cov', '--cov-source=%s' % script.dirpath(),
+                               '--cov-report=term-missing',
+                               '--cov-min=50',
+                               script)
+
+    assert result.ret == 0
+
+
 def test_central_nonspecific(testdir):
     script = testdir.makepyfile(SCRIPT)
 
