@@ -3,14 +3,6 @@ python: 2.7
 env:
   - CWD=. TOX_ENV=flake8
 
-  - CWD=pytest-cov  TOX_ENV=pypy   COV_CORE_DEP=cov-core
-  - CWD=pytest-cov  TOX_ENV=pypy3  COV_CORE_DEP=cov-core
-  - CWD=pytest-cov  TOX_ENV=py26   COV_CORE_DEP=cov-core
-  - CWD=pytest-cov  TOX_ENV=py27   COV_CORE_DEP=cov-core
-  - CWD=pytest-cov  TOX_ENV=py32   COV_CORE_DEP=cov-core
-  - CWD=pytest-cov  TOX_ENV=py33   COV_CORE_DEP=cov-core
-  - CWD=pytest-cov  TOX_ENV=py34   COV_CORE_DEP=cov-core
-
   - CWD=pytest-cov  TOX_ENV=pypy   COV_CORE_DEP=../cov-core
   - CWD=pytest-cov  TOX_ENV=pypy3  COV_CORE_DEP=../cov-core
   - CWD=pytest-cov  TOX_ENV=py26   COV_CORE_DEP=../cov-core
@@ -18,6 +10,14 @@ env:
   - CWD=pytest-cov  TOX_ENV=py32   COV_CORE_DEP=../cov-core
   - CWD=pytest-cov  TOX_ENV=py33   COV_CORE_DEP=../cov-core
   - CWD=pytest-cov  TOX_ENV=py34   COV_CORE_DEP=../cov-core
+
+  - CWD=pytest-cov  TOX_ENV=pypy   COV_CORE_DEP=cov-core
+  - CWD=pytest-cov  TOX_ENV=pypy3  COV_CORE_DEP=cov-core
+  - CWD=pytest-cov  TOX_ENV=py26   COV_CORE_DEP=cov-core
+  - CWD=pytest-cov  TOX_ENV=py27   COV_CORE_DEP=cov-core
+  - CWD=pytest-cov  TOX_ENV=py32   COV_CORE_DEP=cov-core
+  - CWD=pytest-cov  TOX_ENV=py33   COV_CORE_DEP=cov-core
+  - CWD=pytest-cov  TOX_ENV=py34   COV_CORE_DEP=cov-core
 
 matrix:
   allow_failures:
