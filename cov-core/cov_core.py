@@ -78,6 +78,8 @@ class CovController(object):
 
     def summary(self, stream):
         """Produce coverage reports."""
+        if self.cov_report == ['']:
+            return
 
         # Output coverage section header.
         if len(self.node_descs) == 1:
@@ -138,11 +140,6 @@ class Central(CovController):
         node_desc = self.get_node_desc(sys.platform, sys.version_info)
         self.node_descs.add(node_desc)
 
-    def summary(self, stream):
-        """Produce coverage reports."""
-
-        CovController.summary(self, stream)
-
 
 class DistMaster(CovController):
     """Implementation for distributed master."""
@@ -201,11 +198,6 @@ class DistMaster(CovController):
         self.cov.stop()
         self.cov.combine()
         self.cov.save()
-
-    def summary(self, stream):
-        """Produce coverage reports."""
-
-        CovController.summary(self, stream)
 
 
 class DistSlave(CovController):
