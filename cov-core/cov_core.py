@@ -80,7 +80,7 @@ class CovController(object):
         """Produce coverage reports."""
         total = 0
 
-        if self.cov_report == ['']:
+        if not self.cov_report:
             with open(os.devnull, 'w') as null:
                 total = self.cov.report(show_missing=True, ignore_errors=True, file=null)
                 return total

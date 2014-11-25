@@ -54,6 +54,11 @@ def pytest_load_initial_conftests(early_config, parser, args):
     if not ns.cov_source:
         ns.cov_source = None
 
+    if not ns.cov_report:
+        ns.cov_report = ['term']
+    elif ns.cov_report == ['']:
+        ns.cov_report = []
+
     if ns.cov:
         plugin = CovPlugin(ns, early_config.pluginmanager)
         early_config.pluginmanager.register(plugin, '_cov')
@@ -111,7 +116,7 @@ class CovPlugin(object):
 
         self.cov_controller = controller_cls(
             self.options.cov_source,
-            self.options.cov_report or ['term'],
+            self.options.cov_report,
             self.options.cov_config,
             config,
             nodeid

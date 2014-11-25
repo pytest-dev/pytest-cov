@@ -556,3 +556,28 @@ def test_deprecation_warning(testdir):
         'Deprecation warning: * --cov-source instead*'
     ])
     assert result.ret == 0
+
+
+def test_default_output_setting(testdir):
+    script = testdir.makepyfile(SCRIPT)
+
+    result = testdir.runpytest('-v',
+                               '--cov', '--cov-source=%s' % script.dirpath(),
+                               script)
+
+    result.stdout.fnmatch_lines([
+        '*coverage*'
+    ])
+    assert result.ret == 0
+
+
+def test_disabled_output(testdir):
+    script = testdir.makepyfile(SCRIPT)
+
+    result = testdir.runpytest('-v',
+                               '--cov', '--cov-source=%s' % script.dirpath(),
+                               '--cov-report=',
+                               script)
+
+    assert 'coverage' not in result.stdout.str()
+    assert result.ret == 0
