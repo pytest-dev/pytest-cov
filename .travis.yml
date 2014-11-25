@@ -1,5 +1,7 @@
 language: python
+
 python: 2.7
+
 env:
   - CWD=. TOX_ENV=flake8
 
@@ -28,6 +30,8 @@ matrix:
     - env: CWD=pytest-cov  TOX_ENV=py32   COV_CORE_DEP=cov-core
     - env: CWD=pytest-cov  TOX_ENV=py33   COV_CORE_DEP=cov-core
     - env: CWD=pytest-cov  TOX_ENV=py34   COV_CORE_DEP=cov-core
+
+sudo: false
 
 install:
   - pip install tox
