@@ -78,10 +78,12 @@ class CovController(object):
 
     def summary(self, stream):
         """Produce coverage reports."""
-        if self.cov_report == ['']:
-            return
-
         total = 0
+
+        if self.cov_report == ['']:
+            with open(os.devnull, 'w') as null:
+                total = self.cov.report(show_missing=True, ignore_errors=True, file=null)
+                return total
 
         # Output coverage section header.
         if len(self.node_descs) == 1:

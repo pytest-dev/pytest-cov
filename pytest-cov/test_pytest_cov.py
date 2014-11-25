@@ -142,6 +142,7 @@ def test_cov_min_no_report(testdir):
 
     result = testdir.runpytest('-v',
                                '--cov', '--cov-source=%s' % script.dirpath(),
+                               '--cov-report=',
                                '--cov-min=50',
                                script)
 
