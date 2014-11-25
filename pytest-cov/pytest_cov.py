@@ -8,6 +8,10 @@ import cov_core
 import cov_core_init
 
 
+class CoverageError(Exception):
+    '''Indicates that our coverage is too low'''
+
+
 def pytest_addoption(parser):
     """Add options to control coverage."""
 
@@ -34,6 +38,8 @@ def pytest_addoption(parser):
                     dest='no_cov_on_fail',
                     help='do not report coverage if test run fails, '
                          'default: False')
+    group.addoption('--cov-min', action='store', metavar='MIN', type='int',
+                    help='Fail if the total coverage is less than MIN.')
 
 
 @pytest.mark.tryfirst
@@ -148,7 +154,13 @@ class CovPlugin(object):
         if self.cov_controller is None:
             return
         if not (self.failed and self.options.no_cov_on_fail):
-            self.cov_controller.summary(terminalreporter.writer)
+            total = self.cov_controller.summary(terminalreporter.writer)
+            assert total is not None, 'Test coverage should never be `None`'
+            cov_min = self.options.cov_min
+            if cov_min is not None and total < cov_min:
+                raise CoverageError(('Required test coverage of %d%% not '
+                                     'reached. Total coverage: %.2f%%')
+                                    % (self.options.cov_min, total))
 
     def pytest_runtest_setup(self, item):
         if os.getpid() != self.pid:
