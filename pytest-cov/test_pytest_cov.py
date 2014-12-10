@@ -581,3 +581,18 @@ def test_disabled_output(testdir):
 
     assert 'coverage' not in result.stdout.str()
     assert result.ret == 0
+
+
+def test_coverage_file(testdir):
+    script = testdir.makepyfile(SCRIPT)
+    data_file_name = 'covdata'
+    os.environ['COVERAGE_FILE'] = data_file_name
+    try:
+        result = testdir.runpytest('-v', '--cov',
+                                   '--cov-source=%s' % script.dirpath(),
+                                   script)
+        assert result.ret == 0
+        data_file = testdir.tmpdir.join(data_file_name)
+        assert data_file.check()
+    finally:
+        os.environ.pop('COVERAGE_FILE')
