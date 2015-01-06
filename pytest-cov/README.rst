@@ -190,14 +190,20 @@ The terminal report with line numbers::
     TOTAL                  353     20    94%
 
 
-The remaining three reports output to files without showing anything on the terminal (useful for
-when the output is going to a continuous integration server)::
+These three report options output to files without showing anything on the terminal::
 
     py.test --cov-report html
             --cov-report xml
             --cov-report annotate
             --cov myproj tests/
 
+The final report option can also suppress printing to the terminal::
+
+    py.test --cov-report= tests/
+
+This mode can be especially useful on continuous integration servers, where a coverage file
+coverage file is needed for subsequent processing, but no local report needs to be viewed.
+For example, test run on Travis-CI could produce a .coverage file for use with Coveralls.
 
 Coverage Data File
 ------------------
