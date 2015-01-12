@@ -1,19 +1,19 @@
 pytest-cov
 ==========
 
-.. image:: https://travis-ci.org/schlamar/pytest-cov.svg?branch=master   
+.. image:: https://img.shields.io/travis/schlamar/pytest-cov/master.svg
    :target: https://travis-ci.org/schlamar/pytest-cov
    :alt: Build status
    
-.. image:: https://pypip.in/download/pytest-cov/badge.png
-    :target: https://pypi.python.org/pypi//pytest-cov/
+.. image:: https://img.shields.io/pypi/dm/pytest-cov.svg
+    :target: https://pypi.python.org/pypi/pytest-cov/
     :alt: Downloads
 
-.. image:: https://pypip.in/version/pytest-cov/badge.png
+.. image:: https://img.shields.io/pypi/v/pytest-cov.svg
     :target: https://pypi.python.org/pypi/pytest-cov/
     :alt: Latest Version
 
-.. image:: https://pypip.in/license/pytest-cov/badge.png
+.. image:: https://img.shields.io/pypi/l/pytest-cov.svg
     :target: https://pypi.python.org/pypi/pytest-cov/
     :alt: License
 
