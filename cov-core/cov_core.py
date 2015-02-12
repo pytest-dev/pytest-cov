@@ -16,8 +16,11 @@ def multiprocessing_start(obj):
 
 
 def multiprocessing_finish(cov):
-    cov.stop()
-    cov.save()
+    try:
+        cov.stop()
+        cov.save()
+    except:
+        pass
 
 
 try:
