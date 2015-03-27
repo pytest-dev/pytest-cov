@@ -10,9 +10,10 @@ import os
 
 def multiprocessing_start(obj):
     cov = cov_core_init.init()
-    import multiprocessing.util
-    multiprocessing.util.Finalize(
-        None, multiprocessing_finish, args=(cov,), exitpriority=1000)
+    if cov:
+        import multiprocessing.util
+        multiprocessing.util.Finalize(
+            None, multiprocessing_finish, args=(cov,), exitpriority=1000)
 
 
 def multiprocessing_finish(cov):
