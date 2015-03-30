@@ -1,6 +1,7 @@
 """Coverage plugin for pytest."""
 
 import os
+import sys
 
 import pytest
 
@@ -46,9 +47,10 @@ def pytest_addoption(parser):
 def pytest_load_initial_conftests(early_config, parser, args):
     ns = parser.parse_known_args(args)
     if ns.cov and ns.cov != [True]:
-        print ('Deprecation warning: --cov shouldn\'t be used '
-               'with additional source arguments anymore. Use '
-               '--cov-source instead.')
+        sys.__stdout__.write(
+            'Deprecation warning: --cov shouldn\'t be used '
+            'with additional source arguments anymore. Use '
+            '--cov-source instead.')
         ns.cov_source.extend(ns.cov)
 
     if not ns.cov_source:
