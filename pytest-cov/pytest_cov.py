@@ -50,7 +50,7 @@ def pytest_load_initial_conftests(early_config, parser, args):
         sys.__stdout__.write(
             'Deprecation warning: --cov shouldn\'t be used '
             'with additional source arguments anymore. Use '
-            '--cov-source instead.')
+            '--cov-source instead.\n')
         ns.cov_source.extend(ns.cov)
 
     if not ns.cov_source:
