@@ -1,7 +1,6 @@
 """Coverage plugin for pytest."""
 
 import os
-import sys
 
 import pytest
 
@@ -47,10 +46,25 @@ def pytest_addoption(parser):
 def pytest_load_initial_conftests(early_config, parser, args):
     ns = parser.parse_known_args(args)
     if ns.cov and ns.cov != [True]:
-        sys.__stdout__.write(
+        cap_out = None
+        capman = early_config.pluginmanager.getplugin('capturemanager')
+        if capman:
+            # stdout capturing is already active, try to suspend
+            # it for the deprecation warning
+            cap = getattr(capman, '_capturing', None)
+            if cap is not None:
+                cap_out = cap.out
+                if cap_out:
+                    cap_out.suspend()
+
+        print (
             'Deprecation warning: --cov shouldn\'t be used '
             'with additional source arguments anymore. Use '
-            '--cov-source instead.\n')
+            '--cov-source instead.')
+
+        if cap_out:
+            cap_out.resume()
+
         ns.cov_source.extend(ns.cov)
 
     if not ns.cov_source:
