@@ -1,5 +1,7 @@
 language: python
+
 python: 2.7
+
 env:
   - TOX_ENV=flake8
   - TOX_ENV=pypy
@@ -9,10 +11,15 @@ env:
   - TOX_ENV=py32
   - TOX_ENV=py33
   - TOX_ENV=py34
+
+sudo: false
+
 install:
   - pip install tox
+
 script:
   - tox -e $TOX_ENV
+
 notifications:
   email:
     on_success: never
