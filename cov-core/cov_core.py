@@ -16,8 +16,9 @@ def multiprocessing_start(obj):
 
 
 def multiprocessing_finish(cov):
-    cov.stop()
-    cov.save()
+    if cov is not None:
+        cov.stop()
+        cov.save()
 
 
 try:
