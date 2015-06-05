@@ -3,17 +3,22 @@
 from __future__ import absolute_import, print_function
 
 import io
-import os
+from itertools import chain
 import re
 from glob import glob
 from os.path import basename
 from os.path import dirname
 from os.path import join
-from os.path import relpath
 from os.path import splitext
+from distutils.command.build import build
 
+from setuptools import Command
 from setuptools import find_packages
 from setuptools import setup
+from setuptools.command.develop import develop
+from setuptools.command.install_lib import install_lib
+from setuptools.command.easy_install import easy_install
+
 
 def read(*names, **kwargs):
     return io.open(
@@ -118,6 +123,9 @@ setup(
     extras_require={
     },
     entry_points={
+        'pytest11': [
+            'pytest_cov = pytest_cover.plugin',
+        ],
         'console_scripts': [
         ]
     },
