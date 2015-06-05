@@ -1,77 +1,131 @@
-import setuptools
-import sys
+#!/usr/bin/env python
+# -*- encoding: utf-8 -*-
+from __future__ import absolute_import, print_function
+
+import io
 import os
+import re
+from glob import glob
+from os.path import basename
+from os.path import dirname
+from os.path import join
+from os.path import relpath
+from os.path import splitext
 
-# The name of the path file must appear after easy-install.pth so that
-# cov_core has been added to the sys.path and cov_core_init can be
-# imported.
-PTH_FILE_NAME = 'init_cov_core.pth'
+from setuptools import find_packages
+from setuptools import setup
 
-# The line in the path file must begin with "import"
-# so that site.py will exec it.
-PTH_FILE = '''\
-import os; exec(%r)
-''' % '''
-if 'COV_CORE_SOURCE' in os.environ:
-    try:
-        import cov_core_init
-        cov_core_init.init()
-    except ImportError:
+def read(*names, **kwargs):
+    return io.open(
+        join(dirname(__file__), *names),
+        encoding=kwargs.get('encoding', 'utf8')
+    ).read()
+
+
+class BuildWithPTH(build):
+    def run(self):
+        build.run(self)
+        path = join(dirname(__file__), 'src', 'pytest-cover.pth')
+        dest = join(self.build_lib, basename(path))
+        self.copy_file(path, dest)
+
+
+class EasyInstallWithPTH(easy_install):
+    def run(self):
+        easy_install.run(self)
+        path = join(dirname(__file__), 'src', 'pytest-cover.pth')
+        dest = join(self.install_dir, basename(path))
+        self.copy_file(path, dest)
+
+
+class InstallLibWithPTH(install_lib):
+    def run(self):
+        install_lib.run(self)
+        path = join(dirname(__file__), 'src', 'pytest-cover.pth')
+        dest = join(self.install_dir, basename(path))
+        self.copy_file(path, dest)
+        self.outputs = [dest]
+
+    def get_outputs(self):
+        return chain(install_lib.get_outputs(self), self.outputs)
+
+
+class DevelopWithPTH(develop):
+    def run(self):
+        develop.run(self)
+        path = join(dirname(__file__), 'src', 'pytest-cover.pth')
+        dest = join(self.install_dir, basename(path))
+        self.copy_file(path, dest)
+
+
+class GeneratePTH(Command):
+    user_options = []
+
+    def initialize_options(self):
         pass
-'''
 
-PTH_FILE_FAILURE = '''
-Subprocesses WILL NOT have coverage collected.
+    def finalize_options(self):
+        pass
 
-To measure subprocesses put the following in a pth file called %s:
-%s
-''' % (PTH_FILE_NAME, PTH_FILE)
+    def run(self):
+        with open(join(dirname(__file__), 'src', 'pytest-cover.pth'), 'w') as fh:
+            with open(join(dirname(__file__), 'src', 'pytest-cover.embed')) as sh:
+                fh.write(
+                    'import os, sys;'
+                    'exec(%r)' % sh.read().replace('    ', ' ')
+                )
 
-setuptools.setup(name='cov-core',
-                 version='1.15.0',
-                 description='plugin core for use by pytest-cov, '
-                 'nose-cov and nose2-cov',
-                 long_description=open('README.rst').read().strip(),
-                 author='Marc Schlaich',
-                 author_email='marc.schlaich@gmail.com',
-                 url='https://github.com/schlamar/cov-core',
-                 py_modules=['cov_core',
-                             'cov_core_init'],
-                 install_requires=['coverage>=3.6'],
-                 license='MIT License',
-                 zip_safe=False,
-                 keywords='cover coverage',
-                 classifiers=['Development Status :: 4 - Beta',
-                              'Intended Audience :: Developers',
-                              'License :: OSI Approved :: MIT License',
-                              'Operating System :: OS Independent',
-                              'Programming Language :: Python',
-                              'Programming Language :: Python :: 2.4',
-                              'Programming Language :: Python :: 2.5',
-                              'Programming Language :: Python :: 2.6',
-                              'Programming Language :: Python :: 2.7',
-                              'Programming Language :: Python :: 3.0',
-                              'Programming Language :: Python :: 3.1',
-                              'Topic :: Software Development :: Testing'])
-
-if sys.argv[1] in ('install', 'develop'):
-    for path in sys.path:
-        if (path.endswith('site-packages')) or (path.endswith('dist-packages')
-                                                and 'local' in path):
-            path = os.path.join(path, PTH_FILE_NAME)
-            try:
-                pth_file = open(path, 'w')
-                pth_file.write(PTH_FILE)
-                pth_file.close()
-                sys.stdout.write('\nWrote pth file for subprocess '
-                                 'measurement to %s\n' % path)
-                break
-            except Exception:
-                sys.stdout.write('\nFailed to write pth file for subprocess '
-                                 'measurement to %s\n' % path)
-                sys.stdout.write(PTH_FILE_FAILURE)
-                break
-    else:
-        sys.stdout.write('\nFailed to find site-packages or dist-packages '
-                         'dir to put pth file in.\n')
-        sys.stdout.write(PTH_FILE_FAILURE)
+setup(
+    name='pytest-cover',
+    version='0.1.0',
+    license='MIT',
+    description='Pytest plugin for measuring coverage. Forked from `pytest-cov`.',
+    long_description='%s\n%s' % (read('README.rst'), re.sub(':[a-z]+:`~?(.*?)`', r'``\1``', read('CHANGELOG.rst'))),
+    author='Marc Schlaich',
+    author_email='marc.schlaich@gmail.com',
+    maintainer='Ionel Cristian M\u0103rie\u0219',
+    maintainer_email='contact@ionelmc.ro',
+    url='https://github.com/ionelmc/pytest-cover',
+    packages=find_packages('src'),
+    package_dir={'': 'src'},
+    py_modules=[splitext(basename(path))[0] for path in glob('src/*.py')],
+    include_package_data=True,
+    zip_safe=False,
+    classifiers=[
+        # complete classifier list: http://pypi.python.org/pypi?%3Aaction=list_classifiers
+        'Development Status :: 5 - Production/Stable',
+        'Intended Audience :: Developers',
+        'License :: OSI Approved :: BSD License',
+        'Operating System :: Unix',
+        'Operating System :: POSIX',
+        'Operating System :: Microsoft :: Windows',
+        'Programming Language :: Python',
+        'Programming Language :: Python :: 2.6',
+        'Programming Language :: Python :: 2.7',
+        'Programming Language :: Python :: 3',
+        'Programming Language :: Python :: 3.3',
+        'Programming Language :: Python :: 3.4',
+        'Programming Language :: Python :: Implementation :: CPython',
+        'Programming Language :: Python :: Implementation :: PyPy',
+        'Topic :: Utilities',
+        'Topic :: Software Development :: Testing'
+    ],
+    keywords=[
+        'cover', 'coverage', 'pytest', 'py.test', 'distributed', 'parallel',
+    ],
+    install_requires=[
+    ],
+    extras_require={
+    },
+    entry_points={
+        'console_scripts': [
+        ]
+    },
+    cmdclass={
+        'build': BuildWithPTH,
+        'easy_install': EasyInstallWithPTH,
+        'install_lib': InstallLibWithPTH,
+        'develop': DevelopWithPTH,
+        'genpth': GeneratePTH,
+    },
+)
