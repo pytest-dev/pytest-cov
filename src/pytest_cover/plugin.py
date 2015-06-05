@@ -4,12 +4,12 @@ import os
 
 import pytest
 
-import cov_core
-import cov_core_init
+from . import engine
+from . import embed
 
 
 class CoverageError(Exception):
-    '''Indicates that our coverage is too low'''
+    """Indicates that our coverage is too low"""
 
 
 def pytest_addoption(parser):
@@ -92,15 +92,15 @@ class CovPlugin(object):
                    getattr(options, 'distload', False) or
                    getattr(options, 'dist', 'no') != 'no')
         if is_dist and start:
-            self.start(cov_core.DistMaster)
+            self.start(engine.DistMaster)
         elif start:
-            self.start(cov_core.Central)
+            self.start(engine.Central)
 
         # slave is started in pytest hook
 
     def start(self, controller_cls, config=None, nodeid=None):
         if config is None:
-            # fake config option for cov_core
+            # fake config option for engine
             class Config(object):
                 option = self.options
 
@@ -122,7 +122,7 @@ class CovPlugin(object):
         if is_slave:
             nodeid = session.config.slaveinput.get('slaveid',
                                                    getattr(session, 'nodeid'))
-            self.start(cov_core.DistSlave, session.config, nodeid)
+            self.start(engine.DistSlave, session.config, nodeid)
 
     def pytest_configure_node(self, node):
         """Delegate to our implementation.
@@ -163,11 +163,11 @@ class CovPlugin(object):
         if os.getpid() != self.pid:
             # test is run in another process than session, run
             # coverage manually
-            self.cov = cov_core_init.init()
+            self.cov = embed.init()
 
     def pytest_runtest_teardown(self, item):
         if self.cov is not None:
-            cov_core.multiprocessing_finish(self.cov)
+            engine.multiprocessing_finish(self.cov)
             self.cov = None
 
 

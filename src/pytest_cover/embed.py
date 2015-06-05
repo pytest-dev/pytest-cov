@@ -17,7 +17,7 @@ info passed via env vars.
 
 UNIQUE_SEP = '084031f3d2994d40a88c8b699b69e148'
 
-import cov_core  # noqa: register multiprocessing handler
+from . import engine # noqa: register multiprocessing handler
 
 
 def init():

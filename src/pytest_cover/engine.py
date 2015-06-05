@@ -1,7 +1,6 @@
 """Coverage controllers for use by pytest-cov and nose-cov."""
 
-from cov_core_init import UNIQUE_SEP
-import cov_core_init
+
 import coverage
 import socket
 import sys
@@ -9,7 +8,8 @@ import os
 
 
 def multiprocessing_start(obj):
-    cov = cov_core_init.init()
+    from . import embed
+    cov = embed.init()
     if cov:
         import multiprocessing.util
         multiprocessing.util.Finalize(
@@ -47,6 +47,7 @@ class CovController(object):
 
     def set_env(self):
         """Put info about coverage into the env so that subprocesses can activate coverage."""
+        from .embed import UNIQUE_SEP
 
         if self.cov_source is None:
             os.environ['COV_CORE_SOURCE'] = ''
