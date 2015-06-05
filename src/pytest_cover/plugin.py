@@ -17,12 +17,8 @@ def pytest_addoption(parser):
 
     group = parser.getgroup(
         'cov', 'coverage reporting with distributed testing support')
-
-    group.addoption('--cov', action='append', nargs='?', dest='cov',
-                    const=True, default=[],
-                    help='Enable coverage plugin.')
-    group.addoption('--cov-source', action='append', default=[],
-                    metavar='path', dest='cov_source',
+    group.addoption('--cov', action='append', default=[], metavar='path',
+                    nargs='?', const=True, dest='cov_source',
                     help='measure coverage for filesystem path '
                     '(multi-allowed)')
     group.addoption('--cov-report', action='append', default=[],
@@ -45,13 +41,9 @@ def pytest_addoption(parser):
 @pytest.mark.tryfirst
 def pytest_load_initial_conftests(early_config, parser, args):
     ns = parser.parse_known_args(args)
-    if ns.cov and ns.cov != [True]:
-        print ('Deprecation warning: --cov shouldn\'t be used '
-               'with additional source arguments anymore. Use '
-               '--cov-source instead.')
-        ns.cov_source.extend(ns.cov)
+    ns.cov = bool(ns.cov_source)
 
-    if not ns.cov_source:
+    if ns.cov_source == [True]:
         ns.cov_source = None
 
     if not ns.cov_report:
