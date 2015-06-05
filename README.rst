@@ -2,52 +2,52 @@
 pytest-cover
 ===============================
 
-| |docs| |travis| |appveyor| |coveralls|
+| |docs| |travis| |appveyor|
 | |version| |downloads| |wheel| |supported-versions| |supported-implementations|
 
-.. |docs| image:: https://readthedocs.org/projects/pytest-coverer/badge/?style=flat
-    :target: https://readthedocs.org/projects/pytest-coverer
+.. |docs| image:: https://readthedocs.org/projects/pytest-cover/badge/?style=flat
+    :target: https://readthedocs.org/projects/pytest-cover
     :alt: Documentation Status
 
-.. |travis| image:: http://img.shields.io/travis/ionelmc/pytest-coverer/master.png?style=flat
+.. |travis| image:: http://img.shields.io/travis/ionelmc/pytest-cover/master.png?style=flat
     :alt: Travis-CI Build Status
-    :target: https://travis-ci.org/ionelmc/pytest-coverer
+    :target: https://travis-ci.org/ionelmc/pytest-cover
 
-.. |appveyor| image:: https://ci.appveyor.com/api/projects/status/github/ionelmc/pytest-coverer?branch=master
+.. |appveyor| image:: https://ci.appveyor.com/api/projects/status/github/ionelmc/pytest-cover?branch=master
     :alt: AppVeyor Build Status
-    :target: https://ci.appveyor.com/project/ionelmc/pytest-coverer
+    :target: https://ci.appveyor.com/project/ionelmc/pytest-cover
 
-.. |coveralls| image:: http://img.shields.io/coveralls/ionelmc/pytest-coverer/master.png?style=flat
+.. |coveralls| image:: http://img.shields.io/coveralls/ionelmc/pytest-cover/master.png?style=flat
     :alt: Coverage Status
-    :target: https://coveralls.io/r/ionelmc/pytest-coverer
+    :target: https://coveralls.io/r/ionelmc/pytest-cover
 
-.. |landscape| image:: https://landscape.io/github/ionelmc/pytest-coverer/master/landscape.svg?style=flat
-    :target: https://landscape.io/github/ionelmc/pytest-coverer/master
+.. |landscape| image:: https://landscape.io/github/ionelmc/pytest-cover/master/landscape.svg?style=flat
+    :target: https://landscape.io/github/ionelmc/pytest-cover/master
     :alt: Code Quality Status
 
-.. |version| image:: http://img.shields.io/pypi/v/pytest-coverer.png?style=flat
+.. |version| image:: http://img.shields.io/pypi/v/pytest-cover.png?style=flat
     :alt: PyPI Package latest release
-    :target: https://pypi.python.org/pypi/pytest-coverer
+    :target: https://pypi.python.org/pypi/pytest-cover
 
-.. |downloads| image:: http://img.shields.io/pypi/dm/pytest-coverer.png?style=flat
+.. |downloads| image:: http://img.shields.io/pypi/dm/pytest-cover.png?style=flat
     :alt: PyPI Package monthly downloads
-    :target: https://pypi.python.org/pypi/pytest-coverer
+    :target: https://pypi.python.org/pypi/pytest-cover
 
-.. |wheel| image:: https://pypip.in/wheel/pytest-coverer/badge.png?style=flat
+.. |wheel| image:: https://pypip.in/wheel/pytest-cover/badge.png?style=flat
     :alt: PyPI Wheel
-    :target: https://pypi.python.org/pypi/pytest-coverer
+    :target: https://pypi.python.org/pypi/pytest-cover
 
-.. |supported-versions| image:: https://pypip.in/py_versions/pytest-coverer/badge.png?style=flat
+.. |supported-versions| image:: https://pypip.in/py_versions/pytest-cover/badge.png?style=flat
     :alt: Supported versions
-    :target: https://pypi.python.org/pypi/pytest-coverer
+    :target: https://pypi.python.org/pypi/pytest-cover
 
-.. |supported-implementations| image:: https://pypip.in/implementation/pytest-coverer/badge.png?style=flat
+.. |supported-implementations| image:: https://pypip.in/implementation/pytest-cover/badge.png?style=flat
     :alt: Supported imlementations
-    :target: https://pypi.python.org/pypi/pytest-coverer
+    :target: https://pypi.python.org/pypi/pytest-cover
 
-.. |scrutinizer| image:: https://img.shields.io/scrutinizer/g/ionelmc/pytest-coverer/master.png?style=flat
+.. |scrutinizer| image:: https://img.shields.io/scrutinizer/g/ionelmc/pytest-cover/master.png?style=flat
     :alt: Scrutinizer Status
-    :target: https://scrutinizer-ci.com/g/ionelmc/pytest-coverer/
+    :target: https://scrutinizer-ci.com/g/ionelmc/pytest-cover/
 
 Pytest plugin for measuring coverage. Forked from `pytest-cov <https://github.com/schlamar/pytest-cov>`_.
 
@@ -61,7 +61,7 @@ through coverage's config file.
 
 
 Installation
-------------
+============
 
 Install with pip::
 
@@ -78,17 +78,17 @@ For distributed testing support install pytest-xdist::
 
 
 Uninstallation
---------------
+==============
 
 Uninstall with pip::
 
     pip uninstall pytest-cover
 
 Usage
------
+=====
 
 Centralised Testing
-~~~~~~~~~~~~~~~~~~~
+-------------------
 
 Centralised testing will report on the combined coverage of the main process and all of it's
 subprocesses.
@@ -110,7 +110,7 @@ Shows a terminal report::
 
 
 Distributed Testing: Load
-~~~~~~~~~~~~~~~~~~~~~~~~~
+-------------------------
 
 Distributed testing with dist mode set to load will report on the combined coverage of all slaves.
 The slaves may be spread out over any number of hosts and each slave may be located anywhere on the
@@ -153,7 +153,7 @@ Shows a terminal report::
 
 
 Distributed Testing: Each
-~~~~~~~~~~~~~~~~~~~~~~~~~
+-------------------------
 
 Distributed testing with dist mode set to each will report on the combined coverage of all slaves.
 Since each slave is running all tests this allows generating a combined coverage report for multiple
@@ -182,7 +182,7 @@ Shows a terminal report::
 
 
 Reporting
----------
+=========
 
 It is possible to generate any combination of the reports for a single test run.
 
@@ -233,7 +233,7 @@ is needed for subsequent processing, but no local report needs to be viewed. For
 tests run on Travis-CI could produce a .coverage file for use with Coveralls.
 
 Coverage Data File
-------------------
+==================
 
 The data file is erased at the beginning of testing to ensure clean data for each test run.
 
@@ -242,7 +242,7 @@ examine it.
 
 
 Coverage Config File
---------------------
+====================
 
 This plugin provides a clean minimal set of command line options that are added to pytest.  For
 further control of coverage use a coverage config file.
@@ -267,9 +267,8 @@ Note that this plugin controls some options and setting the option in the config
 effect.  These include specifying source to be measured (source option) and all data file handling
 (data_file and parallel options).
 
-
 Limitations
------------
+===========
 
 For distributed testing the slaves must have the pytest-cover package installed.  This is needed since
 the plugin must be registered through setuptools for pytest to start the plugin on the
@@ -280,9 +279,8 @@ subprocess.  The python used by the subprocess must have pytest-cover installed.
 do normal site initialisation so that the environment variables can be detected and coverage
 started.
 
-
 Acknowledgements
-----------------
+================
 
-`Marc Schlaich` for creating `pytest-cov (and cov-core) <https://github.com/schlamar/pytest-cov>`_.
+`Marc Schlaich` and everyone else for contributing and creating `pytest-cov (and cov-core) <https://github.com/schlamar/pytest-cov>`_.
 This plugin is a merge of those two packages with other fixes.
