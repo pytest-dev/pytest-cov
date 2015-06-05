@@ -1,26 +1,62 @@
-pytest-cov
-==========
+===============================
+pytest-cover
+===============================
 
-.. image:: https://travis-ci.org/schlamar/pytest-cov.svg?branch=master   
-   :target: https://travis-ci.org/schlamar/pytest-cov
-   :alt: Build status
-   
-.. image:: https://pypip.in/download/pytest-cov/badge.png
-    :target: https://pypi.python.org/pypi//pytest-cov/
-    :alt: Downloads
+| |docs| |travis| |appveyor| |coveralls|
+| |version| |downloads| |wheel| |supported-versions| |supported-implementations|
 
-.. image:: https://pypip.in/version/pytest-cov/badge.png
-    :target: https://pypi.python.org/pypi/pytest-cov/
-    :alt: Latest Version
+.. |docs| image:: https://readthedocs.org/projects/pytest-coverer/badge/?style=flat
+    :target: https://readthedocs.org/projects/pytest-coverer
+    :alt: Documentation Status
 
-.. image:: https://pypip.in/license/pytest-cov/badge.png
-    :target: https://pypi.python.org/pypi/pytest-cov/
-    :alt: License
+.. |travis| image:: http://img.shields.io/travis/ionelmc/pytest-coverer/master.png?style=flat
+    :alt: Travis-CI Build Status
+    :target: https://travis-ci.org/ionelmc/pytest-coverer
+
+.. |appveyor| image:: https://ci.appveyor.com/api/projects/status/github/ionelmc/pytest-coverer?branch=master
+    :alt: AppVeyor Build Status
+    :target: https://ci.appveyor.com/project/ionelmc/pytest-coverer
+
+.. |coveralls| image:: http://img.shields.io/coveralls/ionelmc/pytest-coverer/master.png?style=flat
+    :alt: Coverage Status
+    :target: https://coveralls.io/r/ionelmc/pytest-coverer
+
+.. |landscape| image:: https://landscape.io/github/ionelmc/pytest-coverer/master/landscape.svg?style=flat
+    :target: https://landscape.io/github/ionelmc/pytest-coverer/master
+    :alt: Code Quality Status
+
+.. |version| image:: http://img.shields.io/pypi/v/pytest-coverer.png?style=flat
+    :alt: PyPI Package latest release
+    :target: https://pypi.python.org/pypi/pytest-coverer
+
+.. |downloads| image:: http://img.shields.io/pypi/dm/pytest-coverer.png?style=flat
+    :alt: PyPI Package monthly downloads
+    :target: https://pypi.python.org/pypi/pytest-coverer
+
+.. |wheel| image:: https://pypip.in/wheel/pytest-coverer/badge.png?style=flat
+    :alt: PyPI Wheel
+    :target: https://pypi.python.org/pypi/pytest-coverer
+
+.. |supported-versions| image:: https://pypip.in/py_versions/pytest-coverer/badge.png?style=flat
+    :alt: Supported versions
+    :target: https://pypi.python.org/pypi/pytest-coverer
+
+.. |supported-implementations| image:: https://pypip.in/implementation/pytest-coverer/badge.png?style=flat
+    :alt: Supported imlementations
+    :target: https://pypi.python.org/pypi/pytest-coverer
+
+.. |scrutinizer| image:: https://img.shields.io/scrutinizer/g/ionelmc/pytest-coverer/master.png?style=flat
+    :alt: Scrutinizer Status
+    :target: https://scrutinizer-ci.com/g/ionelmc/pytest-coverer/
+
+Pytest plugin for measuring coverage. Forked from `pytest-cov <https://github.com/schlamar/pytest-cov>`_.
+
+* Free software: MIT license
 
 This plugin produces coverage reports.  It supports centralised testing and distributed testing in
 both load and each modes.  It also supports coverage of subprocesses.
 
-All features offered by the coverage package should be available, either through pytest-cov or
+All features offered by the coverage package should be available, either through pytest-cover or
 through coverage's config file.
 
 
@@ -29,7 +65,7 @@ Installation
 
 Install with pip::
 
-    pip install pytest-cov
+    pip install pytest-cover
 
 For distributed testing support install pytest-xdist::
 
@@ -46,16 +82,7 @@ Uninstallation
 
 Uninstall with pip::
 
-    pip uninstall pytest-cov
-    pip uninstall cov-core
-
-.. NOTE::
-
-    Ensure that you manually delete the init_cov_core.pth file in your site-packages directory.
-
-    This file starts coverage collection of subprocesses if appropriate during site initialisation
-    at python startup.
-
+    pip uninstall pytest-cover
 
 Usage
 -----
@@ -244,12 +271,12 @@ effect.  These include specifying source to be measured (source option) and all 
 Limitations
 -----------
 
-For distributed testing the slaves must have the pytest-cov package installed.  This is needed since
-the plugin must be registered through setuptools / distribute for pytest to start the plugin on the
+For distributed testing the slaves must have the pytest-cover package installed.  This is needed since
+the plugin must be registered through setuptools for pytest to start the plugin on the
 slave.
 
 For subprocess measurement environment variables must make it from the main process to the
-subprocess.  The python used by the subprocess must have pytest-cov installed.  The subprocess must
+subprocess.  The python used by the subprocess must have pytest-cover installed.  The subprocess must
 do normal site initialisation so that the environment variables can be detected and coverage
 started.
 
@@ -257,16 +284,5 @@ started.
 Acknowledgements
 ----------------
 
-Whilst this plugin has been built fresh from the ground up it has been influenced by the work done
-on pytest-coverage (Ross Lawley, James Mills, Holger Krekel) and nose-cover (Jason Pellerin) which are
-other coverage plugins.
-
-Ned Batchelder for coverage and its ability to combine the coverage results of parallel runs.
-
-Holger Krekel for pytest with its distributed testing support.
-
-Jason Pellerin for nose.
-
-Michael Foord for unittest2.
-
-No doubt others have contributed to these tools as well.
+`Marc Schlaich` for creating `pytest-cov (and cov-core) <https://github.com/schlamar/pytest-cov>`_.
+This plugin is a merge of those two packages with other fixes.
