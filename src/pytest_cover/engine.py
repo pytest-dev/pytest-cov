@@ -1,32 +1,9 @@
 """Coverage controllers for use by pytest-cov and nose-cov."""
-
-
-import coverage
+import os
 import socket
 import sys
-import os
 
-
-def multiprocessing_start(obj):
-    from . import embed
-    cov = embed.init()
-    if cov:
-        import multiprocessing.util
-        multiprocessing.util.Finalize(
-            None, multiprocessing_finish, args=(cov,), exitpriority=1000)
-
-
-def multiprocessing_finish(cov):
-    cov.stop()
-    cov.save()
-
-
-try:
-    import multiprocessing.util
-    multiprocessing.util.register_after_fork(multiprocessing_start,
-                                             multiprocessing_start)
-except ImportError:
-    pass
+import coverage
 
 
 class CovController(object):

@@ -1,11 +1,10 @@
 """Coverage plugin for pytest."""
-
 import os
 
 import pytest
 
-from . import engine
 from . import embed
+from . import engine
 
 
 class CoverageError(Exception):
@@ -167,7 +166,7 @@ class CovPlugin(object):
 
     def pytest_runtest_teardown(self, item):
         if self.cov is not None:
-            engine.multiprocessing_finish(self.cov)
+            embed.multiprocessing_finish(self.cov)
             self.cov = None
 
 
