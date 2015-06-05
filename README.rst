@@ -95,7 +95,7 @@ subprocesses.
 
 Running centralised testing::
 
-    py.test --cov-source myproj tests/
+    py.test --cov=myproj tests/
 
 Shows a terminal report::
 
@@ -118,7 +118,7 @@ file system.  Each slave will have it's subprocesses measured.
 
 Running distributed testing with dist mode set to load::
 
-    py.test --cov-source myproj -n 2 tests/
+    py.test --cov=myproj -n 2 tests/
 
 Shows a terminal report::
 
@@ -134,7 +134,7 @@ Shows a terminal report::
 
 Again but spread over different hosts and different directories::
 
-    py.test --cov-source myproj --dist load
+    py.test --cov=myproj --dist load
             --tx ssh=memedough@host1//chdir=testenv1
             --tx ssh=memedough@host2//chdir=/tmp/testenv2//python=/tmp/env1/bin/python
             --rsyncdir myproj --rsyncdir tests --rsync examples
@@ -161,7 +161,7 @@ environments.
 
 Running distributed testing with dist mode set to each::
 
-    py.test --cov-source myproj --dist each
+    py.test --cov=myproj --dist each
             --tx popen//chdir=/tmp/testenv3//python=/usr/local/python27/bin/python
             --tx ssh=memedough@host2//chdir=/tmp/testenv4//python=/tmp/env2/bin/python
             --rsyncdir myproj --rsyncdir tests --rsync examples
@@ -191,7 +191,7 @@ annotated source code.
 
 The terminal report without line numbers (default)::
 
-    py.test --cov-report term --cov-source myproj tests/
+    py.test --cov-report term --cov=myproj tests/
 
     -------------------- coverage: platform linux2, python 2.6.4-final-0 ---------------------
     Name                 Stmts   Miss  Cover
@@ -205,7 +205,7 @@ The terminal report without line numbers (default)::
 
 The terminal report with line numbers::
 
-    py.test --cov-report term-missing --cov-source myproj tests/
+    py.test --cov-report term-missing --cov=myproj tests/
 
     -------------------- coverage: platform linux2, python 2.6.4-final-0 ---------------------
     Name                 Stmts   Miss  Cover   Missing
@@ -222,11 +222,11 @@ These three report options output to files without showing anything on the termi
     py.test --cov-report html
             --cov-report xml
             --cov-report annotate
-            --cov-source myproj tests/
+            --cov=myproj tests/
 
 The final report option can also suppress printing to the terminal::
 
-    py.test --cov-report= --cov-source myproj tests/
+    py.test --cov-report= --cov=myproj tests/
 
 This mode can be especially useful on continuous integration servers, where a coverage file
 is needed for subsequent processing, but no local report needs to be viewed. For example,
@@ -251,7 +251,7 @@ For example if tests are contained within the directory tree being measured the 
 excluded if desired by using a .coveragerc file with the omit option set::
 
     py.test --cov-config .coveragerc
-            --cov-source myproj
+            --cov=myproj
             myproj/tests/
 
 Where the .coveragerc file contains file globs::
