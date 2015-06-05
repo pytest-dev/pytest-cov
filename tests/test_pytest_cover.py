@@ -332,7 +332,7 @@ def test_dist_missing_data(testdir):
         exe = os.path.join(venv_path, 'Scripts', 'python.exe')
     else:
         exe = os.path.join(venv_path, 'bin', 'python')
-    subprocess.check_call([exe, '-mpip', 'install', 'py', 'pytest'])
+    subprocess.check_call([exe, '-mpip' if sys.version_info >= (2, 7) else '-mpip.__main__', 'install', 'py', 'pytest'])
     script = testdir.makepyfile(SCRIPT)
 
     result = testdir.runpytest('-v',
