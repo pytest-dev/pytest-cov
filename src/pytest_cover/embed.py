@@ -15,7 +15,6 @@ info passed via env vars.
 """
 
 
-UNIQUE_SEP = '084031f3d2994d40a88c8b699b69e148'
 
 from . import engine # noqa: register multiprocessing handler
 
@@ -42,7 +41,7 @@ def init():
             if not cov_source:
                 cov_source = None
             else:
-                cov_source = cov_source.split(UNIQUE_SEP)
+                cov_source = cov_source.split(os.pathsep)
 
             # Activate coverage for this process.
             cov = coverage.coverage(source=cov_source,
