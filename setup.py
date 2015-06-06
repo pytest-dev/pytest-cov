@@ -119,6 +119,8 @@ setup(
         'cover', 'coverage', 'pytest', 'py.test', 'distributed', 'parallel',
     ],
     install_requires=[
+        'pytest>=2.6.0',
+        'coverage>=3.7.1'
     ],
     extras_require={
     },
