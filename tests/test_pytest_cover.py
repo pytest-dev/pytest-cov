@@ -107,7 +107,7 @@ def test_central(testdir):
 
     result.stdout.fnmatch_lines([
         '*- coverage: platform *, python * -*',
-        'test_central * %s *' % SCRIPT_RESULT,
+        'test_central* %s *' % SCRIPT_RESULT,
         '*10 passed*'
         ])
     assert result.ret == 0
@@ -159,7 +159,7 @@ def test_central_nonspecific(testdir):
 
     result.stdout.fnmatch_lines([
         '*- coverage: platform *, python * -*',
-        'test_central_nonspecific * %s *' % SCRIPT_RESULT,
+        'test_central_nonspecific* %s *' % SCRIPT_RESULT,
         '*10 passed*'
         ])
 
@@ -180,12 +180,12 @@ def test_central_coveragerc(testdir):
 
     result.stdout.fnmatch_lines([
         '*- coverage: platform *, python * -*',
-        'test_central_coveragerc * %s *' % SCRIPT_RESULT,
+        'test_central_coveragerc* %s *' % SCRIPT_RESULT,
         '*10 passed*',
         ])
 
     # single-module coverage report
-    assert result.stdout.lines[-3].startswith('test_central_coveragerc ')
+    assert result.stdout.lines[-3].startswith('test_central_coveragerc')
 
     assert result.ret == 0
 
@@ -215,7 +215,7 @@ def test_dist_collocated(testdir):
 
     result.stdout.fnmatch_lines([
         '*- coverage: platform *, python * -*',
-        'test_dist_collocated * %s *' % SCRIPT_RESULT,
+        'test_dist_collocated* %s *' % SCRIPT_RESULT,
         '*10 passed*'
         ])
     assert result.ret == 0
@@ -237,7 +237,7 @@ def test_dist_not_collocated(testdir):
 
     result.stdout.fnmatch_lines([
         '*- coverage: platform *, python * -*',
-        'test_dist_not_collocated * %s *' % SCRIPT_RESULT,
+        'test_dist_not_collocated* %s *' % SCRIPT_RESULT,
         '*10 passed*'
         ])
     assert result.ret == 0
@@ -255,8 +255,8 @@ def test_central_subprocess(testdir):
 
     result.stdout.fnmatch_lines([
         '*- coverage: platform *, python * -*',
-        'child_script * %s *' % CHILD_SCRIPT_RESULT,
-        'parent_script * %s *' % PARENT_SCRIPT_RESULT,
+        'child_script* %s *' % CHILD_SCRIPT_RESULT,
+        'parent_script* %s *' % PARENT_SCRIPT_RESULT,
         ])
     assert result.ret == 0
 
@@ -275,8 +275,8 @@ def test_dist_subprocess_collocated(testdir):
 
     result.stdout.fnmatch_lines([
         '*- coverage: platform *, python * -*',
-        'child_script * %s *' % CHILD_SCRIPT_RESULT,
-        'parent_script * %s *' % PARENT_SCRIPT_RESULT,
+        'child_script* %s *' % CHILD_SCRIPT_RESULT,
+        'parent_script* %s *' % PARENT_SCRIPT_RESULT,
         ])
     assert result.ret == 0
 
@@ -302,8 +302,8 @@ def test_dist_subprocess_not_collocated(testdir, tmpdir):
 
     result.stdout.fnmatch_lines([
         '*- coverage: platform *, python * -*',
-        'child_script * %s *' % CHILD_SCRIPT_RESULT,
-        'parent_script * %s *' % PARENT_SCRIPT_RESULT,
+        'child_script* %s *' % CHILD_SCRIPT_RESULT,
+        'parent_script* %s *' % PARENT_SCRIPT_RESULT,
         ])
     assert result.ret == 0
 
@@ -358,7 +358,7 @@ def test_funcarg(testdir):
 
     result.stdout.fnmatch_lines([
         '*- coverage: platform *, python * -*',
-        'test_funcarg * 3 * 100%*',
+        'test_funcarg* 3 * 100%*',
         '*1 passed*'
         ])
     assert result.ret == 0
@@ -388,7 +388,7 @@ def test_multiprocessing_subprocess(testdir):
 
     result.stdout.fnmatch_lines([
         '*- coverage: platform *, python * -*',
-        'test_multiprocessing_subprocess * 8 * 100%*',
+        'test_multiprocessing_subprocess* 8 * 100%*',
         '*1 passed*'
         ])
     assert result.ret == 0
@@ -415,7 +415,7 @@ def test_basic():
 
 '''
 
-CONF_RESULT = 'mod * 2 * 100% *'
+CONF_RESULT = 'mod* 2 * 100% *'
 
 
 def test_cover_conftest(testdir):
@@ -475,7 +475,7 @@ def test_coveragerc(testdir):
                                '--cov-report=term-missing',
                                script)
     assert result.ret == 0
-    result.stdout.fnmatch_lines(['test_coveragerc * %s' % EXCLUDED_RESULT])
+    result.stdout.fnmatch_lines(['test_coveragerc* %s' % EXCLUDED_RESULT])
 
 
 def test_coveragerc_dist(testdir):
@@ -489,7 +489,7 @@ def test_coveragerc_dist(testdir):
                                script)
     assert result.ret == 0
     result.stdout.fnmatch_lines(
-        ['test_coveragerc_dist * %s' % EXCLUDED_RESULT])
+        ['test_coveragerc_dist* %s' % EXCLUDED_RESULT])
 
 
 CLEAR_ENVIRON_TEST = '''
@@ -534,7 +534,7 @@ def test_dist_boxed(testdir):
 
     result.stdout.fnmatch_lines([
         '*- coverage: platform *, python * -*',
-        'test_dist_boxed * %s*' % SCRIPT_SIMPLE_RESULT,
+        'test_dist_boxed* %s*' % SCRIPT_SIMPLE_RESULT,
         '*1 passed*'
         ])
     assert result.ret == 0
