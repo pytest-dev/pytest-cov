@@ -1,5 +1,4 @@
 import os
-from pprint import pprint
 import sys
 
 import virtualenv
@@ -8,7 +7,6 @@ import py
 import pytest
 import subprocess
 import pytest_cover.plugin
-
 
 pytest_plugins = 'pytester', 'cov'
 
@@ -86,7 +84,6 @@ def test_run_target():
     p.join()
 '''
 
-
 SCRIPT_FAIL = '''
 def test_fail():
     assert False
@@ -110,7 +107,7 @@ def test_central(testdir):
         '*- coverage: platform *, python * -*',
         'test_central* %s *' % SCRIPT_RESULT,
         '*10 passed*'
-        ])
+    ])
     assert result.ret == 0
 
 
@@ -162,7 +159,7 @@ def test_central_nonspecific(testdir):
         '*- coverage: platform *, python * -*',
         'test_central_nonspecific* %s *' % SCRIPT_RESULT,
         '*10 passed*'
-        ])
+    ])
 
     # multi-module coverage report
     assert result.stdout.lines[-3].startswith('TOTAL ')
@@ -183,7 +180,7 @@ def test_central_coveragerc(testdir):
         '*- coverage: platform *, python * -*',
         'test_central_coveragerc* %s *' % SCRIPT_RESULT,
         '*10 passed*',
-        ])
+    ])
 
     # single-module coverage report
     assert result.stdout.lines[-3].startswith('test_central_coveragerc')
@@ -218,7 +215,7 @@ def test_dist_collocated(testdir):
         '*- coverage: platform *, python * -*',
         'test_dist_collocated* %s *' % SCRIPT_RESULT,
         '*10 passed*'
-        ])
+    ])
     assert result.ret == 0
 
 
@@ -240,7 +237,7 @@ def test_dist_not_collocated(testdir):
         '*- coverage: platform *, python * -*',
         'test_dist_not_collocated* %s *' % SCRIPT_RESULT,
         '*10 passed*'
-        ])
+    ])
     assert result.ret == 0
 
 
@@ -258,7 +255,7 @@ def test_central_subprocess(testdir):
         '*- coverage: platform *, python * -*',
         'child_script* %s *' % CHILD_SCRIPT_RESULT,
         'parent_script* %s *' % PARENT_SCRIPT_RESULT,
-        ])
+    ])
     assert result.ret == 0
 
 
@@ -278,7 +275,7 @@ def test_dist_subprocess_collocated(testdir):
         '*- coverage: platform *, python * -*',
         'child_script* %s *' % CHILD_SCRIPT_RESULT,
         'parent_script* %s *' % PARENT_SCRIPT_RESULT,
-        ])
+    ])
     assert result.ret == 0
 
 
@@ -305,7 +302,7 @@ def test_dist_subprocess_not_collocated(testdir, tmpdir):
         '*- coverage: platform *, python * -*',
         'child_script* %s *' % CHILD_SCRIPT_RESULT,
         'parent_script* %s *' % PARENT_SCRIPT_RESULT,
-        ])
+    ])
     assert result.ret == 0
 
 
@@ -320,7 +317,7 @@ def test_empty_report(testdir):
     result.stdout.fnmatch_lines([
         '*- coverage: platform *, python * -*',
         '*10 passed*'
-        ])
+    ])
     assert result.ret == 0
     matching_lines = [line for line in result.outlines if '%' in line]
     assert not matching_lines
@@ -345,7 +342,7 @@ def test_dist_missing_data(testdir):
 
     result.stdout.fnmatch_lines([
         '*- coverage: failed slaves -*'
-        ])
+    ])
     assert result.ret == 0
 
 
@@ -361,7 +358,7 @@ def test_funcarg(testdir):
         '*- coverage: platform *, python * -*',
         'test_funcarg* 3 * 100%*',
         '*1 passed*'
-        ])
+    ])
     assert result.ret == 0
 
 
@@ -373,7 +370,7 @@ def test_funcarg_not_active(testdir):
 
     result.stdout.fnmatch_lines([
         '*1 passed*'
-        ])
+    ])
     assert result.ret == 0
 
 
@@ -391,7 +388,7 @@ def test_multiprocessing_subprocess(testdir):
         '*- coverage: platform *, python * -*',
         'test_multiprocessing_subprocess* 8 * 100%*',
         '*1 passed*'
-        ])
+    ])
     assert result.ret == 0
 
 
@@ -537,7 +534,7 @@ def test_dist_boxed(testdir):
         '*- coverage: platform *, python * -*',
         'test_dist_boxed* %s*' % SCRIPT_SIMPLE_RESULT,
         '*1 passed*'
-        ])
+    ])
     assert result.ret == 0
 
 
