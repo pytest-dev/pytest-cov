@@ -11,7 +11,7 @@ import pytest_cover.plugin
 pytest_plugins = 'pytester', 'cov'
 
 SCRIPT = '''
-import sys, pprint
+import sys, pytest
 
 def pytest_generate_tests(metafunc):
     for i in range(10):
@@ -19,7 +19,7 @@ def pytest_generate_tests(metafunc):
 
 def test_foo():
     x = True
-    assert pprint.pformat(x)  # get some library coverage
+    pytest.importorskip('sys')  # get some library coverage
     if sys.version_info[0] > 5:
         assert False
 '''
