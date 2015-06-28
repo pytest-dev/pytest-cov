@@ -1,11 +1,10 @@
 import os
 import sys
+import subprocess
 
 import virtualenv
-
 import py
 import pytest
-import subprocess
 import pytest_cover.plugin
 
 pytest_plugins = 'pytester', 'cov'
@@ -184,6 +183,34 @@ def test_central_coveragerc(testdir):
 
     # single-module coverage report
     assert result.stdout.lines[-3].startswith('test_central_coveragerc')
+
+    assert result.ret == 0
+
+
+def test_show_missing_coveragerc(testdir):
+    script = testdir.makepyfile(SCRIPT)
+    testdir.tmpdir.join('.coveragerc').write("""
+[run]
+source = .
+
+[report]
+show_missing = true
+""")
+
+    result = testdir.runpytest('-v',
+                               '--cov',
+                               '--cov-report=term',
+                               script)
+
+    result.stdout.fnmatch_lines([
+        '*- coverage: platform *, python * -*',
+        'Name * Stmts * Miss * Cover * Missing',
+        'test_show_missing_coveragerc* %s * 11' % SCRIPT_RESULT,
+        '*10 passed*',
+    ])
+
+    # single-module coverage report
+    assert result.stdout.lines[-3].startswith('test_show_missing_coveragerc')
 
     assert result.ret == 0
 
