@@ -1,7 +1,9 @@
+from distutils.version import StrictVersion
 import os
 import sys
 import subprocess
 
+import coverage
 import virtualenv
 import py
 import pytest
@@ -164,6 +166,22 @@ def test_central_nonspecific(testdir):
     assert result.stdout.lines[-3].startswith('TOTAL ')
 
     assert result.ret == 0
+
+
+@pytest.mark.skipif('StrictVersion(coverage.__version__) <= StrictVersion("3.8")')
+def test_cov_min_from_coveragerc(testdir):
+    script = testdir.makepyfile(SCRIPT)
+    testdir.tmpdir.join('.coveragerc').write("""
+[report]
+fail_under = 100
+""")
+
+    result = testdir.runpytest('-v',
+                               '--cov=%s' % script.dirpath(),
+                               '--cov-report=term-missing',
+                               script)
+
+    assert result.ret == 1
 
 
 def test_central_coveragerc(testdir):

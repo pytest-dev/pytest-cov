@@ -113,6 +113,9 @@ class CovPlugin(object):
             nodeid
         )
         self.cov_controller.start()
+        cov_config = self.cov_controller.cov.config
+        if self.options.cov_min is None and hasattr(cov_config, 'fail_under'):
+            self.options.cov_min = cov_config.fail_under
 
     def pytest_sessionstart(self, session):
         """At session start determine our implementation and delegate to it."""
