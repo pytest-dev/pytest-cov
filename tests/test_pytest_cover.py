@@ -118,7 +118,7 @@ def test_cov_min_100(testdir):
     result = testdir.runpytest('-v',
                                '--cov=%s' % script.dirpath(),
                                '--cov-report=term-missing',
-                               '--cov-min=100',
+                               '--cov-fail-under=100',
                                script)
 
     assert result.ret == 1
@@ -130,7 +130,7 @@ def test_cov_min_50(testdir):
     result = testdir.runpytest('-v',
                                '--cov=%s' % script.dirpath(),
                                '--cov-report=term-missing',
-                               '--cov-min=50',
+                               '--cov-fail-under=50',
                                script)
 
     assert result.ret == 0
@@ -142,7 +142,7 @@ def test_cov_min_no_report(testdir):
     result = testdir.runpytest('-v',
                                '--cov=%s' % script.dirpath(),
                                '--cov-report=',
-                               '--cov-min=50',
+                               '--cov-fail-under=50',
                                script)
 
     assert result.ret == 0

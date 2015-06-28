@@ -33,7 +33,7 @@ def pytest_addoption(parser):
                     dest='no_cov_on_fail',
                     help='do not report coverage if test run fails, '
                          'default: False')
-    group.addoption('--cov-min', action='store', metavar='MIN', type='int',
+    group.addoption('--cov-fail-under', action='store', metavar='MIN', type='int',
                     help='Fail if the total coverage is less than MIN.')
 
 
