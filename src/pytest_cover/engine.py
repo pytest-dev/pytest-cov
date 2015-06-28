@@ -72,7 +72,7 @@ class CovController(object):
 
         # Produce terminal report if wanted.
         if 'term' in self.cov_report or 'term-missing' in self.cov_report:
-            show_missing = 'term-missing' in self.cov_report
+            show_missing = ('term-missing' in self.cov_report) or None
             total = self.cov.report(show_missing=show_missing, ignore_errors=True, file=stream)
 
         # Produce annotated source code report if wanted.
