@@ -114,8 +114,8 @@ class CovPlugin(object):
         )
         self.cov_controller.start()
         cov_config = self.cov_controller.cov.config
-        if self.options.cov_min is None and hasattr(cov_config, 'fail_under'):
-            self.options.cov_min = cov_config.fail_under
+        if self.options.cov_fail_under is None and hasattr(cov_config, 'fail_under'):
+            self.options.cov_fail_under = cov_config.fail_under
 
     def pytest_sessionstart(self, session):
         """At session start determine our implementation and delegate to it."""
@@ -155,11 +155,11 @@ class CovPlugin(object):
         if not (self.failed and self.options.no_cov_on_fail):
             total = self.cov_controller.summary(terminalreporter.writer)
             assert total is not None, 'Test coverage should never be `None`'
-            cov_min = self.options.cov_min
-            if cov_min is not None and total < cov_min:
+            cov_fail_under = self.options.cov_fail_under
+            if cov_fail_under is not None and total < cov_fail_under:
                 raise CoverageError(('Required test coverage of %d%% not '
                                      'reached. Total coverage: %.2f%%')
-                                    % (self.options.cov_min, total))
+                                    % (self.options.cov_fail_under, total))
 
     def pytest_runtest_setup(self, item):
         if os.getpid() != self.pid:
