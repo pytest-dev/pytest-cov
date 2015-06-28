@@ -4,9 +4,9 @@ graft src
 graft ci
 graft tests
 
-include *.komodoproject
 include .bumpversion.cfg
 include .coveragerc
+include .cookiecutterrc
 include .isort.cfg
 include .pylintrc
 

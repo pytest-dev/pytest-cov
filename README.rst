@@ -2,50 +2,64 @@
 pytest-cover
 ===============================
 
-| |docs| |travis| |appveyor|
-| |version| |downloads| |wheel| |supported-versions| |supported-implementations|
+.. list-table::
+    :stub-columns: 1
+
+    * - docs
+      - |docs|
+    * - tests
+      - | |travis| |appveyor|
+    * - package
+      - |version| |downloads|
+
+..
+    |wheel| |supported-versions| |supported-implementations|
 
 .. |docs| image:: https://readthedocs.org/projects/pytest-cover/badge/?style=flat
     :target: https://readthedocs.org/projects/pytest-cover
     :alt: Documentation Status
 
-.. |travis| image:: http://img.shields.io/travis/ionelmc/pytest-cover/master.png?style=flat
+.. |travis| image:: http://img.shields.io/travis/ionelmc/pytest-cover/master.svg?style=flat&label=Travis
     :alt: Travis-CI Build Status
     :target: https://travis-ci.org/ionelmc/pytest-cover
 
-.. |appveyor| image:: https://ci.appveyor.com/api/projects/status/github/ionelmc/pytest-cover?branch=master
+.. |appveyor| image:: https://img.shields.io/appveyor/ci/ionelmc/pytest-cover/master.svg?style=flat&label=AppVeyor
     :alt: AppVeyor Build Status
     :target: https://ci.appveyor.com/project/ionelmc/pytest-cover
 
-.. |coveralls| image:: http://img.shields.io/coveralls/ionelmc/pytest-cover/master.png?style=flat
+.. |coveralls| image:: http://img.shields.io/coveralls/ionelmc/pytest-cover/master.svg?style=flat&label=Coveralls
     :alt: Coverage Status
     :target: https://coveralls.io/r/ionelmc/pytest-cover
+
+.. |codecov| image:: http://img.shields.io/codecov/c/github/ionelmc/pytest-cover/master.svg?style=flat&label=Codecov
+    :alt: Coverage Status
+    :target: https://codecov.io/github/ionelmc/pytest-cover
 
 .. |landscape| image:: https://landscape.io/github/ionelmc/pytest-cover/master/landscape.svg?style=flat
     :target: https://landscape.io/github/ionelmc/pytest-cover/master
     :alt: Code Quality Status
 
-.. |version| image:: http://img.shields.io/pypi/v/pytest-cover.png?style=flat
+.. |version| image:: http://img.shields.io/pypi/v/pytest-cover.svg?style=flat
     :alt: PyPI Package latest release
     :target: https://pypi.python.org/pypi/pytest-cover
 
-.. |downloads| image:: http://img.shields.io/pypi/dm/pytest-cover.png?style=flat
+.. |downloads| image:: http://img.shields.io/pypi/dm/pytest-cover.svg?style=flat
     :alt: PyPI Package monthly downloads
     :target: https://pypi.python.org/pypi/pytest-cover
 
-.. |wheel| image:: https://pypip.in/wheel/pytest-cover/badge.png?style=flat
+.. |wheel| image:: https://pypip.in/wheel/pytest-cover/badge.svg?style=flat
     :alt: PyPI Wheel
     :target: https://pypi.python.org/pypi/pytest-cover
 
-.. |supported-versions| image:: https://pypip.in/py_versions/pytest-cover/badge.png?style=flat
+.. |supported-versions| image:: https://pypip.in/py_versions/pytest-cover/badge.svg?style=flat
     :alt: Supported versions
     :target: https://pypi.python.org/pypi/pytest-cover
 
-.. |supported-implementations| image:: https://pypip.in/implementation/pytest-cover/badge.png?style=flat
+.. |supported-implementations| image:: https://pypip.in/implementation/pytest-cover/badge.svg?style=flat
     :alt: Supported imlementations
     :target: https://pypi.python.org/pypi/pytest-cover
 
-.. |scrutinizer| image:: https://img.shields.io/scrutinizer/g/ionelmc/pytest-cover/master.png?style=flat
+.. |scrutinizer| image:: https://img.shields.io/scrutinizer/g/ionelmc/pytest-cover/master.svg?style=flat
     :alt: Scrutinizer Status
     :target: https://scrutinizer-ci.com/g/ionelmc/pytest-cover/
 
