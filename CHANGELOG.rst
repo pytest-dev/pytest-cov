@@ -1,13 +1,13 @@
 Changelog
 =========
 
-2.0.0 (??????????)
+2.0.0 (2015-06-29)
 ------------------
 
 * Renamed ``--cov-min`` to ``--cov-fail-under`` to be consistent with the new ``fail_under`` option in `coverage-4.0`.
 * Changed ``--cov-report=term`` to automatically upgrade to ``--cov-report=term-missing`` if there's ``[run] show_missing = True`` in
   ``.coveragerc``.
-* Changed ``--cov-fail-under`` to be automatically activated if there's a ``[report] fail_under =`` in ``.coveragerc``.
+* Changed ``--cov-fail-under`` to be automatically activated if there's a ``[report] fail_under = ...`` in ``.coveragerc``.
 
 1.0.0 (2015-06-05)
 ------------------
