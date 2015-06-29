@@ -113,6 +113,22 @@ def test_central(testdir):
     assert result.ret == 0
 
 
+def test_cov_source_activate_pluggin(testdir):
+    script = testdir.makepyfile(SCRIPT)
+
+    result = testdir.runpytest('-v',
+                               '--cov-source=%s' % script.dirpath(),
+                               '--cov-report=term-missing',
+                               script)
+
+    result.stdout.fnmatch_lines([
+        '*- coverage: platform *, python * -*',
+        'test_central * %s *' % SCRIPT_RESULT,
+        '*10 passed*'
+        ])
+    assert result.ret == 0
+
+
 def test_cov_min_100(testdir):
     script = testdir.makepyfile(SCRIPT)
 

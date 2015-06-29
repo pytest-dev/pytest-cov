@@ -59,7 +59,7 @@ def pytest_load_initial_conftests(early_config, parser, args):
     elif ns.cov_report == ['']:
         ns.cov_report = []
 
-    if ns.cov:
+    if ns.cov or ns.cov_source is not None:
         plugin = CovPlugin(ns, early_config.pluginmanager)
         early_config.pluginmanager.register(plugin, '_cov')
 
