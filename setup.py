@@ -88,7 +88,7 @@ setup(
     long_description='%s\n%s' % (read('README.rst'), re.sub(':[a-z]+:`~?(.*?)`', r'``\1``', read('CHANGELOG.rst'))),
     author='Marc Schlaich',
     author_email='marc.schlaich@gmail.com',
-    maintainer='Ionel Cristian M\u0103rie\u0219',
+    maintainer='Ionel Cristian Mărieș',
     maintainer_email='contact@ionelmc.ro',
     url='https://github.com/ionelmc/pytest-cover',
     packages=find_packages('src'),
