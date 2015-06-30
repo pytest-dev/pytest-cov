@@ -1,5 +1,5 @@
-pytest_cover
+pytest_cov
 =============================
 
-.. automodule:: pytest_cover
+.. automodule:: pytest_cov
     :members:

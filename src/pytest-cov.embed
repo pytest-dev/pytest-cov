@@ -1,6 +1,6 @@
 if 'COV_CORE_SOURCE' in os.environ:
     try:
-        from pytest_cover.embed import init
+        from pytest_cov.embed import init
         init()
     except ImportError:
         sys.stderr.write(

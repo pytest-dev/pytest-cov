@@ -4,26 +4,16 @@ Changelog
 2.0.0 (2015-06-29)
 ------------------
 
-* Renamed ``--cov-min`` to ``--cov-fail-under`` to be consistent with the new ``fail_under`` option in `coverage-4.0`.
-* Changed ``--cov-report=term`` to automatically upgrade to ``--cov-report=term-missing`` if there's ``[run] show_missing = True`` in
-  ``.coveragerc``.
-* Changed ``--cov-fail-under`` to be automatically activated if there's a ``[report] fail_under = ...`` in ``.coveragerc``.
-
-1.0.0 (2015-06-05)
-------------------
-
+* Added ``--cov-fail-under``, akin to the new ``fail_under`` option in `coverage-4.0`
+  (automatically activated if there's a ``[report] fail_under = ...`` in ``.coveragerc``).
+* Changed ``--cov-report=term`` to automatically upgrade to ``--cov-report=term-missing``
+  if there's ``[run] show_missing = True`` in ``.coveragerc``.
+* Changed ``--cov`` so it can be used with no path argument (in wich case the source
+  settings from ``.coveragerc`` will be used instead).
 * Fixed `.pth` installation to work in all cases (install, easy_install, wheels, develop etc).
 * Fixed `.pth` uninstallation to work for wheel installs.
-* Reverted the unreleased ``--cov=path`` deprecation.
-* Removed the unreleased addition of ``--cov-source=path``.
 
------
+1.8.2 (2014-11-06)
+------------------
 
-* Forked from the `2.0` branch of https://github.com/schlamar/pytest-cov/ - fixes include:
-
-  * No need to specify the source anymore via ``--cov``. The source settings from
-    ``.coveragerc`` will be used instead.
-  * Support for ``--cov-min``.
-
-
-
+* N/A

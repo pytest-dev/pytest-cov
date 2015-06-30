@@ -4,4 +4,4 @@ Installation
 
 At the command line::
 
-    pip install pytest-cover
+    pip install pytest-cov

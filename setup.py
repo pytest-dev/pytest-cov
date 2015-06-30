@@ -30,7 +30,7 @@ def read(*names, **kwargs):
 class BuildWithPTH(build):
     def run(self):
         build.run(self)
-        path = join(dirname(__file__), 'src', 'pytest-cover.pth')
+        path = join(dirname(__file__), 'src', 'pytest-cov.pth')
         dest = join(self.build_lib, basename(path))
         self.copy_file(path, dest)
 
@@ -38,7 +38,7 @@ class BuildWithPTH(build):
 class EasyInstallWithPTH(easy_install):
     def run(self):
         easy_install.run(self)
-        path = join(dirname(__file__), 'src', 'pytest-cover.pth')
+        path = join(dirname(__file__), 'src', 'pytest-cov.pth')
         dest = join(self.install_dir, basename(path))
         self.copy_file(path, dest)
 
@@ -46,7 +46,7 @@ class EasyInstallWithPTH(easy_install):
 class InstallLibWithPTH(install_lib):
     def run(self):
         install_lib.run(self)
-        path = join(dirname(__file__), 'src', 'pytest-cover.pth')
+        path = join(dirname(__file__), 'src', 'pytest-cov.pth')
         dest = join(self.install_dir, basename(path))
         self.copy_file(path, dest)
         self.outputs = [dest]
@@ -58,7 +58,7 @@ class InstallLibWithPTH(install_lib):
 class DevelopWithPTH(develop):
     def run(self):
         develop.run(self)
-        path = join(dirname(__file__), 'src', 'pytest-cover.pth')
+        path = join(dirname(__file__), 'src', 'pytest-cov.pth')
         dest = join(self.install_dir, basename(path))
         self.copy_file(path, dest)
 
@@ -73,24 +73,22 @@ class GeneratePTH(Command):
         pass
 
     def run(self):
-        with open(join(dirname(__file__), 'src', 'pytest-cover.pth'), 'w') as fh:
-            with open(join(dirname(__file__), 'src', 'pytest-cover.embed')) as sh:
+        with open(join(dirname(__file__), 'src', 'pytest-cov.pth'), 'w') as fh:
+            with open(join(dirname(__file__), 'src', 'pytest-cov.embed')) as sh:
                 fh.write(
                     'import os, sys;'
                     'exec(%r)' % sh.read().replace('    ', ' ')
                 )
 
 setup(
-    name='pytest-cover',
+    name='pytest-cov',
     version='2.0.0',
     license='MIT',
-    description='Pytest plugin for measuring coverage. Forked from `pytest-cov`.',
+    description='Pytest plugin for measuring coverage.',
     long_description='%s\n%s' % (read('README.rst'), re.sub(':[a-z]+:`~?(.*?)`', r'``\1``', read('CHANGELOG.rst'))),
     author='Marc Schlaich',
     author_email='marc.schlaich@gmail.com',
-    maintainer='Ionel Cristian Mărieș',
-    maintainer_email='contact@ionelmc.ro',
-    url='https://github.com/ionelmc/pytest-cover',
+    url='https://github.com/schlamar/pytest-cov',
     packages=find_packages('src'),
     package_dir={'': 'src'},
     py_modules=[splitext(basename(path))[0] for path in glob('src/*.py')],
@@ -126,7 +124,7 @@ setup(
     },
     entry_points={
         'pytest11': [
-            'pytest_cov = pytest_cover.plugin',
+            'pytest_cov = pytest_cov.plugin',
         ],
         'console_scripts': [
         ]

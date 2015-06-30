@@ -1,5 +1,5 @@
 ===============================
-pytest-cover
+pytest-cov
 ===============================
 
 .. list-table::
@@ -15,62 +15,62 @@ pytest-cover
 ..
     |wheel| |supported-versions| |supported-implementations|
 
-.. |docs| image:: https://readthedocs.org/projects/pytest-cover/badge/?style=flat
-    :target: https://readthedocs.org/projects/pytest-cover
+.. |docs| image:: https://readthedocs.org/projects/pytest-cov/badge/?style=flat
+    :target: https://readthedocs.org/projects/pytest-cov
     :alt: Documentation Status
 
-.. |travis| image:: http://img.shields.io/travis/ionelmc/pytest-cover/master.svg?style=flat&label=Travis
+.. |travis| image:: http://img.shields.io/travis/schlamar/pytest-cov/master.svg?style=flat&label=Travis
     :alt: Travis-CI Build Status
-    :target: https://travis-ci.org/ionelmc/pytest-cover
+    :target: https://travis-ci.org/schlamar/pytest-cov
 
-.. |appveyor| image:: https://img.shields.io/appveyor/ci/ionelmc/pytest-cover/master.svg?style=flat&label=AppVeyor
+.. |appveyor| image:: https://img.shields.io/appveyor/ci/schlamar/pytest-cov/master.svg?style=flat&label=AppVeyor
     :alt: AppVeyor Build Status
-    :target: https://ci.appveyor.com/project/ionelmc/pytest-cover
+    :target: https://ci.appveyor.com/project/schlamar/pytest-cov
 
-.. |coveralls| image:: http://img.shields.io/coveralls/ionelmc/pytest-cover/master.svg?style=flat&label=Coveralls
+.. |coveralls| image:: http://img.shields.io/coveralls/schlamar/pytest-cov/master.svg?style=flat&label=Coveralls
     :alt: Coverage Status
-    :target: https://coveralls.io/r/ionelmc/pytest-cover
+    :target: https://coveralls.io/r/schlamar/pytest-cov
 
-.. |codecov| image:: http://img.shields.io/codecov/c/github/ionelmc/pytest-cover/master.svg?style=flat&label=Codecov
+.. |codecov| image:: http://img.shields.io/codecov/c/github/schlamar/pytest-cov/master.svg?style=flat&label=Codecov
     :alt: Coverage Status
-    :target: https://codecov.io/github/ionelmc/pytest-cover
+    :target: https://codecov.io/github/schlamar/pytest-cov
 
-.. |landscape| image:: https://landscape.io/github/ionelmc/pytest-cover/master/landscape.svg?style=flat
-    :target: https://landscape.io/github/ionelmc/pytest-cover/master
+.. |landscape| image:: https://landscape.io/github/schlamar/pytest-cov/master/landscape.svg?style=flat
+    :target: https://landscape.io/github/schlamar/pytest-cov/master
     :alt: Code Quality Status
 
-.. |version| image:: http://img.shields.io/pypi/v/pytest-cover.svg?style=flat
+.. |version| image:: http://img.shields.io/pypi/v/pytest-cov.svg?style=flat
     :alt: PyPI Package latest release
-    :target: https://pypi.python.org/pypi/pytest-cover
+    :target: https://pypi.python.org/pypi/pytest-cov
 
-.. |downloads| image:: http://img.shields.io/pypi/dm/pytest-cover.svg?style=flat
+.. |downloads| image:: http://img.shields.io/pypi/dm/pytest-cov.svg?style=flat
     :alt: PyPI Package monthly downloads
-    :target: https://pypi.python.org/pypi/pytest-cover
+    :target: https://pypi.python.org/pypi/pytest-cov
 
-.. |wheel| image:: https://pypip.in/wheel/pytest-cover/badge.svg?style=flat
+.. |wheel| image:: https://pypip.in/wheel/pytest-cov/badge.svg?style=flat
     :alt: PyPI Wheel
-    :target: https://pypi.python.org/pypi/pytest-cover
+    :target: https://pypi.python.org/pypi/pytest-cov
 
-.. |supported-versions| image:: https://pypip.in/py_versions/pytest-cover/badge.svg?style=flat
+.. |supported-versions| image:: https://pypip.in/py_versions/pytest-cov/badge.svg?style=flat
     :alt: Supported versions
-    :target: https://pypi.python.org/pypi/pytest-cover
+    :target: https://pypi.python.org/pypi/pytest-cov
 
-.. |supported-implementations| image:: https://pypip.in/implementation/pytest-cover/badge.svg?style=flat
+.. |supported-implementations| image:: https://pypip.in/implementation/pytest-cov/badge.svg?style=flat
     :alt: Supported imlementations
-    :target: https://pypi.python.org/pypi/pytest-cover
+    :target: https://pypi.python.org/pypi/pytest-cov
 
-.. |scrutinizer| image:: https://img.shields.io/scrutinizer/g/ionelmc/pytest-cover/master.svg?style=flat
+.. |scrutinizer| image:: https://img.shields.io/scrutinizer/g/schlamar/pytest-cov/master.svg?style=flat
     :alt: Scrutinizer Status
-    :target: https://scrutinizer-ci.com/g/ionelmc/pytest-cover/
+    :target: https://scrutinizer-ci.com/g/schlamar/pytest-cov/
 
-Pytest plugin for measuring coverage. Forked from `pytest-cov <https://github.com/schlamar/pytest-cov>`_.
+Pytest plugin for measuring coverage.
 
 * Free software: MIT license
 
 This plugin produces coverage reports.  It supports centralised testing and distributed testing in
 both load and each modes.  It also supports coverage of subprocesses.
 
-All features offered by the coverage package should be available, either through pytest-cover or
+All features offered by the coverage package should be available, either through pytest-cov or
 through coverage's config file.
 
 
@@ -79,7 +79,7 @@ Installation
 
 Install with pip::
 
-    pip install pytest-cover
+    pip install pytest-cov
 
 For distributed testing support install pytest-xdist::
 
@@ -96,7 +96,7 @@ Uninstallation
 
 Uninstall with pip::
 
-    pip uninstall pytest-cover
+    pip uninstall pytest-cov
 
 Usage
 =====
@@ -284,17 +284,28 @@ effect.  These include specifying source to be measured (source option) and all 
 Limitations
 ===========
 
-For distributed testing the slaves must have the pytest-cover package installed.  This is needed since
+For distributed testing the slaves must have the pytest-cov package installed.  This is needed since
 the plugin must be registered through setuptools for pytest to start the plugin on the
 slave.
 
 For subprocess measurement environment variables must make it from the main process to the
-subprocess.  The python used by the subprocess must have pytest-cover installed.  The subprocess must
+subprocess.  The python used by the subprocess must have pytest-cov installed.  The subprocess must
 do normal site initialisation so that the environment variables can be detected and coverage
 started.
 
 Acknowledgements
 ================
 
-`Marc Schlaich` and everyone else for contributing and creating `pytest-cov (and cov-core) <https://github.com/schlamar/pytest-cov>`_.
-This plugin is a merge of those two packages with other fixes.
+Whilst this plugin has been built fresh from the ground up it has been influenced by the work done
+on pytest-coverage (Ross Lawley, James Mills, Holger Krekel) and nose-cover (Jason Pellerin) which are
+other coverage plugins.
+
+Ned Batchelder for coverage and its ability to combine the coverage results of parallel runs.
+
+Holger Krekel for pytest with its distributed testing support.
+
+Jason Pellerin for nose.
+
+Michael Foord for unittest2.
+
+No doubt others have contributed to these tools as well.

@@ -4,4 +4,4 @@ Reference
 .. toctree::
     :glob:
 
-    pytest_cover*
+    pytest_cov*

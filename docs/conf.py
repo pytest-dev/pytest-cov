@@ -20,7 +20,7 @@ if os.getenv('SPELLCHECK'):
 
 source_suffix = '.rst'
 master_doc = 'index'
-project = 'pytest-cover'
+project = 'pytest-cov'
 year = '2015'
 author = 'Ionel Cristian Mărieș'
 copyright = '{0}, {1}'.format(year, author)
@@ -29,7 +29,7 @@ import sphinx_py3doc_enhanced_theme
 html_theme = "sphinx_py3doc_enhanced_theme"
 html_theme_path = [sphinx_py3doc_enhanced_theme.get_html_theme_path()]
 html_theme_options = {
-    'githuburl': 'https://github.com/ionelmc/pytest-cover/'
+    'githuburl': 'https://github.com/schlamar/pytest-cov/'
 }
 
 pygments_style = 'trac'

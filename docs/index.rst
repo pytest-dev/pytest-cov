@@ -1,4 +1,4 @@
-Welcome to pytest-cover's documentation!
+Welcome to pytest-cov's documentation!
 ======================================
 
 Contents:
