@@ -1,7 +1,7 @@
 Changelog
 =========
 
-2.0.0 (2015-06-29)
+2.0.0 (??????????)
 ------------------
 
 * Added ``--cov-fail-under``, akin to the new ``fail_under`` option in `coverage-4.0`
