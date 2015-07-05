@@ -12,6 +12,9 @@ Changelog
   settings from ``.coveragerc`` will be used instead).
 * Fixed `.pth` installation to work in all cases (install, easy_install, wheels, develop etc).
 * Fixed `.pth` uninstallation to work for wheel installs.
+* Support for coverage 4.0.
+* Data file suffixing changed to use coverage's ``data_suffix=True`` option (instead of the
+  custom suffixing).
 
 1.8.2 (2014-11-06)
 ------------------
