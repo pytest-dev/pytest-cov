@@ -1,6 +1,0 @@
-*.pyo
-*.pyc
-*egg-info
-build
-dist
-env*

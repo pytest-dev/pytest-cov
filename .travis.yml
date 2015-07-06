@@ -1,45 +1,33 @@
 language: python
-
 python: 2.7
-
-env:
-  - CWD=. TOX_ENV=flake8
-
-  - CWD=pytest-cov  TOX_ENV=pypy   COV_CORE_DEP=../cov-core
-  - CWD=pytest-cov  TOX_ENV=pypy3  COV_CORE_DEP=../cov-core
-  - CWD=pytest-cov  TOX_ENV=py26   COV_CORE_DEP=../cov-core
-  - CWD=pytest-cov  TOX_ENV=py27   COV_CORE_DEP=../cov-core
-  - CWD=pytest-cov  TOX_ENV=py32   COV_CORE_DEP=../cov-core
-  - CWD=pytest-cov  TOX_ENV=py33   COV_CORE_DEP=../cov-core
-  - CWD=pytest-cov  TOX_ENV=py34   COV_CORE_DEP=../cov-core
-
-  - CWD=pytest-cov  TOX_ENV=pypy   COV_CORE_DEP=cov-core
-  - CWD=pytest-cov  TOX_ENV=pypy3  COV_CORE_DEP=cov-core
-  - CWD=pytest-cov  TOX_ENV=py26   COV_CORE_DEP=cov-core
-  - CWD=pytest-cov  TOX_ENV=py27   COV_CORE_DEP=cov-core
-  - CWD=pytest-cov  TOX_ENV=py32   COV_CORE_DEP=cov-core
-  - CWD=pytest-cov  TOX_ENV=py33   COV_CORE_DEP=cov-core
-  - CWD=pytest-cov  TOX_ENV=py34   COV_CORE_DEP=cov-core
-
-matrix:
-  allow_failures:
-    - env: CWD=pytest-cov  TOX_ENV=pypy   COV_CORE_DEP=cov-core
-    - env: CWD=pytest-cov  TOX_ENV=pypy3  COV_CORE_DEP=cov-core
-    - env: CWD=pytest-cov  TOX_ENV=py26   COV_CORE_DEP=cov-core
-    - env: CWD=pytest-cov  TOX_ENV=py27   COV_CORE_DEP=cov-core
-    - env: CWD=pytest-cov  TOX_ENV=py32   COV_CORE_DEP=cov-core
-    - env: CWD=pytest-cov  TOX_ENV=py33   COV_CORE_DEP=cov-core
-    - env: CWD=pytest-cov  TOX_ENV=py34   COV_CORE_DEP=cov-core
-
 sudo: false
-
+env:
+  global:
+    LD_PRELOAD=/lib/x86_64-linux-gnu/libSegFault.so
+  matrix:
+    - TOXENV=check
+    - TOXENV=2.6-37
+    - TOXENV=2.7-37
+    - TOXENV=3.3-37
+    - TOXENV=3.4-37
+    - TOXENV=pypy-37
+    - TOXENV=2.6-40
+    - TOXENV=2.7-40
+    - TOXENV=3.3-40
+    - TOXENV=3.4-40
+    - TOXENV=pypy-40
+before_install:
+  - python --version
+  - virtualenv --version
+  - pip --version
+  - uname -a
+  - lsb_release -a
 install:
   - pip install tox
-
 script:
-  - cd $CWD && tox -e $TOX_ENV
-
+  - tox -v
 notifications:
   email:
     on_success: never
-    on_failure: change
+    on_failure: always
+

@@ -1,32 +1,9 @@
 """Coverage controllers for use by pytest-cov and nose-cov."""
-
-from cov_core_init import UNIQUE_SEP
-import cov_core_init
-import coverage
+import os
 import socket
 import sys
-import os
 
-
-def multiprocessing_start(obj):
-    cov = cov_core_init.init()
-    if cov:
-        import multiprocessing.util
-        multiprocessing.util.Finalize(
-            None, multiprocessing_finish, args=(cov,), exitpriority=1000)
-
-
-def multiprocessing_finish(cov):
-    cov.stop()
-    cov.save()
-
-
-try:
-    import multiprocessing.util
-    multiprocessing.util.register_after_fork(multiprocessing_start,
-                                             multiprocessing_start)
-except ImportError:
-    pass
+import coverage
 
 
 class CovController(object):
@@ -47,11 +24,10 @@ class CovController(object):
 
     def set_env(self):
         """Put info about coverage into the env so that subprocesses can activate coverage."""
-
         if self.cov_source is None:
             os.environ['COV_CORE_SOURCE'] = ''
         else:
-            os.environ['COV_CORE_SOURCE'] = UNIQUE_SEP.join(self.cov_source)
+            os.environ['COV_CORE_SOURCE'] = os.pathsep.join(self.cov_source)
         os.environ['COV_CORE_CONFIG'] = self.cov_config
 
     @staticmethod
@@ -96,7 +72,7 @@ class CovController(object):
 
         # Produce terminal report if wanted.
         if 'term' in self.cov_report or 'term-missing' in self.cov_report:
-            show_missing = 'term-missing' in self.cov_report
+            show_missing = ('term-missing' in self.cov_report) or None
             total = self.cov.report(show_missing=show_missing, ignore_errors=True, file=stream)
 
         # Produce annotated source code report if wanted.
