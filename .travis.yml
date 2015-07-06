@@ -1,19 +1,33 @@
 language: python
 python: 2.7
+sudo: false
 env:
-  - TOX_ENV=flake8
-  - TOX_ENV=pypy
-  - TOX_ENV=pypy3
-  - TOX_ENV=py26
-  - TOX_ENV=py27
-  - TOX_ENV=py32
-  - TOX_ENV=py33
-  - TOX_ENV=py34
+  global:
+    LD_PRELOAD=/lib/x86_64-linux-gnu/libSegFault.so
+  matrix:
+    - TOXENV=check
+    - TOXENV=2.6-37
+    - TOXENV=2.7-37
+    - TOXENV=3.3-37
+    - TOXENV=3.4-37
+    - TOXENV=pypy-37
+    - TOXENV=2.6-40
+    - TOXENV=2.7-40
+    - TOXENV=3.3-40
+    - TOXENV=3.4-40
+    - TOXENV=pypy-40
+before_install:
+  - python --version
+  - virtualenv --version
+  - pip --version
+  - uname -a
+  - lsb_release -a
 install:
   - pip install tox
 script:
-  - tox -e $TOX_ENV
+  - tox -v
 notifications:
   email:
     on_success: never
-    on_failure: change
+    on_failure: always
+

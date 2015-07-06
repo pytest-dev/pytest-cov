@@ -1,20 +1,23 @@
 """Coverage plugin for pytest."""
-
 import os
 
 import pytest
 
-import cov_core
-import cov_core_init
+from . import embed
+from . import engine
+
+
+class CoverageError(Exception):
+    """Indicates that our coverage is too low"""
 
 
 def pytest_addoption(parser):
     """Add options to control coverage."""
 
-    group = parser.getgroup('coverage reporting with distributed testing '
-                            'support')
+    group = parser.getgroup(
+        'cov', 'coverage reporting with distributed testing support')
     group.addoption('--cov', action='append', default=[], metavar='path',
-                    dest='cov_source',
+                    nargs='?', const=True, dest='cov_source',
                     help='measure coverage for filesystem path '
                     '(multi-allowed)')
     group.addoption('--cov-report', action='append', default=[],
@@ -30,12 +33,24 @@ def pytest_addoption(parser):
                     dest='no_cov_on_fail',
                     help='do not report coverage if test run fails, '
                          'default: False')
+    group.addoption('--cov-fail-under', action='store', metavar='MIN', type='int',
+                    help='Fail if the total coverage is less than MIN.')
 
 
 @pytest.mark.tryfirst
 def pytest_load_initial_conftests(early_config, parser, args):
     ns = parser.parse_known_args(args)
-    if ns.cov_source:
+    ns.cov = bool(ns.cov_source)
+
+    if ns.cov_source == [True]:
+        ns.cov_source = None
+
+    if not ns.cov_report:
+        ns.cov_report = ['term']
+    elif ns.cov_report == ['']:
+        ns.cov_report = []
+
+    if ns.cov:
         plugin = CovPlugin(ns, early_config.pluginmanager)
         early_config.pluginmanager.register(plugin, '_cov')
 
@@ -76,15 +91,15 @@ class CovPlugin(object):
                    getattr(options, 'distload', False) or
                    getattr(options, 'dist', 'no') != 'no')
         if is_dist and start:
-            self.start(cov_core.DistMaster)
+            self.start(engine.DistMaster)
         elif start:
-            self.start(cov_core.Central)
+            self.start(engine.Central)
 
         # slave is started in pytest hook
 
     def start(self, controller_cls, config=None, nodeid=None):
         if config is None:
-            # fake config option for cov_core
+            # fake config option for engine
             class Config(object):
                 option = self.options
 
@@ -92,12 +107,15 @@ class CovPlugin(object):
 
         self.cov_controller = controller_cls(
             self.options.cov_source,
-            self.options.cov_report or ['term'],
+            self.options.cov_report,
             self.options.cov_config,
             config,
             nodeid
         )
         self.cov_controller.start()
+        cov_config = self.cov_controller.cov.config
+        if self.options.cov_fail_under is None and hasattr(cov_config, 'fail_under'):
+            self.options.cov_fail_under = cov_config.fail_under
 
     def pytest_sessionstart(self, session):
         """At session start determine our implementation and delegate to it."""
@@ -106,7 +124,7 @@ class CovPlugin(object):
         if is_slave:
             nodeid = session.config.slaveinput.get('slaveid',
                                                    getattr(session, 'nodeid'))
-            self.start(cov_core.DistSlave, session.config, nodeid)
+            self.start(engine.DistSlave, session.config, nodeid)
 
     def pytest_configure_node(self, node):
         """Delegate to our implementation.
@@ -135,17 +153,23 @@ class CovPlugin(object):
         if self.cov_controller is None:
             return
         if not (self.failed and self.options.no_cov_on_fail):
-            self.cov_controller.summary(terminalreporter._tw)
+            total = self.cov_controller.summary(terminalreporter.writer)
+            assert total is not None, 'Test coverage should never be `None`'
+            cov_fail_under = self.options.cov_fail_under
+            if cov_fail_under is not None and total < cov_fail_under:
+                raise CoverageError(('Required test coverage of %d%% not '
+                                     'reached. Total coverage: %.2f%%')
+                                    % (self.options.cov_fail_under, total))
 
     def pytest_runtest_setup(self, item):
         if os.getpid() != self.pid:
             # test is run in another process than session, run
             # coverage manually
-            self.cov = cov_core_init.init()
+            self.cov = embed.init()
 
     def pytest_runtest_teardown(self, item):
         if self.cov is not None:
-            cov_core.multiprocessing_finish(self.cov)
+            embed.multiprocessing_finish(self.cov)
             self.cov = None
 
 
