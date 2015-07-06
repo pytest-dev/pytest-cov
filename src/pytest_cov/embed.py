@@ -58,4 +58,6 @@ def init():
                                 auto_data=True)
         cov.erase()
         cov.start()
+        cov._warn_no_data = False
+        cov._warn_unimported_source = False
         return cov
