@@ -15,6 +15,7 @@ Changelog
 * Support for coverage 4.0.
 * Data file suffixing changed to use coverage's ``data_suffix=True`` option (instead of the
   custom suffixing).
+* Avoid warning about missing coverage data (just like ``coverage.control.process_startup``).
 
 1.8.2 (2014-11-06)
 ------------------
