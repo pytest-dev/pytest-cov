@@ -147,7 +147,7 @@ class DistMaster(CovController):
         node.slaveinput['cov_master_rsync_roots'] = [str(root) for root in node.nodemanager.roots]
 
     def testnodedown(self, node, error):
-        """Collect data file name from slave.  Also save data to file if slave not collocated."""
+        """Collect data file name from slave."""
 
         # If slave doesn't return any data then it is likely that this
         # plugin didn't get activated on the slave side.
@@ -155,19 +155,23 @@ class DistMaster(CovController):
             self.failed_slaves.append(node)
             return
 
+        cov = coverage.coverage(source=self.cov_source,
+                                data_suffix=True,
+                                config_file=self.cov_config)
+        cov.start()
+        cov.stop()
+        # Collect any coverage files (happens when we're collocated)
+        cov.combine()
+
         # If slave is not collocated then we must save the data file
         # that it returns to us.
         if 'cov_slave_lines' in node.slaveoutput:
-            cov = coverage.coverage(source=self.cov_source,
-                                    data_suffix=True,
-                                    config_file=self.cov_config)
-            cov.start()
             cov.data.lines = node.slaveoutput['cov_slave_lines']
             cov.data.arcs = node.slaveoutput['cov_slave_arcs']
-            cov.stop()
-            cov.save()
             path = node.slaveoutput['cov_slave_path']
             self.cov.config.paths['source'].append(path)
+
+        cov.save()
 
         # Record the slave types that contribute to the data file.
         rinfo = node.gateway._rinfo()
@@ -211,16 +215,21 @@ class DistSlave(CovController):
 
     def finish(self):
         """Stop coverage and send relevant info back to the master."""
-
         self.unset_env()
         self.cov.stop()
-        self.cov.save()
 
         if self.is_collocated:
+            # We don't combine data if we're collocated - we can get
+            # race conditions in the .combine() call (it's not atomic)
+            # The data is going to be combined in the master.
+            self.cov.save()
+
             # If we are collocated then just inform the master of our
             # data file to indicate that we have finished.
             self.config.slaveoutput['cov_slave_node_id'] = self.nodeid
         else:
+            self.cov.combine()
+            self.cov.save()
             # If we are not collocated then add the current path
             # and coverage data to the output so we can combine
             # it on the master node.
