@@ -214,7 +214,6 @@ class DistSlave(CovController):
 
         self.unset_env()
         self.cov.stop()
-        self.cov.combine()
         self.cov.save()
 
         if self.is_collocated:
