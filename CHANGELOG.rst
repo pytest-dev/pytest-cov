@@ -16,6 +16,8 @@ Changelog
 * Data file suffixing changed to use coverage's ``data_suffix=True`` option (instead of the
   custom suffixing).
 * Avoid warning about missing coverage data (just like ``coverage.control.process_startup``).
+* Fixed a race condition when running with xdist (all the workers tried to combine the files).
+  It's possible that this issue is not present in `pytest-cov 1.8.X`.
 
 1.8.2 (2014-11-06)
 ------------------

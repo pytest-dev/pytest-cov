@@ -246,6 +246,32 @@ def test_no_cov_on_fail(testdir):
     result.stdout.fnmatch_lines(['*1 failed*'])
 
 
+def test_dist_combine_racecondition(testdir):
+    script = testdir.makepyfile("""
+import pytest
+
+@pytest.mark.parametrize("foo", range(1000))
+def test_foo(foo):
+""" + "\n".join("""
+    if foo == %s:
+        assert True
+""" % i for i in range(1000)))
+
+    result = testdir.runpytest('-v',
+                               '--cov=%s' % script.dirpath(),
+                               '--cov-report=term-missing',
+                               '-n', '5',
+                               script)
+    result.stdout.fnmatch_lines([
+        '*- coverage: platform *, python * -*',
+        'test_dist_combine_racecondition* 2002 * 0 * 100% *',
+        '*1000 passed*'
+    ])
+    for line in result.stdout.lines:
+        assert 'The following slaves failed to return coverage data' not in line
+    assert result.ret == 0
+
+
 def test_dist_collocated(testdir):
     script = testdir.makepyfile(SCRIPT)
 
