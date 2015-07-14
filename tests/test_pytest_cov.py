@@ -1,13 +1,19 @@
-from distutils.version import StrictVersion
 import os
-import sys
 import subprocess
+import sys
+from distutils.version import StrictVersion
 
 import coverage
-import virtualenv
 import py
 import pytest
+import virtualenv
+from process_tests import TestProcess
+from process_tests import wait_for_strings
+
 import pytest_cov.plugin
+
+
+coverage, StrictVersion  # required for skipif mark on test_cov_min_from_coveragerc
 
 pytest_plugins = 'pytester', 'cov'
 
@@ -497,6 +503,24 @@ def test_cover_conftest(testdir):
                                script)
     assert result.ret == 0
     result.stdout.fnmatch_lines([CONF_RESULT])
+
+
+def test_cover_looponfail(testdir, monkeypatch):
+    testdir.makepyfile(mod=MODULE)
+    testdir.makeconftest(CONFTEST)
+    script = testdir.makepyfile(BASIC_TEST)
+
+    monkeypatch.setattr(testdir, 'run', lambda *args: TestProcess(*map(str, args)))
+    with testdir.runpytest('-v',
+                           '--cov=%s' % script.dirpath(),
+                           '--cov-report=term-missing',
+                           '--looponfail',
+                           script) as process:
+        wait_for_strings(
+            process.read,
+            5,  # 5 seconds
+            'Stmts   Miss  Cover'
+        )
 
 
 def test_cover_conftest_dist(testdir):
