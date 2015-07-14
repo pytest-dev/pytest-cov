@@ -59,6 +59,9 @@ def pytest_configure(config):
     """Activate coverage plugin if appropriate."""
     if config.getvalue('cov_source'):
         if not config.pluginmanager.hasplugin('_cov'):
+            if not config.option.cov_report:
+                config.option.cov_report = ['term']
+
             plugin = CovPlugin(config.option, config.pluginmanager,
                                start=False)
             config.pluginmanager.register(plugin, '_cov')
@@ -85,6 +88,7 @@ class CovPlugin(object):
         self.cov = None
         self.cov_controller = None
         self.failed = False
+        self._started = False
         self.options = options
 
         is_dist = (getattr(options, 'numprocesses', False) or
@@ -113,6 +117,7 @@ class CovPlugin(object):
             nodeid
         )
         self.cov_controller.start()
+        self._started = True
         cov_config = self.cov_controller.cov.config
         if self.options.cov_fail_under is None and hasattr(cov_config, 'fail_under'):
             self.options.cov_fail_under = cov_config.fail_under
@@ -125,6 +130,8 @@ class CovPlugin(object):
             nodeid = session.config.slaveinput.get('slaveid',
                                                    getattr(session, 'nodeid'))
             self.start(engine.DistSlave, session.config, nodeid)
+        elif not self._started:
+            self.start(engine.Central)
 
     def pytest_configure_node(self, node):
         """Delegate to our implementation.
