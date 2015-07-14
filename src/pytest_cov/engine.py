@@ -160,12 +160,13 @@ class DistMaster(CovController):
                                 config_file=self.cov_config)
         cov.start()
         cov.stop()
-        # Collect any coverage files (happens when we're collocated)
-        cov.combine()
 
         # If slave is not collocated then we must save the data file
         # that it returns to us.
         if 'cov_slave_lines' in node.slaveoutput:
+            # Collect any coverage files (happens when we're collocated)
+            cov.combine()
+
             cov.data.lines = node.slaveoutput['cov_slave_lines']
             cov.data.arcs = node.slaveoutput['cov_slave_arcs']
             path = node.slaveoutput['cov_slave_path']
