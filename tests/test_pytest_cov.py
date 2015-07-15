@@ -513,7 +513,6 @@ def test_cover_looponfail(testdir, monkeypatch):
     monkeypatch.setattr(testdir, 'run', lambda *args: TestProcess(*map(str, args)))
     with testdir.runpytest('-v',
                            '--cov=%s' % script.dirpath(),
-                           '--cov-report=term-missing',
                            '--looponfail',
                            script) as process:
         wait_for_strings(
