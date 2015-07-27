@@ -252,7 +252,7 @@ def test_no_cov_on_fail(testdir):
     result.stdout.fnmatch_lines(['*1 failed*'])
 
 
-def test_dist_combine_racecondition(testdir):
+def _test_dist_combine_racecondition(testdir):
     script = testdir.makepyfile("""
 import pytest
 
