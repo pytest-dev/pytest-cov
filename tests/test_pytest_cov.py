@@ -8,6 +8,7 @@ import py
 import pytest
 import virtualenv
 from process_tests import TestProcess
+from process_tests import dump_on_error
 from process_tests import wait_for_strings
 
 import pytest_cov.plugin
@@ -515,11 +516,12 @@ def test_cover_looponfail(testdir, monkeypatch):
                            '--cov=%s' % script.dirpath(),
                            '--looponfail',
                            script) as process:
-        wait_for_strings(
-            process.read,
-            5,  # 5 seconds
-            'Stmts   Miss  Cover'
-        )
+        with dump_on_error(process.read):
+            wait_for_strings(
+                process.read,
+                30,  # 30 seconds
+                'Stmts   Miss  Cover'
+            )
 
 
 def test_cover_conftest_dist(testdir):
