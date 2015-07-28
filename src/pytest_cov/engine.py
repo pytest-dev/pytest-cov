@@ -155,24 +155,19 @@ class DistMaster(CovController):
             self.failed_slaves.append(node)
             return
 
-        cov = coverage.coverage(source=self.cov_source,
-                                data_suffix=True,
-                                config_file=self.cov_config)
-        cov.start()
-        cov.stop()
-
         # If slave is not collocated then we must save the data file
         # that it returns to us.
         if 'cov_slave_lines' in node.slaveoutput:
-            # Collect any coverage files (happens when we're collocated)
-            cov.combine()
-
+            cov = coverage.coverage(source=self.cov_source,
+                                    data_suffix=True,
+                                    config_file=self.cov_config)
+            cov.start()
             cov.data.lines = node.slaveoutput['cov_slave_lines']
             cov.data.arcs = node.slaveoutput['cov_slave_arcs']
+            cov.stop()
+            cov.save()
             path = node.slaveoutput['cov_slave_path']
             self.cov.config.paths['source'].append(path)
-
-        cov.save()
 
         # Record the slave types that contribute to the data file.
         rinfo = node.gateway._rinfo()
