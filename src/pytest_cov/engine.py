@@ -1,5 +1,7 @@
 """Coverage controllers for use by pytest-cov and nose-cov."""
+
 import os
+import random
 import socket
 import sys
 
@@ -158,8 +160,14 @@ class DistMaster(CovController):
         # If slave is not collocated then we must save the data file
         # that it returns to us.
         if 'cov_slave_lines' in node.slaveoutput:
+            data_suffix = '%s.%s.%06d.%s' % (
+                socket.gethostname(), os.getpid(),
+                random.randint(0, 999999),
+                node.slaveoutput['cov_slave_node_id']
+                )
+
             cov = coverage.coverage(source=self.cov_source,
-                                    data_suffix=True,
+                                    data_suffix=data_suffix,
                                     config_file=self.cov_config)
             cov.start()
             cov.data.lines = node.slaveoutput['cov_slave_lines']
