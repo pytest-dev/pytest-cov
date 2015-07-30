@@ -19,24 +19,24 @@ pytest-cov
     :target: https://readthedocs.org/projects/pytest-cov
     :alt: Documentation Status
 
-.. |travis| image:: http://img.shields.io/travis/schlamar/pytest-cov/master.svg?style=flat&label=Travis
+.. |travis| image:: http://img.shields.io/travis/pytest-dev/pytest-cov/master.svg?style=flat&label=Travis
     :alt: Travis-CI Build Status
-    :target: https://travis-ci.org/schlamar/pytest-cov
+    :target: https://travis-ci.org/pytest-dev/pytest-cov
 
-.. |appveyor| image:: https://img.shields.io/appveyor/ci/schlamar/pytest-cov/master.svg?style=flat&label=AppVeyor
+.. |appveyor| image:: https://img.shields.io/appveyor/ci/pytestbot/pytest-cov/master.svg?style=flat&label=AppVeyor
     :alt: AppVeyor Build Status
-    :target: https://ci.appveyor.com/project/schlamar/pytest-cov
+    :target: https://ci.appveyor.com/project/pytestbot/pytest-cov
 
-.. |coveralls| image:: http://img.shields.io/coveralls/schlamar/pytest-cov/master.svg?style=flat&label=Coveralls
+.. |coveralls| image:: http://img.shields.io/coveralls/pytest-dev/pytest-cov/master.svg?style=flat&label=Coveralls
     :alt: Coverage Status
-    :target: https://coveralls.io/r/schlamar/pytest-cov
+    :target: https://coveralls.io/r/pytest-dev/pytest-cov
 
-.. |codecov| image:: http://img.shields.io/codecov/c/github/schlamar/pytest-cov/master.svg?style=flat&label=Codecov
+.. |codecov| image:: http://img.shields.io/codecov/c/github/pytest-dev/pytest-cov/master.svg?style=flat&label=Codecov
     :alt: Coverage Status
-    :target: https://codecov.io/github/schlamar/pytest-cov
+    :target: https://codecov.io/github/pytest-dev/pytest-cov
 
-.. |landscape| image:: https://landscape.io/github/schlamar/pytest-cov/master/landscape.svg?style=flat
-    :target: https://landscape.io/github/schlamar/pytest-cov/master
+.. |landscape| image:: https://landscape.io/github/pytest-dev/pytest-cov/master/landscape.svg?style=flat
+    :target: https://landscape.io/github/pytest-dev/pytest-cov/master
     :alt: Code Quality Status
 
 .. |version| image:: http://img.shields.io/pypi/v/pytest-cov.svg?style=flat
@@ -59,9 +59,9 @@ pytest-cov
     :alt: Supported imlementations
     :target: https://pypi.python.org/pypi/pytest-cov
 
-.. |scrutinizer| image:: https://img.shields.io/scrutinizer/g/schlamar/pytest-cov/master.svg?style=flat
+.. |scrutinizer| image:: https://img.shields.io/scrutinizer/g/pytest-dev/pytest-cov/master.svg?style=flat
     :alt: Scrutinizer Status
-    :target: https://scrutinizer-ci.com/g/schlamar/pytest-cov/
+    :target: https://scrutinizer-ci.com/g/pytest-dev/pytest-cov/
 
 Pytest plugin for measuring coverage.
 
@@ -100,7 +100,7 @@ Uninstall with pip::
 
 Under certain scenarios a stray ``.pth`` file may be left around in site-packages.
 
-* `pytest-cov 2.0` may leave a ``pytest-cov.pth`` if you installed without wheels 
+* `pytest-cov 2.0` may leave a ``pytest-cov.pth`` if you installed without wheels
   (``easy_install``, ``setup.py install`` etc).
 * `pytest-cov 1.8 or older` will leave a ``init_cov_core.pth``.
 
