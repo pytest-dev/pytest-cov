@@ -88,7 +88,7 @@ setup(
     long_description='%s\n%s' % (read('README.rst'), re.sub(':[a-z]+:`~?(.*?)`', r'``\1``', read('CHANGELOG.rst'))),
     author='Marc Schlaich',
     author_email='marc.schlaich@gmail.com',
-    url='https://github.com/schlamar/pytest-cov',
+    url='https://github.com/pytest-dev/pytest-cov',
     packages=find_packages('src'),
     package_dir={'': 'src'},
     py_modules=[splitext(basename(path))[0] for path in glob('src/*.py')],
