@@ -85,11 +85,11 @@ For distributed testing support install pytest-xdist::
 
     pip install pytest-xdist
 
-.. NOTE::
+Upgrade
+=======
 
-    Ensure you use pip instead of easy_install as the latter does not correctly install the
-    init_cov_core.pth file needed for subprocess measurement.
-
+`pytest-cov 2.0` is using a new ``.pth`` file (``pytest-cov.pth``). You may want to manually remove the older
+``init_cov_core.pth`` from site-packages as it's not automatically removed.
 
 Uninstallation
 ==============
@@ -97,6 +97,12 @@ Uninstallation
 Uninstall with pip::
 
     pip uninstall pytest-cov
+
+Under certain scenarios a stray ``.pth`` file may be left around in site-packages.
+
+* `pytest-cov 2.0` may leave a ``pytest-cov.pth`` if you installed without wheels 
+  (``easy_install``, ``setup.py install`` etc).
+* `pytest-cov 1.8 or older` will leave a ``init_cov_core.pth``.
 
 Usage
 =====
