@@ -19,7 +19,7 @@ pytest-cov
     :target: https://readthedocs.org/projects/pytest-cov
     :alt: Documentation Status
 
-.. |travis| image:: http://img.shields.io/travis/pytest-dev/pytest-cov/master.svg?style=flat&label=Travis
+.. |travis| image:: https://img.shields.io/travis/pytest-dev/pytest-cov/master.svg?style=flat&label=Travis
     :alt: Travis-CI Build Status
     :target: https://travis-ci.org/pytest-dev/pytest-cov
 
@@ -27,11 +27,11 @@ pytest-cov
     :alt: AppVeyor Build Status
     :target: https://ci.appveyor.com/project/pytestbot/pytest-cov
 
-.. |coveralls| image:: http://img.shields.io/coveralls/pytest-dev/pytest-cov/master.svg?style=flat&label=Coveralls
+.. |coveralls| image:: https://img.shields.io/coveralls/pytest-dev/pytest-cov/master.svg?style=flat&label=Coveralls
     :alt: Coverage Status
     :target: https://coveralls.io/r/pytest-dev/pytest-cov
 
-.. |codecov| image:: http://img.shields.io/codecov/c/github/pytest-dev/pytest-cov/master.svg?style=flat&label=Codecov
+.. |codecov| image:: https://img.shields.io/codecov/c/github/pytest-dev/pytest-cov/master.svg?style=flat&label=Codecov
     :alt: Coverage Status
     :target: https://codecov.io/github/pytest-dev/pytest-cov
 
@@ -39,11 +39,11 @@ pytest-cov
     :target: https://landscape.io/github/pytest-dev/pytest-cov/master
     :alt: Code Quality Status
 
-.. |version| image:: http://img.shields.io/pypi/v/pytest-cov.svg?style=flat
+.. |version| image:: https://img.shields.io/pypi/v/pytest-cov.svg?style=flat
     :alt: PyPI Package latest release
     :target: https://pypi.python.org/pypi/pytest-cov
 
-.. |downloads| image:: http://img.shields.io/pypi/dm/pytest-cov.svg?style=flat
+.. |downloads| image:: https://img.shields.io/pypi/dm/pytest-cov.svg?style=flat
     :alt: PyPI Package monthly downloads
     :target: https://pypi.python.org/pypi/pytest-cov
 
