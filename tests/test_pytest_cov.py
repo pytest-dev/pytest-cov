@@ -1,3 +1,4 @@
+import glob
 import os
 import subprocess
 import sys
@@ -6,13 +7,12 @@ from distutils.version import StrictVersion
 import coverage
 import py
 import pytest
+
 import virtualenv
 from process_tests import TestProcess
 from process_tests import dump_on_error
 from process_tests import wait_for_strings
-
 import pytest_cov.plugin
-
 
 coverage, StrictVersion  # required for skipif mark on test_cov_min_from_coveragerc
 
@@ -677,3 +677,43 @@ def test_coverage_file(testdir):
         assert data_file.check()
     finally:
         os.environ.pop('COVERAGE_FILE')
+
+
+def test_external_data_file(testdir):
+    script = testdir.makepyfile(SCRIPT)
+    testdir.tmpdir.join('.coveragerc').write("""
+[run]
+data_file = %s
+""" % testdir.tmpdir.join('some/special/place/coverage-data').ensure())
+
+    result = testdir.runpytest('-v',
+                               '--cov=%s' % script.dirpath(),
+                               script)
+    assert result.ret == 0
+    assert glob.glob(str(testdir.tmpdir.join('some/special/place/coverage-data*')))
+
+
+def test_external_data_file_xdist(testdir):
+    script = testdir.makepyfile(SCRIPT)
+    testdir.tmpdir.join('.coveragerc').write("""
+[run]
+parallel = true
+data_file = %s
+""" % testdir.tmpdir.join('some/special/place/coverage-data').ensure())
+
+    result = testdir.runpytest('-v',
+                               '--cov=%s' % script.dirpath(),
+                               '-n', '1',
+                               script)
+    assert result.ret == 0
+    assert glob.glob(str(testdir.tmpdir.join('some/special/place/coverage-data*')))
+
+def test_external_data_file_negative(testdir):
+    script = testdir.makepyfile(SCRIPT)
+    testdir.tmpdir.join('.coveragerc').write("")
+
+    result = testdir.runpytest('-v',
+                               '--cov=%s' % script.dirpath(),
+                               script)
+    assert result.ret == 0
+    assert glob.glob(str(testdir.tmpdir.join('.coverage*')))
