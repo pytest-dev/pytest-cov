@@ -115,7 +115,10 @@ class Central(CovController):
 
         self.cov = coverage.coverage(source=self.cov_source,
                                      config_file=self.cov_config)
-        self.cov.erase()
+        if self.config.option.append_coverage:
+            self.cov.load()
+        else:
+            self.cov.erase()
         self.cov.start()
         self.set_env()
 
