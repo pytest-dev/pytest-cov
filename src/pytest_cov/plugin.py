@@ -35,7 +35,7 @@ def pytest_addoption(parser):
                          'default: False')
     group.addoption('--cov-fail-under', action='store', metavar='MIN', type='int',
                     help='Fail if the total coverage is less than MIN.')
-    group.addoption('--append-cov', action='store_true', default=False,
+    group.addoption('--cov-append', action='store_true', default=False,
                     dest='append_coverage',
                     help='do not delete coverage but append to current, '
                          'default: False')
