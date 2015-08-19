@@ -32,6 +32,16 @@ def test_foo():
         assert False
 '''
 
+SCRIPT2 = '''
+#
+
+def test_bar():
+    x = True
+    assert x
+
+'''
+
+
 COVERAGERC_SOURCE = '''\
 [run]
 source = .
@@ -717,3 +727,36 @@ def test_external_data_file_negative(testdir):
                                script)
     assert result.ret == 0
     assert glob.glob(str(testdir.tmpdir.join('.coverage*')))
+
+def test_append_coverage(testdir):
+    script = testdir.makepyfile(test_1=SCRIPT)
+    testdir.tmpdir.join('.coveragerc').write("")
+    result = testdir.runpytest('-v',
+                               '--cov=%s' % script.dirpath(),
+                               script)
+    size1 = script.dirpath().join('.coverage').size()
+    assert(size1 > 0)
+    script.remove()
+    script2 = testdir.makepyfile(test_2=SCRIPT2)
+    result = testdir.runpytest('-v', '--cov-append',
+                               '--cov=%s' % script2.dirpath(),
+                               script2)
+    size2 = script2.dirpath().join('.coverage').size()
+    assert(size2 > size1)
+
+def test_do_not_append_coverage(testdir):
+    script = testdir.makepyfile(test_1=SCRIPT)
+    testdir.tmpdir.join('.coveragerc').write("")
+    result = testdir.runpytest('-v',
+                               '--cov=%s' % script.dirpath(),
+                               script)
+    size1 = script.dirpath().join('.coverage').size()
+    assert(size1 > 0)
+    script.remove()
+    script2 = testdir.makepyfile(test_2=SCRIPT2)
+    result = testdir.runpytest('-v',
+                               '--cov=%s' % script2.dirpath(),
+                               script2)
+    size2 = script2.dirpath().join('.coverage').size()
+    assert(size1 > size2)
+    assert(size2 > 0)

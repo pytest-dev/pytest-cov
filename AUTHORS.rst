@@ -11,3 +11,4 @@ Authors
 * Federico Ceratto - http://firelet.net/
 * Josh Kalderimis - http://blog.cookiestack.com/
 * Ionel Cristian Mărieș - http://blog.ionelmc.ro
+* Christian Ledermann - https://github.com/cleder
