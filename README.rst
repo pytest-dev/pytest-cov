@@ -8,22 +8,19 @@ pytest-cov
     * - docs
       - |docs|
     * - tests
-      - | |travis| |appveyor|
+      - | |travis| |appveyor| |requires|
     * - package
       - |version| |downloads|
-
-..
-    |wheel| |supported-versions| |supported-implementations|
 
 .. |docs| image:: https://readthedocs.org/projects/pytest-cov/badge/?style=flat
     :target: https://readthedocs.org/projects/pytest-cov
     :alt: Documentation Status
 
-.. |travis| image:: https://img.shields.io/travis/pytest-dev/pytest-cov/master.svg?style=flat&label=Travis
+.. |travis| image:: https://travis-ci.org/pytest-dev/pytest-cov.svg?branch=master
     :alt: Travis-CI Build Status
     :target: https://travis-ci.org/pytest-dev/pytest-cov
 
-.. |appveyor| image:: https://img.shields.io/appveyor/ci/pytestbot/pytest-cov/master.svg?style=flat&label=AppVeyor
+.. |appveyor| image:: https://ci.appveyor.com/api/projects/status/github/pytest-dev/pytest-cov?branch=master&svg=true
     :alt: AppVeyor Build Status
     :target: https://ci.appveyor.com/project/pytestbot/pytest-cov
 
@@ -34,6 +31,10 @@ pytest-cov
 .. |codecov| image:: https://img.shields.io/codecov/c/github/pytest-dev/pytest-cov/master.svg?style=flat&label=Codecov
     :alt: Coverage Status
     :target: https://codecov.io/github/pytest-dev/pytest-cov
+
+.. |requires| image:: https://requires.io/github/pytest-dev/pytest-cov/requirements.svg?branch=master
+    :alt: Requirements Status
+    :target: https://requires.io/github/pytest-dev/pytest-cov/requirements/?branch=master
 
 .. |landscape| image:: https://landscape.io/github/pytest-dev/pytest-cov/master/landscape.svg?style=flat
     :target: https://landscape.io/github/pytest-dev/pytest-cov/master
