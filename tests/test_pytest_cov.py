@@ -356,7 +356,7 @@ omit =
                                '--cov=%s' % script.dirpath(), script)
     result.stdout.fnmatch_lines([
         '*- coverage: platform *, python * -*',
-        'test_central_subprocess_no_subscript.py * 3 * 0 * 100%*',
+        'test_central_subprocess_no_subscript* * 3 * 0 * 100%*',
     ])
     assert result.ret == 0
 
