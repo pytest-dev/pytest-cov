@@ -337,6 +337,30 @@ def test_central_subprocess(testdir):
     assert result.ret == 0
 
 
+def test_central_subprocess_no_subscript(testdir):
+    script = testdir.makepyfile("""
+import subprocess, sys
+
+def test_foo():
+    subprocess.check_call([sys.executable, '-c', 'print("Hello World")'])
+""")
+    testdir.makefile('', coveragerc="""
+[run]
+branch = true
+parallel = true
+omit =
+    */__init__.py
+""")
+    result = testdir.runpytest('-v',
+                               '--cov-config=coveragerc',
+                               '--cov=%s' % script.dirpath(), script)
+    result.stdout.fnmatch_lines([
+        '*- coverage: platform *, python * -*',
+        'test_central_subprocess_no_subscript.py * 3 * 0 * 100%*',
+    ])
+    assert result.ret == 0
+
+
 def test_dist_subprocess_collocated(testdir):
     scripts = testdir.makepyfile(parent_script=SCRIPT_PARENT,
                                  child_script=SCRIPT_CHILD)
