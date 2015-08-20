@@ -2,6 +2,7 @@
 import os
 
 import pytest
+from coverage.misc import CoverageException
 
 from . import embed
 from . import engine
@@ -160,7 +161,11 @@ class CovPlugin(object):
         if self.cov_controller is None:
             return
         if not (self.failed and self.options.no_cov_on_fail):
-            total = self.cov_controller.summary(terminalreporter.writer)
+            try:
+                total = self.cov_controller.summary(terminalreporter.writer)
+            except CoverageException as exc:
+                terminalreporter.writer.write('Failed to generate report: %s\n' % exc)
+                total = 0
             assert total is not None, 'Test coverage should never be `None`'
             cov_fail_under = self.options.cov_fail_under
             if cov_fail_under is not None and total < cov_fail_under:
