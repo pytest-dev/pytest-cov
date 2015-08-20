@@ -56,7 +56,7 @@ def init():
                                 data_suffix=True,
                                 config_file=cov_config,
                                 auto_data=True)
-        cov.erase()
+        cov.load()
         cov.start()
         cov._warn_no_data = False
         cov._warn_unimported_source = False
