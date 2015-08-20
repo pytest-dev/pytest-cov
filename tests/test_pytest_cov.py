@@ -287,6 +287,7 @@ def test_dist_collocated(testdir):
                                '--cov-report=term-missing',
                                '--dist=load',
                                '--tx=2*popen',
+                               '--max-slave-restart=0',
                                script)
 
     result.stdout.fnmatch_lines([
@@ -309,6 +310,7 @@ def test_dist_not_collocated(testdir):
                                '--tx=popen//chdir=%s' % dir1,
                                '--tx=popen//chdir=%s' % dir2,
                                '--rsyncdir=%s' % script.basename,
+                               '--max-slave-restart=0', '-s',
                                script)
 
     result.stdout.fnmatch_lines([
@@ -371,6 +373,7 @@ def test_dist_subprocess_collocated(testdir):
                                '--cov-report=term-missing',
                                '--dist=load',
                                '--tx=2*popen',
+                               '--max-slave-restart=0',
                                parent_script)
 
     result.stdout.fnmatch_lines([
@@ -398,6 +401,7 @@ def test_dist_subprocess_not_collocated(testdir, tmpdir):
                                '--tx=popen//chdir=%s' % dir2,
                                '--rsyncdir=%s' % child_script,
                                '--rsyncdir=%s' % parent_script,
+                               '--max-slave-restart=0',
                                parent_script)
 
     result.stdout.fnmatch_lines([
@@ -440,6 +444,7 @@ def test_dist_missing_data(testdir):
                                '--cov-report=term-missing',
                                '--dist=load',
                                '--tx=popen//python=%s' % exe,
+                               '--max-slave-restart=0',
                                script)
 
     result.stdout.fnmatch_lines([
@@ -557,6 +562,7 @@ def test_cover_conftest_dist(testdir):
                                '--cov-report=term-missing',
                                '--dist=load',
                                '--tx=2*popen',
+                               '--max-slave-restart=0',
                                script)
     assert result.ret == 0
     result.stdout.fnmatch_lines([CONF_RESULT])
@@ -604,6 +610,7 @@ def test_coveragerc_dist(testdir):
                                '--cov=%s' % script.dirpath(),
                                '--cov-report=term-missing',
                                '-n', '2',
+                               '--max-slave-restart=0',
                                script)
     assert result.ret == 0
     result.stdout.fnmatch_lines(
@@ -728,6 +735,7 @@ data_file = %s
     result = testdir.runpytest('-v',
                                '--cov=%s' % script.dirpath(),
                                '-n', '1',
+                               '--max-slave-restart=0',
                                script)
     assert result.ret == 0
     assert glob.glob(str(testdir.tmpdir.join('some/special/place/coverage-data*')))
