@@ -4,6 +4,10 @@ import os
 import random
 import socket
 import sys
+try:
+    from io import StringIO
+except ImportError:
+    from StringIO import StringIO
 
 import coverage
 
@@ -159,7 +163,7 @@ class DistMaster(CovController):
 
         # If slave is not collocated then we must save the data file
         # that it returns to us.
-        if 'cov_slave_lines' in node.slaveoutput:
+        if 'cov_slave_data' in node.slaveoutput:
             data_suffix = '%s.%s.%06d.%s' % (
                 socket.gethostname(), os.getpid(),
                 random.randint(0, 999999),
@@ -170,12 +174,10 @@ class DistMaster(CovController):
                                     data_suffix=data_suffix,
                                     config_file=self.cov_config)
             cov.start()
-            if hasattr(self.cov.data, '_lines'):  # for coverage 4.0b1 or older
-                cov.data._lines = node.slaveoutput['cov_slave_lines']
-                cov.data._arcs = node.slaveoutput['cov_slave_arcs']
+            if hasattr(self.cov.data, 'read_fileobj'):  # for coverage 4.0b1 or older
+                cov.data.read_fileobj(StringIO(node.slaveoutput['cov_slave_data']))
             else:
-                cov.data.lines = node.slaveoutput['cov_slave_lines']
-                cov.data.arcs = node.slaveoutput['cov_slave_arcs']
+                cov.data.lines, cov.data.arcs = node.slaveoutput['cov_slave_data']
             cov.stop()
             cov.save()
             path = node.slaveoutput['cov_slave_path']
@@ -245,12 +247,12 @@ class DistSlave(CovController):
             # Send all the data to the master over the channel.
             self.config.slaveoutput['cov_slave_path'] = self.topdir
             self.config.slaveoutput['cov_slave_node_id'] = self.nodeid
-            if hasattr(self.cov.data, '_lines'):  # for coverage 4.0b1 or older
-                self.config.slaveoutput['cov_slave_lines'] = self.cov.data._lines
-                self.config.slaveoutput['cov_slave_arcs'] = self.cov.data._arcs
+            if hasattr(self.cov.data, 'write_fileobj'):  # for coverage 4.0
+                buff = StringIO()
+                self.cov.data.write_fileobj(buff)
+                self.config.slaveoutput['cov_slave_data'] = buff.getvalue()
             else:
-                self.config.slaveoutput['cov_slave_lines'] = self.cov.data.lines
-                self.config.slaveoutput['cov_slave_arcs'] = self.cov.data.arcs
+                self.config.slaveoutput['cov_slave_data'] = self.cov.data.lines, self.cov.data.arcs
 
     def summary(self, stream):
         """Only the master reports so do nothing."""
