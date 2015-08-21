@@ -174,7 +174,7 @@ class DistMaster(CovController):
                                     data_suffix=data_suffix,
                                     config_file=self.cov_config)
             cov.start()
-            if hasattr(self.cov.data, 'read_fileobj'):  # for coverage 4.0b1 or older
+            if hasattr(self.cov.data, 'read_fileobj'):  # for coverage 4.0
                 cov.data.read_fileobj(StringIO(node.slaveoutput['cov_slave_data']))
             else:
                 cov.data.lines, cov.data.arcs = node.slaveoutput['cov_slave_data']
