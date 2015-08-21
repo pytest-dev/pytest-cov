@@ -5,9 +5,9 @@ import random
 import socket
 import sys
 try:
-    from io import StringIO
-except ImportError:
     from StringIO import StringIO
+except ImportError:
+    from io import StringIO
 
 import coverage
 
