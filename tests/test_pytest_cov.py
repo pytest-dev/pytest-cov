@@ -109,8 +109,11 @@ def test_fail():
 '''
 
 SCRIPT_RESULT = '9 * 89%'
+SCRIPT2_RESULT = '3 * 100%'
 CHILD_SCRIPT_RESULT = '6 * 100%'
 PARENT_SCRIPT_RESULT = '8 * 100%'
+
+xdist = pytest.mark.parametrize('opts', ['', '-n 1'], ids=['nodist', 'xdist'])
 
 
 def test_central(testdir):
@@ -750,6 +753,7 @@ data_file = %s
     assert result.ret == 0
     assert glob.glob(str(testdir.tmpdir.join('some/special/place/coverage-data*')))
 
+
 def test_external_data_file_negative(testdir):
     script = testdir.makepyfile(SCRIPT)
     testdir.tmpdir.join('.coveragerc').write("")
@@ -760,35 +764,48 @@ def test_external_data_file_negative(testdir):
     assert result.ret == 0
     assert glob.glob(str(testdir.tmpdir.join('.coverage*')))
 
-def test_append_coverage(testdir):
-    script = testdir.makepyfile(test_1=SCRIPT)
-    testdir.tmpdir.join('.coveragerc').write("")
-    result = testdir.runpytest('-v',
-                               '--cov=%s' % script.dirpath(),
-                               script)
-    size1 = script.dirpath().join('.coverage').size()
-    assert(size1 > 0)
-    script.remove()
-    script2 = testdir.makepyfile(test_2=SCRIPT2)
-    result = testdir.runpytest('-v', '--cov-append',
-                               '--cov=%s' % script2.dirpath(),
-                               script2)
-    size2 = script2.dirpath().join('.coverage').size()
-    assert(size2 > size1)
 
-def test_do_not_append_coverage(testdir):
+@xdist
+def test_append_coverage(testdir, opts):
     script = testdir.makepyfile(test_1=SCRIPT)
     testdir.tmpdir.join('.coveragerc').write("")
     result = testdir.runpytest('-v',
                                '--cov=%s' % script.dirpath(),
-                               script)
-    size1 = script.dirpath().join('.coverage').size()
-    assert(size1 > 0)
-    script.remove()
+                               script,
+                               *opts.split())
+    result.stdout.fnmatch_lines([
+        'test_1* %s*' % SCRIPT_RESULT,
+    ])
+    script2 = testdir.makepyfile(test_2=SCRIPT2)
+    result = testdir.runpytest('-v',
+                               '--cov-append',
+                               '--cov=%s' % script2.dirpath(),
+                               script2,
+                               *opts.split())
+    result.stdout.fnmatch_lines([
+        'test_1* %s*' % SCRIPT_RESULT,
+        'test_2* %s*' % SCRIPT2_RESULT,
+    ])
+
+
+@xdist
+def test_do_not_append_coverage(testdir, opts):
+    script = testdir.makepyfile(test_1=SCRIPT)
+    testdir.tmpdir.join('.coveragerc').write("")
+    result = testdir.runpytest('-v',
+                               '--cov=%s' % script.dirpath(),
+                               script,
+                               *opts.split())
+    result.stdout.fnmatch_lines([
+        'test_1* %s*' % SCRIPT_RESULT,
+    ])
     script2 = testdir.makepyfile(test_2=SCRIPT2)
     result = testdir.runpytest('-v',
                                '--cov=%s' % script2.dirpath(),
-                               script2)
-    size2 = script2.dirpath().join('.coverage').size()
-    assert(size1 > size2)
-    assert(size2 > 0)
+                               script2,
+                               *opts.split())
+    result.stdout.fnmatch_lines([
+        'test_1* 0%',
+        'test_2* %s*' % SCRIPT2_RESULT,
+    ])
+
