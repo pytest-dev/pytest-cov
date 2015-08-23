@@ -22,16 +22,15 @@ def pytest_addoption(parser):
                     help='measure coverage for filesystem path '
                     '(multi-allowed)')
     group.addoption('--cov-report', action='append', default=[],
-                    metavar='type', dest='cov_report',
+                    metavar='type',
                     choices=['term', 'term-missing', 'annotate', 'html',
                              'xml', ''],
                     help='type of report to generate: term, term-missing, '
                     'annotate, html, xml (multi-allowed)')
     group.addoption('--cov-config', action='store', default='.coveragerc',
-                    metavar='path', dest='cov_config',
+                    metavar='path',
                     help='config file for coverage, default: .coveragerc')
     group.addoption('--no-cov-on-fail', action='store_true', default=False,
-                    dest='no_cov_on_fail',
                     help='do not report coverage if test run fails, '
                          'default: False')
     group.addoption('--cov-fail-under', action='store', metavar='MIN', type='int',
