@@ -145,7 +145,10 @@ class DistMaster(CovController):
 
         self.cov = coverage.coverage(source=self.cov_source,
                                      config_file=self.cov_config)
-        self.cov.erase()
+        if self.cov_append:
+            self.cov.load()
+        else:
+            self.cov.erase()
         self.cov.start()
         self.cov.config.paths['source'] = [self.topdir]
 
@@ -223,7 +226,10 @@ class DistSlave(CovController):
         self.cov = coverage.coverage(source=self.cov_source,
                                      data_suffix=True,
                                      config_file=self.cov_config)
-        self.cov.erase()
+        if self.cov_append:
+            self.cov.load()
+        else:
+            self.cov.erase()
         self.cov.start()
         self.set_env()
 
