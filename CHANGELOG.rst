@@ -1,6 +1,13 @@
 Changelog
 =========
 
+2.1.0 (2015-08-23)
+------------------
+
+* Added support for `coverage 4.0b2`.
+* Added the ``--cov-append`` command line options. Contributed by Christian Ledermann
+  in `PR#80 <https://github.com/pytest-dev/pytest-cov/pull/80>`_.
+
 2.0.0 (2015-07-28)
 ------------------
 
