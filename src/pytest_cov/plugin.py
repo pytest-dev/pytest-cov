@@ -36,7 +36,6 @@ def pytest_addoption(parser):
     group.addoption('--cov-fail-under', action='store', metavar='MIN', type='int',
                     help='Fail if the total coverage is less than MIN.')
     group.addoption('--cov-append', action='store_true', default=False,
-                    dest='append_coverage',
                     help='do not delete coverage but append to current, '
                          'default: False')
 
@@ -117,6 +116,7 @@ class CovPlugin(object):
             self.options.cov_source,
             self.options.cov_report,
             self.options.cov_config,
+            self.options.cov_append,
             config,
             nodeid
         )

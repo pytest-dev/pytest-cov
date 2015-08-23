@@ -15,11 +15,12 @@ import coverage
 class CovController(object):
     """Base class for different plugin implementations."""
 
-    def __init__(self, cov_source, cov_report, cov_config, config=None, nodeid=None):
+    def __init__(self, cov_source, cov_report, cov_config, cov_append, config=None, nodeid=None):
         """Get some common config used by multiple derived classes."""
         self.cov_source = cov_source
         self.cov_report = cov_report
         self.cov_config = cov_config
+        self.cov_append = cov_append
         self.config = config
         self.nodeid = nodeid
 
@@ -115,7 +116,7 @@ class Central(CovController):
 
         self.cov = coverage.coverage(source=self.cov_source,
                                      config_file=self.cov_config)
-        if self.config.option.append_coverage:
+        if self.cov_append:
             self.cov.load()
         else:
             self.cov.erase()
