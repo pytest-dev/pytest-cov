@@ -16,8 +16,6 @@ import pytest_cov.plugin
 
 coverage, StrictVersion  # required for skipif mark on test_cov_min_from_coveragerc
 
-pytest_plugins = 'pytester',
-
 SCRIPT = '''
 import sys, helper
 
