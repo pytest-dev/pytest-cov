@@ -139,7 +139,7 @@ def test_cov_min_100(testdir):
                                '--cov-fail-under=100',
                                script)
 
-    assert result.ret == 1
+    assert result.ret != 0
 
 
 def test_cov_min_50(testdir):
@@ -181,7 +181,7 @@ def test_central_nonspecific(testdir):
     ])
 
     # multi-module coverage report
-    assert result.stdout.lines[-3].startswith('TOTAL ')
+    assert any(line.startswith('TOTAL ') for line in result.stdout.lines[-4:])
 
     assert result.ret == 0
 
@@ -199,7 +199,7 @@ fail_under = 100
                                '--cov-report=term-missing',
                                script)
 
-    assert result.ret == 1
+    assert result.ret != 0
 
 
 def test_central_coveragerc(testdir):
@@ -218,7 +218,7 @@ def test_central_coveragerc(testdir):
     ])
 
     # single-module coverage report
-    assert result.stdout.lines[-3].startswith('test_central_coveragerc')
+    assert all(not line.startswith('TOTAL ') for line in result.stdout.lines[-4:])
 
     assert result.ret == 0
 
@@ -246,7 +246,7 @@ show_missing = true
     ])
 
     # single-module coverage report
-    assert result.stdout.lines[-3].startswith('test_show_missing_coveragerc')
+    assert all(not line.startswith('TOTAL ') for line in result.stdout.lines[-4:])
 
     assert result.ret == 0
 
