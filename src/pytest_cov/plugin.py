@@ -43,8 +43,6 @@ def pytest_addoption(parser):
 @pytest.mark.tryfirst
 def pytest_load_initial_conftests(early_config, parser, args):
     ns = parser.parse_known_args(args)
-    if isinstance(ns, tuple):
-        ns, _ = ns
     ns.cov = bool(ns.cov_source)
 
     if ns.cov_source == [True]:
