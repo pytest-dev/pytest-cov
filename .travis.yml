@@ -1,5 +1,5 @@
 language: python
-python: 2.7
+python: '3.5'
 sudo: false
 env:
   global:
@@ -10,34 +10,42 @@ env:
     - TOXENV=2.7-27-37
     - TOXENV=3.3-27-37
     - TOXENV=3.4-27-37
+    - TOXENV=3.5-27-37
     - TOXENV=pypy-27-37
     - TOXENV=2.6-27-40
     - TOXENV=2.7-27-40
     - TOXENV=3.3-27-40
     - TOXENV=3.4-27-40
+    - TOXENV=3.5-27-40
     - TOXENV=pypy-27-40
     - TOXENV=2.6-28-37
     - TOXENV=2.7-28-37
     - TOXENV=3.3-28-37
     - TOXENV=3.4-28-37
+    - TOXENV=3.5-28-37
     - TOXENV=pypy-28-37
     - TOXENV=2.6-28-40
     - TOXENV=2.7-28-40
     - TOXENV=3.3-28-40
     - TOXENV=3.4-28-40
+    - TOXENV=3.5-28-40
     - TOXENV=pypy-28-40
 before_install:
   - python --version
-  - virtualenv --version
-  - pip --version
   - uname -a
   - lsb_release -a
 install:
   - pip install tox
+  - virtualenv --version
+  - easy_install --version
+  - pip --version
+  - tox --version
 script:
   - tox -v
+after_failure:
+  - more .tox/log/* | cat
+  - more .tox/*/log/* | cat
 notifications:
   email:
     on_success: never
     on_failure: always
-
