@@ -108,7 +108,7 @@ def test_fail():
 
 SCRIPT_RESULT = '9 * 89%'
 SCRIPT2_RESULT = '3 * 100%'
-CHILD_SCRIPT_RESULT = '6 * 100%'
+CHILD_SCRIPT_RESULT = '[56] * 100%'
 PARENT_SCRIPT_RESULT = '8 * 100%'
 
 xdist = pytest.mark.parametrize('opts', ['', '-n 1'], ids=['nodist', 'xdist'])
