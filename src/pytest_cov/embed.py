@@ -41,7 +41,8 @@ def init():
 
     cov_source = os.environ.get('COV_CORE_SOURCE')
     cov_config = os.environ.get('COV_CORE_CONFIG')
-    if cov_config:
+    cov_datafile = os.environ.get('COV_CORE_DATAFILE')
+    if cov_datafile:
         # Import what we need to activate coverage.
         import coverage
 
@@ -50,12 +51,17 @@ def init():
             cov_source = None
         else:
             cov_source = cov_source.split(os.pathsep)
+        if not cov_config:
+            cov_config = True
 
         # Activate coverage for this process.
-        cov = coverage.coverage(source=cov_source,
-                                data_suffix=True,
-                                config_file=cov_config,
-                                auto_data=True)
+        cov = coverage.coverage(
+            source=cov_source,
+            data_suffix=True,
+            config_file=cov_config,
+            auto_data=True,
+            data_file=cov_datafile
+        )
         cov.load()
         cov.start()
         cov._warn_no_data = False
