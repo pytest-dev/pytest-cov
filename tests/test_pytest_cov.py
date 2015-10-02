@@ -7,11 +7,11 @@ from distutils.version import StrictVersion
 import coverage
 import py
 import pytest
-
 import virtualenv
 from process_tests import TestProcess
 from process_tests import dump_on_error
 from process_tests import wait_for_strings
+
 import pytest_cov.plugin
 
 coverage, StrictVersion  # required for skipif mark on test_cov_min_from_coveragerc
@@ -69,6 +69,30 @@ def test_foo(idx):
         [sys.executable, 'child_script.py', str(idx)],
         stdout=subprocess.PIPE,
         stderr=subprocess.PIPE).communicate()
+
+# there is a issue in coverage.py with multiline statements at
+# end of file: https://bitbucket.org/ned/coveragepy/issue/293
+pass
+'''
+
+SCRIPT_PARENT_CHANGE_CWD = '''
+import subprocess
+import sys
+import os
+
+def pytest_generate_tests(metafunc):
+    for i in range(2):
+        metafunc.addcall(funcargs=dict(idx=i))
+
+def test_foo(idx):
+    os.mkdir("foobar")
+    os.chdir("foobar")
+
+    subprocess.check_call([
+        sys.executable,
+        os.path.join(os.path.dirname(__file__), 'child_script.py'),
+        str(idx)
+    ])
 
 # there is a issue in coverage.py with multiline statements at
 # end of file: https://bitbucket.org/ned/coveragepy/issue/293
@@ -346,6 +370,30 @@ def test_central_subprocess(testdir):
         '*- coverage: platform *, python * -*',
         'child_script* %s *' % CHILD_SCRIPT_RESULT,
         'parent_script* %s *' % PARENT_SCRIPT_RESULT,
+    ])
+    assert result.ret == 0
+
+
+def test_central_subprocess_change_cwd(testdir):
+    scripts = testdir.makepyfile(parent_script=SCRIPT_PARENT_CHANGE_CWD,
+                                 child_script=SCRIPT_CHILD)
+    parent_script = scripts.dirpath().join('parent_script.py')
+    testdir.makefile('', coveragerc="""
+[run]
+branch = true
+parallel = true
+""")
+
+    result = testdir.runpytest('-v', '--tb=short',
+                               '--cov=%s' % scripts.dirpath(),
+                               '--cov-config=coveragerc',
+                               '--cov-report=term-missing',
+                               parent_script)
+
+    result.stdout.fnmatch_lines([
+        '*- coverage: platform *, python * -*',
+        'child_script* %s *' % CHILD_SCRIPT_RESULT,
+        'parent_script* 100% *',
     ])
     assert result.ret == 0
 
