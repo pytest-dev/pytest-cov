@@ -1,6 +1,12 @@
 Changelog
 =========
 
+2.2.0 (2015-10-04)
+------------------
+
+* Added support for changing working directory in tests. Previously changing working
+  directory would disable coverage measurements in suprocesses.
+
 2.1.0 (2015-08-23)
 ------------------
 
