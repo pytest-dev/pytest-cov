@@ -154,6 +154,22 @@ def test_central(testdir):
     assert result.ret == 0
 
 
+def test_annotate(testdir):
+    script = testdir.makepyfile(SCRIPT)
+
+    result = testdir.runpytest('-v',
+                               '--cov=%s' % script.dirpath(),
+                               '--cov-report=annotate',
+                               script)
+
+    result.stdout.fnmatch_lines([
+        '*- coverage: platform *, python * -*',
+        'Coverage annotated source written next to source',
+        '*10 passed*',
+    ])
+    assert result.ret == 0
+
+
 def test_cov_min_100(testdir):
     script = testdir.makepyfile(SCRIPT)
 

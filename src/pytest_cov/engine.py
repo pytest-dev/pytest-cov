@@ -91,7 +91,8 @@ class CovController(object):
 
         # Produce annotated source code report if wanted.
         if 'annotate' in self.cov_report:
-            total = self.cov.annotate(ignore_errors=True)
+            self.cov.annotate(ignore_errors=True)
+            total = self.cov.report(ignore_errors=True, file=StringIO())
             stream.write('Coverage annotated source written next to source\n')
 
         # Produce html report if wanted.
