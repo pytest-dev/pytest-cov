@@ -6,6 +6,7 @@ Changelog
 
 * Added support for changing working directory in tests. Previously changing working
   directory would disable coverage measurements in suprocesses.
+* Fixed broken handling for ``--cov-report=annotate``.
 
 2.1.0 (2015-08-23)
 ------------------
