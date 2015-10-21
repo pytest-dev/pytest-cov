@@ -22,14 +22,14 @@ source_suffix = '.rst'
 master_doc = 'index'
 project = 'pytest-cov'
 year = '2015'
-author = 'Ionel Cristian Mărieș'
+author = 'pytest-cov contributors'
 copyright = '{0}, {1}'.format(year, author)
 version = release = '2.2.0'
 import sphinx_py3doc_enhanced_theme
 html_theme = "sphinx_py3doc_enhanced_theme"
 html_theme_path = [sphinx_py3doc_enhanced_theme.get_html_theme_path()]
 html_theme_options = {
-    'githuburl': 'https://github.com/schlamar/pytest-cov/'
+    'githuburl': 'https://github.com/pytest-dev/pytest-cov/'
 }
 
 pygments_style = 'trac'
