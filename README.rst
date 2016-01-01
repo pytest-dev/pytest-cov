@@ -302,6 +302,16 @@ subprocess.  The python used by the subprocess must have pytest-cov installed.  
 do normal site initialisation so that the environment variables can be detected and coverage
 started.
 
+Integration with doctests
+-------------------------
+
+pytest-cov works with pytest's built-in `doctest support`_. It should "just work" when you use ``--doctest-modules`` argument with your pytest-cov arguments, i.e. ``--cov=<module>`` or other arguments.
+
+However, the ``--doctest-glob`` argument may have issues. You should use the ``--doctest-modules`` if you can. If this is causing you trouble, please `submit an issue on GitHub`_.
+
+.. _`doctest support`: https://pytest.org/latest/doctest.html
+.. _`submit an issue on GitHub`: https://github.com/pytest-dev/pytest-cov/issues
+
 Acknowledgements
 ================
 
