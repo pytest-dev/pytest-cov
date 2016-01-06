@@ -257,7 +257,7 @@ Coverage Data File
 ==================
 
 The data file is erased at the beginning of testing to ensure clean data for each test run. If you
-need to combine the overage of several test runs you can use the ``--cov-append`` option to append
+need to combine the coverage of several test runs you can use the ``--cov-append`` option to append
 this coverage data to coverage data from previous test runs.
 
 The data file is left at the end of testing so that it is possible to use normal coverage tools to
