@@ -1,6 +1,8 @@
-===============================
-pytest-cov
-===============================
+========
+Overview
+========
+
+.. start-badges
 
 .. list-table::
     :stub-columns: 1
@@ -10,7 +12,7 @@ pytest-cov
     * - tests
       - | |travis| |appveyor| |requires|
     * - package
-      - |version| |downloads|
+      - |version| |downloads| |wheel| |supported-versions| |supported-implementations|
 
 .. |docs| image:: https://readthedocs.org/projects/pytest-cov/badge/?style=flat
     :target: https://readthedocs.org/projects/pytest-cov
@@ -22,23 +24,11 @@ pytest-cov
 
 .. |appveyor| image:: https://ci.appveyor.com/api/projects/status/github/pytest-dev/pytest-cov?branch=master&svg=true
     :alt: AppVeyor Build Status
-    :target: https://ci.appveyor.com/project/pytestbot/pytest-cov
-
-.. |coveralls| image:: https://img.shields.io/coveralls/pytest-dev/pytest-cov/master.svg?style=flat&label=Coveralls
-    :alt: Coverage Status
-    :target: https://coveralls.io/r/pytest-dev/pytest-cov
-
-.. |codecov| image:: https://img.shields.io/codecov/c/github/pytest-dev/pytest-cov/master.svg?style=flat&label=Codecov
-    :alt: Coverage Status
-    :target: https://codecov.io/github/pytest-dev/pytest-cov
+    :target: https://ci.appveyor.com/project/pytest-dev/pytest-cov
 
 .. |requires| image:: https://requires.io/github/pytest-dev/pytest-cov/requirements.svg?branch=master
     :alt: Requirements Status
     :target: https://requires.io/github/pytest-dev/pytest-cov/requirements/?branch=master
-
-.. |landscape| image:: https://landscape.io/github/pytest-dev/pytest-cov/master/landscape.svg?style=flat
-    :target: https://landscape.io/github/pytest-dev/pytest-cov/master
-    :alt: Code Quality Status
 
 .. |version| image:: https://img.shields.io/pypi/v/pytest-cov.svg?style=flat
     :alt: PyPI Package latest release
@@ -48,25 +38,20 @@ pytest-cov
     :alt: PyPI Package monthly downloads
     :target: https://pypi.python.org/pypi/pytest-cov
 
-.. |wheel| image:: https://pypip.in/wheel/pytest-cov/badge.svg?style=flat
+.. |wheel| image:: https://img.shields.io/pypi/wheel/pytest-cov.svg?style=flat
     :alt: PyPI Wheel
     :target: https://pypi.python.org/pypi/pytest-cov
 
-.. |supported-versions| image:: https://pypip.in/py_versions/pytest-cov/badge.svg?style=flat
+.. |supported-versions| image:: https://img.shields.io/pypi/pyversions/pytest-cov.svg?style=flat
     :alt: Supported versions
     :target: https://pypi.python.org/pypi/pytest-cov
 
-.. |supported-implementations| image:: https://pypip.in/implementation/pytest-cov/badge.svg?style=flat
-    :alt: Supported imlementations
+.. |supported-implementations| image:: https://img.shields.io/pypi/implementation/pytest-cov.svg?style=flat
+    :alt: Supported implementations
     :target: https://pypi.python.org/pypi/pytest-cov
 
-.. |scrutinizer| image:: https://img.shields.io/scrutinizer/g/pytest-dev/pytest-cov/master.svg?style=flat
-    :alt: Scrutinizer Status
-    :target: https://scrutinizer-ci.com/g/pytest-dev/pytest-cov/
 
-Pytest plugin for measuring coverage.
-
-* Free software: MIT license
+.. end-badges
 
 This plugin produces coverage reports.  It supports centralised testing and distributed testing in
 both load and each modes.  It also supports coverage of subprocesses.
@@ -74,6 +59,7 @@ both load and each modes.  It also supports coverage of subprocesses.
 All features offered by the coverage package should be available, either through pytest-cov or
 through coverage's config file.
 
+* Free software: MIT license
 
 Installation
 ============

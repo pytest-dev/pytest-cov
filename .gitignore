@@ -9,6 +9,7 @@
 dist
 build
 eggs
+.eggs
 parts
 bin
 var
@@ -28,6 +29,7 @@ pip-log.txt
 .tox
 .coverage.*
 nosetests.xml
+coverage.xml
 htmlcov
 
 # Translations
@@ -57,4 +59,5 @@ docs/_build
 .cache
 .pytest
 .bootstrap
+.appveyor.token
 *.bak

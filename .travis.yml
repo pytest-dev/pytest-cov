@@ -3,33 +3,47 @@ python: '3.5'
 sudo: false
 env:
   global:
-    LD_PRELOAD=/lib/x86_64-linux-gnu/libSegFault.so
+    - LD_PRELOAD=/lib/x86_64-linux-gnu/libSegFault.so
+    - SEGFAULT_SIGNALS=all
   matrix:
     - TOXENV=check
-    - TOXENV=2.6-27-37
-    - TOXENV=2.7-27-37
-    - TOXENV=3.3-27-37
-    - TOXENV=3.4-27-37
-    - TOXENV=3.5-27-37
+
+    - TOXENV=py26-27-37
+    - TOXENV=py26-27-40
+    - TOXENV=py26-27-41
+    - TOXENV=py26-28-37
+    - TOXENV=py26-28-40
+    - TOXENV=py26-28-41
+    - TOXENV=py27-27-37
+    - TOXENV=py27-27-40
+    - TOXENV=py27-27-41
+    - TOXENV=py27-28-37
+    - TOXENV=py27-28-40
+    - TOXENV=py27-28-41
+    - TOXENV=py33-27-37
+    - TOXENV=py33-27-40
+    - TOXENV=py33-27-41
+    - TOXENV=py33-28-37
+    - TOXENV=py33-28-40
+    - TOXENV=py33-28-41
+    - TOXENV=py34-27-37
+    - TOXENV=py34-27-40
+    - TOXENV=py34-27-41
+    - TOXENV=py34-28-37
+    - TOXENV=py34-28-40
+    - TOXENV=py34-28-41
+    - TOXENV=py35-27-37
+    - TOXENV=py35-27-40
+    - TOXENV=py35-27-41
+    - TOXENV=py35-28-37
+    - TOXENV=py35-28-40
+    - TOXENV=py35-28-41
     - TOXENV=pypy-27-37
-    - TOXENV=2.6-27-40
-    - TOXENV=2.7-27-40
-    - TOXENV=3.3-27-40
-    - TOXENV=3.4-27-40
-    - TOXENV=3.5-27-40
     - TOXENV=pypy-27-40
-    - TOXENV=2.6-28-37
-    - TOXENV=2.7-28-37
-    - TOXENV=3.3-28-37
-    - TOXENV=3.4-28-37
-    - TOXENV=3.5-28-37
+    - TOXENV=pypy-27-41
     - TOXENV=pypy-28-37
-    - TOXENV=2.6-28-40
-    - TOXENV=2.7-28-40
-    - TOXENV=3.3-28-40
-    - TOXENV=3.4-28-40
-    - TOXENV=3.5-28-40
     - TOXENV=pypy-28-40
+    - TOXENV=pypy-28-41
 before_install:
   - python --version
   - uname -a
@@ -45,6 +59,11 @@ script:
 after_failure:
   - more .tox/log/* | cat
   - more .tox/*/log/* | cat
+before_cache:
+  - rm -rf $HOME/.cache/pip/log
+cache:
+  directories:
+    - $HOME/.cache/pip
 notifications:
   email:
     on_success: never

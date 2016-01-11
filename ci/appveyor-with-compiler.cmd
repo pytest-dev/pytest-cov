@@ -17,21 +17,30 @@
 ::
 :: Author: Olivier Grisel
 :: License: CC0 1.0 Universal: http://creativecommons.org/publicdomain/zero/1.0/
-@ECHO OFF
-
 SET COMMAND_TO_RUN=%*
 SET WIN_SDK_ROOT=C:\Program Files\Microsoft SDKs\Windows
+SET WIN_WDK="c:\Program Files (x86)\Windows Kits\10\Include\wdf"
+ECHO SDK: %WINDOWS_SDK_VERSION% ARCH: %PYTHON_ARCH%
 
-IF "%PYTHON_ARCH%"=="64" (
-    ECHO SDK: %WINDOWS_SDK_VERSION% ARCH: %PYTHON_ARCH%
-    SET DISTUTILS_USE_SDK=1
-    SET MSSdk=1
-    "%WIN_SDK_ROOT%\%WINDOWS_SDK_VERSION%\Setup\WindowsSdkVer.exe" -q -version:%WINDOWS_SDK_VERSION%
-    "%WIN_SDK_ROOT%\%WINDOWS_SDK_VERSION%\Bin\SetEnv.cmd" /x64 /release
-    ECHO Executing: %COMMAND_TO_RUN%
-    call %COMMAND_TO_RUN% || EXIT 1
-) ELSE (
-    ECHO SDK: %WINDOWS_SDK_VERSION% ARCH: %PYTHON_ARCH%
-    ECHO Executing: %COMMAND_TO_RUN%
-    call %COMMAND_TO_RUN% || EXIT 1
+
+IF "%PYTHON_VERSION%"=="3.5" (
+    IF EXIST %WIN_WDK% (
+        REM See: https://connect.microsoft.com/VisualStudio/feedback/details/1610302/
+        REN %WIN_WDK% 0wdf
+    )
+    GOTO main
 )
+
+IF "%PYTHON_ARCH%"=="32" (
+    GOTO main
+)
+
+SET DISTUTILS_USE_SDK=1
+SET MSSdk=1
+"%WIN_SDK_ROOT%\%WINDOWS_SDK_VERSION%\Setup\WindowsSdkVer.exe" -q -version:%WINDOWS_SDK_VERSION%
+CALL "%WIN_SDK_ROOT%\%WINDOWS_SDK_VERSION%\Bin\SetEnv.cmd" /x64 /release
+
+:main
+
+ECHO Executing: %COMMAND_TO_RUN%
+CALL %COMMAND_TO_RUN% || EXIT 1
