@@ -322,7 +322,7 @@ def test_foo(foo):
                                script)
     result.stdout.fnmatch_lines([
         '*- coverage: platform *, python * -*',
-        'test_dist_combine_racecondition* 2002 * 0 * 100% *',
+        'test_dist_combine_racecondition* 2002 * 0 * 100%*',
         '*1000 passed*'
     ])
     for line in result.stdout.lines:
@@ -384,8 +384,8 @@ def test_central_subprocess(testdir):
 
     result.stdout.fnmatch_lines([
         '*- coverage: platform *, python * -*',
-        'child_script* %s *' % CHILD_SCRIPT_RESULT,
-        'parent_script* %s *' % PARENT_SCRIPT_RESULT,
+        'child_script* %s*' % CHILD_SCRIPT_RESULT,
+        'parent_script* %s*' % PARENT_SCRIPT_RESULT,
     ])
     assert result.ret == 0
 
@@ -409,7 +409,7 @@ parallel = true
     result.stdout.fnmatch_lines([
         '*- coverage: platform *, python * -*',
         'child_script* %s *' % CHILD_SCRIPT_RESULT,
-        'parent_script* 100% *',
+        'parent_script* 100%*',
     ])
     assert result.ret == 0
 
@@ -601,7 +601,7 @@ def test_basic():
 
 '''
 
-CONF_RESULT = 'mod* 2 * 100% *'
+CONF_RESULT = 'mod* 2 * 100%*'
 
 
 def test_cover_conftest(testdir):
@@ -668,7 +668,7 @@ def test_basic():
 
 '''
 
-EXCLUDED_RESULT = '4 * 100% *'
+EXCLUDED_RESULT = '4 * 100%*'
 
 
 def test_coveragerc(testdir):
