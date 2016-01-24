@@ -400,7 +400,7 @@ branch = true
 parallel = true
 """)
 
-    result = testdir.runpytest('-v', '--tb=short',
+    result = testdir.runpytest('-v', '-s',
                                '--cov=%s' % scripts.dirpath(),
                                '--cov-config=coveragerc',
                                '--cov-report=term-missing',
@@ -408,7 +408,7 @@ parallel = true
 
     result.stdout.fnmatch_lines([
         '*- coverage: platform *, python * -*',
-        'child_script* %s *' % CHILD_SCRIPT_RESULT,
+        'child_script* %s*' % CHILD_SCRIPT_RESULT,
         'parent_script* 100%*',
     ])
     assert result.ret == 0
@@ -453,8 +453,8 @@ def test_dist_subprocess_collocated(testdir):
 
     result.stdout.fnmatch_lines([
         '*- coverage: platform *, python * -*',
-        'child_script* %s *' % CHILD_SCRIPT_RESULT,
-        'parent_script* %s *' % PARENT_SCRIPT_RESULT,
+        'child_script* %s*' % CHILD_SCRIPT_RESULT,
+        'parent_script* %s*' % PARENT_SCRIPT_RESULT,
     ])
     assert result.ret == 0
 
@@ -481,8 +481,8 @@ def test_dist_subprocess_not_collocated(testdir, tmpdir):
 
     result.stdout.fnmatch_lines([
         '*- coverage: platform *, python * -*',
-        'child_script* %s *' % CHILD_SCRIPT_RESULT,
-        'parent_script* %s *' % PARENT_SCRIPT_RESULT,
+        'child_script* %s*' % CHILD_SCRIPT_RESULT,
+        'parent_script* %s*' % PARENT_SCRIPT_RESULT,
     ])
     assert result.ret == 0
 
