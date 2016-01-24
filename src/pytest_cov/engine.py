@@ -10,6 +10,7 @@ except ImportError:
     from io import StringIO
 
 import coverage
+from coverage.data import CoverageData
 
 
 class CovController(object):
@@ -192,7 +193,9 @@ class DistMaster(CovController):
                                     config_file=self.cov_config)
             cov.start()
             if hasattr(self.cov.data, 'read_fileobj'):  # for coverage 4.0
-                cov.data.read_fileobj(StringIO(node.slaveoutput['cov_slave_data']))
+                data = CoverageData()
+                data.read_fileobj(StringIO(node.slaveoutput['cov_slave_data']))
+                cov.data.update(data)
             else:
                 cov.data.lines, cov.data.arcs = node.slaveoutput['cov_slave_data']
             cov.stop()
