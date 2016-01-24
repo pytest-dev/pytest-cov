@@ -22,9 +22,9 @@ Overview
     :alt: Travis-CI Build Status
     :target: https://travis-ci.org/pytest-dev/pytest-cov
 
-.. |appveyor| image:: https://ci.appveyor.com/api/projects/status/github/pytest-dev/pytest-cov?branch=master&svg=true
+.. |appveyor| image:: https://ci.appveyor.com/api/projects/status/github/pytestbot/pytest-cov?branch=master&svg=true
     :alt: AppVeyor Build Status
-    :target: https://ci.appveyor.com/project/pytest-dev/pytest-cov
+    :target: https://ci.appveyor.com/project/pytestbot/pytest-cov
 
 .. |requires| image:: https://requires.io/github/pytest-dev/pytest-cov/requirements.svg?branch=master
     :alt: Requirements Status
