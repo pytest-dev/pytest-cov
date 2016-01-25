@@ -51,9 +51,9 @@ import sys
 idx = int(sys.argv[1])
 
 if idx == 0:
-    pass
+    foo = "a"  # previously there was a "pass" here but Python 3.5 optimizes it away.
 if idx == 1:
-    pass
+    foo = "b"  # previously there was a "pass" here but Python 3.5 optimizes it away.
 '''
 
 SCRIPT_PARENT = '''
