@@ -1,7 +1,7 @@
 Changelog
 =========
 
-2.2.1 (2016-01-28)
+2.2.1 (2016-01-30)
 ------------------
 
 * Fixed incorrect merging of coverage data when xdist was used and coverage was ``>= 4.0``.
