@@ -97,7 +97,7 @@ Usage
 Centralised Testing
 -------------------
 
-Centralised testing will report on the combined coverage of the main process and all of it's
+Centralised testing will report on the combined coverage of the main process and all of its
 subprocesses.
 
 Running centralised testing::
@@ -121,7 +121,7 @@ Distributed Testing: Load
 
 Distributed testing with dist mode set to load will report on the combined coverage of all slaves.
 The slaves may be spread out over any number of hosts and each slave may be located anywhere on the
-file system.  Each slave will have it's subprocesses measured.
+file system.  Each slave will have its subprocesses measured.
 
 Running distributed testing with dist mode set to load::
 
