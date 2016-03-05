@@ -12,3 +12,4 @@ Authors
 * Josh Kalderimis - http://blog.cookiestack.com/
 * Ionel Cristian Mărieș - http://blog.ionelmc.ro
 * Christian Ledermann - https://github.com/cleder
+* Alec Nikolas Reiter - https://github.com/justanr
