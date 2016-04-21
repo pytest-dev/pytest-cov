@@ -1,15 +1,10 @@
 """Coverage plugin for pytest."""
 import os
-
 import pytest
 from coverage.misc import CoverageException
 
 from . import embed
 from . import engine
-
-
-class CoverageError(Exception):
-    """Indicates that our coverage is too low"""
 
 
 def pytest_addoption(parser):
@@ -172,9 +167,11 @@ class CovPlugin(object):
             assert total is not None, 'Test coverage should never be `None`'
             cov_fail_under = self.options.cov_fail_under
             if cov_fail_under is not None and total < cov_fail_under:
-                raise CoverageError(('Required test coverage of %d%% not '
-                                     'reached. Total coverage: %.2f%%')
-                                    % (self.options.cov_fail_under, total))
+                raise pytest.UsageError(
+                    'Required test coverage of %d%% not '
+                    'reached. Total coverage: %.2f%%\n'
+                    % (self.options.cov_fail_under, total)
+                )
 
     def pytest_runtest_setup(self, item):
         if os.getpid() != self.pid:
