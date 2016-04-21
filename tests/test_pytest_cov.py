@@ -99,6 +99,29 @@ def test_foo(idx):
 pass
 '''
 
+SCRIPT_PARENT_CHANGE_CWD_IMPORT_CHILD = '''
+import subprocess
+import sys
+import os
+
+def pytest_generate_tests(metafunc):
+    for i in range(2):
+        metafunc.addcall(funcargs=dict(idx=i))
+
+def test_foo(idx):
+    os.mkdir("foobar")
+    os.chdir("foobar")
+
+    subprocess.check_call([
+        sys.executable,
+        '-m', 'child_script', str(idx)
+    ])
+
+# there is a issue in coverage.py with multiline statements at
+# end of file: https://bitbucket.org/ned/coveragepy/issue/293
+pass
+'''
+
 SCRIPT_FUNCARG = '''
 import coverage
 
@@ -413,6 +436,30 @@ parallel = true
     ])
     assert result.ret == 0
 
+
+def test_central_subprocess_change_cwd_with_pythonpath(testdir, monkeypatch):
+    stuff = testdir.mkdir('stuff')
+    parent_script = stuff.join('parent_script.py')
+    parent_script.write(SCRIPT_PARENT_CHANGE_CWD_IMPORT_CHILD)
+    stuff.join('child_script.py').write(SCRIPT_CHILD)
+    testdir.makefile('', coveragerc="""
+[run]
+branch = true
+parallel = true
+""")
+
+    monkeypatch.setitem(os.environ, 'PYTHONPATH', str(stuff))
+    result = testdir.runpytest('-vv', '-s',
+                               '--cov=child_script',
+                               '--cov-config=coveragerc',
+                               '--cov-report=term-missing',
+                               parent_script)
+
+    result.stdout.fnmatch_lines([
+        '*- coverage: platform *, python * -*',
+        '*child_script* %s*' % CHILD_SCRIPT_RESULT,
+    ])
+    assert result.ret == 0
 
 def test_central_subprocess_no_subscript(testdir):
     script = testdir.makepyfile("""
