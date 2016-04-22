@@ -115,6 +115,7 @@ def test_foo(idx):
     subprocess.check_call([
         sys.executable,
         '-c', 'import sys; sys.argv = ["", str(%s)]; import child_script' % idx
+    ])
 
 # there is a issue in coverage.py with multiline statements at
 # end of file: https://bitbucket.org/ned/coveragepy/issue/293
