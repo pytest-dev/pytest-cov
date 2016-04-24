@@ -235,7 +235,10 @@ def test_term_output_dir(testdir):
                                '--cov-report=term:' + DEST_DIR,
                                script)
 
+    # backport of argparse to py26 doesn't display ArgumentTypeError message
     result.stderr.fnmatch_lines([
+        '*argument --cov-report: *',
+    ] if tuple(sys.version_info[:2]) == (2, 6) else [
         '*argument --cov-report: output specifier not supported for: "term:%s"*' % DEST_DIR,
     ])
     assert result.ret != 0
@@ -249,7 +252,10 @@ def test_term_missing_output_dir(testdir):
                                '--cov-report=term-missing:' + DEST_DIR,
                                script)
 
+    # backport of argparse to py26 doesn't display ArgumentTypeError message
     result.stderr.fnmatch_lines([
+        '*argument --cov-report: *',
+    ] if tuple(sys.version_info[:2]) == (2, 6) else [
         '*argument --cov-report: output specifier not supported for: '
         '"term-missing:%s"*' % DEST_DIR,
     ])
