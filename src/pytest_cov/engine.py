@@ -92,20 +92,24 @@ class CovController(object):
 
         # Produce annotated source code report if wanted.
         if 'annotate' in self.cov_report:
-            self.cov.annotate(ignore_errors=True)
+            annotate_dir = self.cov_report['annotate']
+            self.cov.annotate(ignore_errors=True, directory=annotate_dir)
             # We need to call Coverage.report here, just to get the total
             # Coverage.annotate don't return any total and we need it for --cov-fail-under.
             total = self.cov.report(ignore_errors=True, file=StringIO())
-            stream.write('Coverage annotated source written next to source\n')
+            if annotate_dir:
+                stream.write('Coverage annotated source written to dir %s\n' % annotate_dir)
+            else:
+                stream.write('Coverage annotated source written next to source\n')
 
         # Produce html report if wanted.
         if 'html' in self.cov_report:
-            total = self.cov.html_report(ignore_errors=True)
+            total = self.cov.html_report(ignore_errors=True, directory=self.cov_report['html'])
             stream.write('Coverage HTML written to dir %s\n' % self.cov.config.html_dir)
 
         # Produce xml report if wanted.
         if 'xml' in self.cov_report:
-            total = self.cov.xml_report(ignore_errors=True)
+            total = self.cov.xml_report(ignore_errors=True, outfile=self.cov_report['xml'])
             stream.write('Coverage XML written to file %s\n' % self.cov.config.xml_output)
 
         # Report on any failed slaves.

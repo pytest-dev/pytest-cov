@@ -1,10 +1,42 @@
 """Coverage plugin for pytest."""
 import os
 import pytest
+import argparse
 from coverage.misc import CoverageException
 
 from . import embed
 from . import engine
+
+
+class CoverageError(Exception):
+    """Indicates that our coverage is too low"""
+
+
+def validate_report(arg):
+    file_choices = ['annotate', 'html', 'xml']
+    term_choices = ['term', 'term-missing']
+    all_choices = term_choices + file_choices
+    values = arg.split(":", 1)
+    report_type = values[0]
+    if report_type not in all_choices + ['']:
+        msg = 'invalid choice: "{}" (choose from "{}")'.format(arg, all_choices)
+        raise argparse.ArgumentTypeError(msg)
+
+    if len(values) == 1:
+        return report_type, None
+
+    if report_type not in file_choices:
+        msg = 'output specifier not supported for: "{}" (choose from "{}")'.format(arg,
+                                                                                   file_choices)
+        raise argparse.ArgumentTypeError(msg)
+
+    return values
+
+
+class StoreReport(argparse.Action):
+    def __call__(self, parser, namespace, values, option_string=None):
+        report_type, file = values
+        namespace.cov_report[report_type] = file
 
 
 def pytest_addoption(parser):
@@ -16,12 +48,12 @@ def pytest_addoption(parser):
                     nargs='?', const=True, dest='cov_source',
                     help='measure coverage for filesystem path '
                     '(multi-allowed)')
-    group.addoption('--cov-report', action='append', default=[],
-                    metavar='type',
-                    choices=['term', 'term-missing', 'annotate', 'html',
-                             'xml', ''],
+    group.addoption('--cov-report', action=StoreReport, default={},
+                    metavar='type', type=validate_report,
                     help='type of report to generate: term, term-missing, '
-                    'annotate, html, xml (multi-allowed)')
+                    'annotate, html, xml (multi-allowed). '
+                    'annotate, html and xml may be be followed by ":DEST" '
+                    'where DEST specifies the output location.')
     group.addoption('--cov-config', action='store', default='.coveragerc',
                     metavar='path',
                     help='config file for coverage, default: .coveragerc')
@@ -45,8 +77,8 @@ def pytest_load_initial_conftests(early_config, parser, args):
 
     if not ns.cov_report:
         ns.cov_report = ['term']
-    elif ns.cov_report == ['']:
-        ns.cov_report = []
+    elif len(ns.cov_report) == 1 and '' in ns.cov_report:
+        ns.cov_report = {}
 
     if ns.cov:
         plugin = CovPlugin(ns, early_config.pluginmanager)

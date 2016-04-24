@@ -134,6 +134,8 @@ SCRIPT_RESULT = '9 * 89%'
 SCRIPT2_RESULT = '3 * 100%'
 CHILD_SCRIPT_RESULT = '[56] * 100%'
 PARENT_SCRIPT_RESULT = '8 * 100%'
+DEST_DIR = 'cov_dest'
+REPORT_NAME = 'cov.xml'
 
 xdist = pytest.mark.parametrize('opts', ['', '-n 1'], ids=['nodist', 'xdist'])
 
@@ -168,6 +170,90 @@ def test_annotate(testdir):
         '*10 passed*',
     ])
     assert result.ret == 0
+
+
+def test_annotate_output_dir(testdir):
+    script = testdir.makepyfile(SCRIPT)
+
+    result = testdir.runpytest('-v',
+                               '--cov=%s' % script.dirpath(),
+                               '--cov-report=annotate:' + DEST_DIR,
+                               script)
+
+    result.stdout.fnmatch_lines([
+        '*- coverage: platform *, python * -*',
+        'Coverage annotated source written to dir ' + DEST_DIR,
+        '*10 passed*',
+    ])
+    dest_dir = testdir.tmpdir.join(DEST_DIR)
+    assert dest_dir.check(dir=True)
+    assert dest_dir.join(script.basename + ",cover").check()
+    assert result.ret == 0
+
+
+def test_html_output_dir(testdir):
+    script = testdir.makepyfile(SCRIPT)
+
+    result = testdir.runpytest('-v',
+                               '--cov=%s' % script.dirpath(),
+                               '--cov-report=html:' + DEST_DIR,
+                               script)
+
+    result.stdout.fnmatch_lines([
+        '*- coverage: platform *, python * -*',
+        'Coverage HTML written to dir ' + DEST_DIR,
+        '*10 passed*',
+    ])
+    dest_dir = testdir.tmpdir.join(DEST_DIR)
+    assert dest_dir.check(dir=True)
+    assert dest_dir.join("index.html").check()
+    assert result.ret == 0
+
+
+def test_xml_output_dir(testdir):
+    script = testdir.makepyfile(SCRIPT)
+
+    result = testdir.runpytest('-v',
+                               '--cov=%s' % script.dirpath(),
+                               '--cov-report=xml:' + REPORT_NAME,
+                               script)
+
+    result.stdout.fnmatch_lines([
+        '*- coverage: platform *, python * -*',
+        'Coverage XML written to file ' + REPORT_NAME,
+        '*10 passed*',
+    ])
+    assert testdir.tmpdir.join(REPORT_NAME).check()
+    assert result.ret == 0
+
+
+def test_term_output_dir(testdir):
+    script = testdir.makepyfile(SCRIPT)
+
+    result = testdir.runpytest('-v',
+                               '--cov=%s' % script.dirpath(),
+                               '--cov-report=term:' + DEST_DIR,
+                               script)
+
+    result.stderr.fnmatch_lines([
+        '*argument --cov-report: output specifier not supported for: "term:%s"*' % DEST_DIR,
+    ])
+    assert result.ret != 0
+
+
+def test_term_missing_output_dir(testdir):
+    script = testdir.makepyfile(SCRIPT)
+
+    result = testdir.runpytest('-v',
+                               '--cov=%s' % script.dirpath(),
+                               '--cov-report=term-missing:' + DEST_DIR,
+                               script)
+
+    result.stderr.fnmatch_lines([
+        '*argument --cov-report: output specifier not supported for: '
+        '"term-missing:%s"*' % DEST_DIR,
+    ])
+    assert result.ret != 0
 
 
 def test_cov_min_100(testdir):
