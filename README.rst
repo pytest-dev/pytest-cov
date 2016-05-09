@@ -231,6 +231,15 @@ These three report options output to files without showing anything on the termi
             --cov-report annotate
             --cov=myproj tests/
 
+The output location for each of these reports can be specified. The output location for the XML
+report is a file. Where as the output location for the HTML and annotated source code reports are
+directories::
+
+    py.test --cov-report html:cov_html
+            --cov-report xml:cov.xml
+            --cov-report annotate:cov_annotate
+            --cov=myproj tests/
+
 The final report option can also suppress printing to the terminal::
 
     py.test --cov-report= --cov=myproj tests/
