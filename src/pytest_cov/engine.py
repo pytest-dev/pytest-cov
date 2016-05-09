@@ -35,8 +35,7 @@ class CovController(object):
         if self.cov_source is None:
             os.environ['COV_CORE_SOURCE'] = ''
         else:
-            os.environ['COV_CORE_SOURCE'] = os.pathsep.join(
-                os.path.abspath(p) for p in self.cov_source)
+            os.environ['COV_CORE_SOURCE'] = os.pathsep.join(self.cov_source)
         config_file = os.path.abspath(self.cov_config)
         if os.path.exists(config_file):
             os.environ['COV_CORE_CONFIG'] = config_file
