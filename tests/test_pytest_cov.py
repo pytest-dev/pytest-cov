@@ -147,6 +147,12 @@ def test_run_target():
     p.join()
 '''
 
+try:
+    import xdist
+    HAS_XDIST = True
+except:
+    HAS_XDIST = False
+
 SCRIPT_FAIL = '''
 def test_fail():
     assert False
@@ -160,7 +166,11 @@ PARENT_SCRIPT_RESULT = '8 * 100%'
 DEST_DIR = 'cov_dest'
 REPORT_NAME = 'cov.xml'
 
-xdist = pytest.mark.parametrize('opts', ['', '-n 1'], ids=['nodist', 'xdist'])
+try:
+    import xdist
+    xdist = pytest.mark.parametrize('opts', ['', '-n 1'], ids=['nodist', 'xdist'])
+except:
+    xdist = pytest.mark.parametrize('opts', [''], ids=['nodist'])
 
 
 def test_central(testdir):
@@ -406,6 +416,7 @@ show_missing = true
     assert result.ret == 0
 
 
+@pytest.mark.skipif("not HAS_XDIST")
 def test_no_cov_on_fail(testdir):
     script = testdir.makepyfile(SCRIPT_FAIL)
 
@@ -419,6 +430,7 @@ def test_no_cov_on_fail(testdir):
     result.stdout.fnmatch_lines(['*1 failed*'])
 
 
+@pytest.mark.skipif("not HAS_XDIST")
 def test_dist_combine_racecondition(testdir):
     script = testdir.makepyfile("""
 import pytest
@@ -445,6 +457,7 @@ def test_foo(foo):
     assert result.ret == 0
 
 
+@pytest.mark.skipif("not HAS_XDIST")
 def test_dist_collocated(testdir):
     script = testdir.makepyfile(SCRIPT)
 
@@ -464,6 +477,7 @@ def test_dist_collocated(testdir):
     assert result.ret == 0
 
 
+@pytest.mark.skipif("not HAS_XDIST")
 def test_dist_not_collocated(testdir):
     script = testdir.makepyfile(SCRIPT)
     dir1 = testdir.mkdir('dir1')
@@ -577,6 +591,7 @@ omit =
     assert result.ret == 0
 
 
+@pytest.mark.skipif("not HAS_XDIST")
 def test_dist_subprocess_collocated(testdir):
     scripts = testdir.makepyfile(parent_script=SCRIPT_PARENT,
                                  child_script=SCRIPT_CHILD)
@@ -598,6 +613,7 @@ def test_dist_subprocess_collocated(testdir):
     assert result.ret == 0
 
 
+@pytest.mark.skipif("not HAS_XDIST")
 def test_dist_subprocess_not_collocated(testdir, tmpdir):
     scripts = testdir.makepyfile(parent_script=SCRIPT_PARENT,
                                  child_script=SCRIPT_CHILD)
@@ -643,6 +659,7 @@ def test_empty_report(testdir):
     assert not matching_lines
 
 
+@pytest.mark.skipif("not HAS_XDIST")
 def test_dist_missing_data(testdir):
     venv_path = os.path.join(str(testdir.tmpdir), 'venv')
     virtualenv.create_environment(venv_path)
@@ -755,6 +772,7 @@ def test_cover_conftest(testdir):
     result.stdout.fnmatch_lines([CONF_RESULT])
 
 
+@pytest.mark.skipif("not HAS_XDIST")
 def test_cover_looponfail(testdir, monkeypatch):
     testdir.makepyfile(mod=MODULE)
     testdir.makeconftest(CONFTEST)
@@ -773,6 +791,7 @@ def test_cover_looponfail(testdir, monkeypatch):
             )
 
 
+@pytest.mark.skipif("not HAS_XDIST")
 def test_cover_conftest_dist(testdir):
     testdir.makepyfile(mod=MODULE)
     testdir.makeconftest(CONFTEST)
@@ -822,6 +841,7 @@ def test_coveragerc(testdir):
     result.stdout.fnmatch_lines(['test_coveragerc* %s' % EXCLUDED_RESULT])
 
 
+@pytest.mark.skipif("not HAS_XDIST")
 def test_coveragerc_dist(testdir):
     testdir.makefile('', coveragerc=COVERAGERC)
     script = testdir.makepyfile(EXCLUDED_TEST)
@@ -868,7 +888,7 @@ def test_foo():
 SCRIPT_SIMPLE_RESULT = '4 * 100%'
 
 
-@pytest.mark.skipif('sys.platform == "win32"')
+@pytest.mark.skipif('sys.platform == "win32" or not HAS_XDIST')
 def test_dist_boxed(testdir):
     script = testdir.makepyfile(SCRIPT_SIMPLE)
 
@@ -944,6 +964,7 @@ data_file = %s
     assert glob.glob(str(testdir.tmpdir.join('some/special/place/coverage-data*')))
 
 
+@pytest.mark.skipif("not HAS_XDIST")
 def test_external_data_file_xdist(testdir):
     script = testdir.makepyfile(SCRIPT)
     testdir.tmpdir.join('.coveragerc').write("""
