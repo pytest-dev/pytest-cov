@@ -8,7 +8,7 @@ import coverage
 import py
 import pytest
 import virtualenv
-from process_tests import TestProcess
+from process_tests import TestProcess as _TestProcess
 from process_tests import dump_on_error
 from process_tests import wait_for_strings
 
@@ -760,7 +760,7 @@ def test_cover_looponfail(testdir, monkeypatch):
     testdir.makeconftest(CONFTEST)
     script = testdir.makepyfile(BASIC_TEST)
 
-    monkeypatch.setattr(testdir, 'run', lambda *args: TestProcess(*map(str, args)))
+    monkeypatch.setattr(testdir, 'run', lambda *args: _TestProcess(*map(str, args)))
     with testdir.runpytest('-v',
                            '--cov=%s' % script.dirpath(),
                            '--looponfail',
