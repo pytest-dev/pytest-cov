@@ -4,6 +4,7 @@ import subprocess
 import sys
 from distutils.version import StrictVersion
 
+from _pytest.main import EXIT_USAGEERROR
 import coverage
 import py
 import pytest
@@ -640,7 +641,7 @@ def test_dist_subprocess_not_collocated(testdir, tmpdir):
     assert result.ret == 0
 
 
-def test_empty_report(testdir):
+def test_invalid_coverage_source(testdir):
     script = testdir.makepyfile(SCRIPT)
 
     result = testdir.runpytest('-v',
@@ -652,7 +653,7 @@ def test_empty_report(testdir):
         '*- coverage: platform *, python * -*',
         '*10 passed*'
     ])
-    assert result.ret == 0
+    assert result.ret == EXIT_USAGEERROR
     matching_lines = [line for line in result.outlines if '%' in line]
     assert not matching_lines
 
