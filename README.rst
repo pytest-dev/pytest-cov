@@ -223,6 +223,19 @@ The terminal report with line numbers::
     --------------------------------------------------
     TOTAL                  353     20    94%
 
+The terminal report with skip covered::
+
+    py.test --cov-report term-skip-covered --cov=myproj tests/
+
+    -------------------- coverage: platform linux2, python 2.6.4-final-0 ---------------------
+    Name                 Stmts   Miss  Cover
+    ----------------------------------------
+    myproj/myproj          257     13    94%
+    myproj/feature4286      94      7    92%
+    ----------------------------------------
+    TOTAL                  353     20    94%
+
+    1 files skipped due to complete coverage.
 
 These three report options output to files without showing anything on the terminal::
 

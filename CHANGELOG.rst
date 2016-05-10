@@ -12,7 +12,8 @@ Changelog
   Contributed by David Szotten in `PR#116 <https://github.com/pytest-dev/pytest-cov/pull/116>`_.
 * Fixed bug occurred when bare ``--cov`` parameter was used with xdist.
   Contributed by Michael Elovskikh in `PR#120 <https://github.com/pytest-dev/pytest-cov/pull/120>`_.
-
+* Add support for ``skip_covered`` and added ``--cov-report=term-skip-covered`` command
+  line options. Contributed by Saurabh Kumar in `PR#115 <https://github.com/pytest-dev/pytest-cov/pull/115>`_.
 
 2.2.1 (2016-01-30)
 ------------------

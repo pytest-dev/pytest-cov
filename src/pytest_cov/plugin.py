@@ -16,7 +16,7 @@ class CoverageError(Exception):
 
 def validate_report(arg):
     file_choices = ['annotate', 'html', 'xml']
-    term_choices = ['term', 'term-missing']
+    term_choices = ['term', 'term-missing', 'term-skip-covered']
     all_choices = term_choices + file_choices
     values = arg.split(":", 1)
     report_type = values[0]
@@ -53,7 +53,7 @@ def pytest_addoption(parser):
     group.addoption('--cov-report', action=StoreReport, default={},
                     metavar='type', type=validate_report,
                     help='type of report to generate: term, term-missing, '
-                    'annotate, html, xml (multi-allowed). '
+                    'term-skip-covered, annotate, html, xml (multi-allowed). '
                     'annotate, html and xml may be be followed by ":DEST" '
                     'where DEST specifies the output location.')
     group.addoption('--cov-config', action='store', default='.coveragerc',
