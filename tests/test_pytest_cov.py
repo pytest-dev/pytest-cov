@@ -419,6 +419,20 @@ def test_no_cov_on_fail(testdir):
     result.stdout.fnmatch_lines(['*1 failed*'])
 
 
+def test_cov_and_failure_report_on_fail(testdir):
+    script = testdir.makepyfile(SCRIPT + SCRIPT_FAIL)
+
+    result = testdir.runpytest('-v',
+                               '--cov=%s' % script.dirpath(),
+                               '--cov-fail-under=100',
+                               script)
+
+    assert 'coverage: platform' in result.stdout.str()
+    assert 'Required test coverage of 100% not reached' in result.stdout.str()
+    assert 'assert False' in result.stdout.str()
+    result.stdout.fnmatch_lines(['*10 failed*'])
+
+
 def test_dist_combine_racecondition(testdir):
     script = testdir.makepyfile("""
 import pytest
