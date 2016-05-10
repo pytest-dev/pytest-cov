@@ -216,11 +216,13 @@ class CovPlugin(object):
     def pytest_terminal_summary(self, terminalreporter):
         if self.cov_controller is None:
             return
+
+        terminalreporter.write('\n' + self.cov_report.getvalue())
+
         if self.cov_total is None:
             # report generation failed (error raised above)
             return
 
-        terminalreporter.write('\n' + self.cov_report.getvalue())
         if self._should_report() and self._failed_cov_total():
             markup = {'red': True, 'bold': True}
             msg = (
