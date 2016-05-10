@@ -887,7 +887,7 @@ def test_dist_boxed(testdir):
 
 def test_not_started_plugin_does_not_fail(testdir):
     plugin = pytest_cov.plugin.CovPlugin(None, None, start=False)
-    plugin.pytest_sessionfinish(None, None)
+    plugin.pytest_runtestloop(None)
     plugin.pytest_terminal_summary(None)
 
 
