@@ -224,11 +224,11 @@ class CovPlugin(object):
         if self._should_report() and self._failed_cov_total():
             markup = {'red': True, 'bold': True}
             msg = (
-                'Required test coverage of %d%% not '
-                'reached. Total coverage: %.2f%%'
+                '\nFAIL Required test coverage of %d%% not '
+                'reached. Total coverage: %.2f%%\n'
                 % (self.options.cov_fail_under, self.cov_total)
             )
-            terminalreporter.write(msg + '\n', **markup)
+            terminalreporter.write(msg, **markup)
 
     def pytest_runtest_setup(self, item):
         if os.getpid() != self.pid:

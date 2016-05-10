@@ -428,7 +428,7 @@ def test_cov_and_failure_report_on_fail(testdir):
                                script)
 
     assert 'coverage: platform' in result.stdout.str()
-    assert 'Required test coverage of 100% not reached' in result.stdout.str()
+    assert 'FAIL Required test coverage of 100% not reached' in result.stdout.str()
     assert 'assert False' in result.stdout.str()
     result.stdout.fnmatch_lines(['*10 failed*'])
 
