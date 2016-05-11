@@ -4,7 +4,6 @@ import subprocess
 import sys
 from distutils.version import StrictVersion
 
-from _pytest.main import EXIT_USAGEERROR
 import coverage
 import py
 import pytest
@@ -653,7 +652,7 @@ def test_invalid_coverage_source(testdir):
         '*- coverage: platform *, python * -*',
         '*10 passed*'
     ])
-    assert result.ret == EXIT_USAGEERROR
+    assert result.ret != 0
     matching_lines = [line for line in result.outlines if '%' in line]
     assert not matching_lines
 
