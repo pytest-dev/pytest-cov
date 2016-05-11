@@ -6,7 +6,8 @@ Changelog
 
 * Add support for specifying output location for html, xml, and annotate report.
 * Fix bug hiding test failure when cov-fail-under failed
-* Error if coverage fails to find the source instead of just printing the error
+* For coverage >= 4.0, match the default behaviour of `coverage report` and
+  error if coverage fails to find the source instead of just printing a warning
 
 
 2.2.1 (2016-01-30)

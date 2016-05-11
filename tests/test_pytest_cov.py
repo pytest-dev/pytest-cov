@@ -652,9 +652,19 @@ def test_invalid_coverage_source(testdir):
         '*10 passed*'
     ])
     result.stderr.fnmatch_lines([
-        'ERROR: Failed to generate report: No data to report.',
+        'Coverage.py warning: No data was collected.'
     ])
-    assert result.ret != 0
+
+    if StrictVersion(coverage.__version__) <= StrictVersion("3.8"):
+        # older `coverage report` doesn't error on missing imports
+        assert result.ret == 0
+    else:
+        # newer `coverage report` errors on missing importts
+        result.stderr.fnmatch_lines([
+            'ERROR: Failed to generate report: No data to report.',
+        ])
+        assert result.ret != 0
+
     matching_lines = [line for line in result.outlines if '%' in line]
     assert not matching_lines
 
