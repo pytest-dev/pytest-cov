@@ -5,6 +5,8 @@ except ImportError:
 
 import pytest
 
+StringIO  # pyflakes, this is for re-export
+
 
 if hasattr(pytest, 'hookimpl'):
     hookwrapper = pytest.hookimpl(hookwrapper=True)

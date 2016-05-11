@@ -195,7 +195,7 @@ class CovPlugin(object):
     # runs, it's too late to set testsfailed
     @compat.hookwrapper
     def pytest_runtestloop(self, session):
-        outcome = yield
+        yield
 
         compat_session = compat.SessionWrapper(session)
 
