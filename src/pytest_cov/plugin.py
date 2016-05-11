@@ -219,13 +219,13 @@ class CovPlugin(object):
         if self.cov_controller is None:
             return
 
-        terminalreporter.write('\n' + self.cov_report.getvalue())
-
         if self.cov_total is None:
-            # report generation failed (error raised above)
+            # we shouldn't report, or report generation failed (error raised above)
             return
 
-        if self._should_report() and self._failed_cov_total():
+        terminalreporter.write('\n' + self.cov_report.getvalue())
+
+        if self._failed_cov_total():
             markup = {'red': True, 'bold': True}
             msg = (
                 '\nFAIL Required test coverage of %d%% not '

@@ -649,8 +649,10 @@ def test_invalid_coverage_source(testdir):
                                script)
 
     result.stdout.fnmatch_lines([
-        '*- coverage: platform *, python * -*',
         '*10 passed*'
+    ])
+    result.stderr.fnmatch_lines([
+        'ERROR: Failed to generate report: No data to report.',
     ])
     assert result.ret != 0
     matching_lines = [line for line in result.outlines if '%' in line]
