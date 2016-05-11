@@ -14,3 +14,4 @@ Authors
 * Christian Ledermann - https://github.com/cleder
 * Alec Nikolas Reiter - https://github.com/justanr
 * Patrick Lannigan - https://github.com/unholysampler
+* David Szotten - https://github.com/davidszotten
