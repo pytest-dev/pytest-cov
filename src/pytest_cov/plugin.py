@@ -223,12 +223,12 @@ class CovPlugin(object):
             # we shouldn't report, or report generation failed (error raised above)
             return
 
-        terminalreporter.write('\n' + self.cov_report.getvalue())
+        terminalreporter.write('\n' + self.cov_report.getvalue() + '\n')
 
         if self._failed_cov_total():
             markup = {'red': True, 'bold': True}
             msg = (
-                '\nFAIL Required test coverage of %d%% not '
+                'FAIL Required test coverage of %d%% not '
                 'reached. Total coverage: %.2f%%\n'
                 % (self.options.cov_fail_under, self.cov_total)
             )
