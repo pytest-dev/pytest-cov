@@ -4,13 +4,11 @@ import os
 import random
 import socket
 import sys
-try:
-    from StringIO import StringIO
-except ImportError:
-    from io import StringIO
 
 import coverage
 from coverage.data import CoverageData
+
+from .compat import StringIO
 
 
 class CovController(object):

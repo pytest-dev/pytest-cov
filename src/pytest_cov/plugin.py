@@ -1,9 +1,5 @@
 """Coverage plugin for pytest."""
 import os
-try:
-    from StringIO import StringIO
-except ImportError:
-    from io import StringIO
 
 import pytest
 import argparse
@@ -11,6 +7,7 @@ from coverage.misc import CoverageException
 
 from . import embed
 from . import engine
+from . import compat
 
 
 class CoverageError(Exception):
@@ -122,7 +119,7 @@ class CovPlugin(object):
         self.pid = None
         self.cov = None
         self.cov_controller = None
-        self.cov_report = StringIO()
+        self.cov_report = compat.StringIO()
         self.cov_total = None
         self.failed = False
         self._started = False
@@ -196,11 +193,13 @@ class CovPlugin(object):
 
     # we need to wrap pytest_runtestloop. by the time pytest_sessionfinish
     # runs, it's too late to set testsfailed
-    @pytest.hookimpl(hookwrapper=True)
+    @compat.hookwrapper
     def pytest_runtestloop(self, session):
         outcome = yield
 
-        self.failed = bool(session.testsfailed)
+        compat_session = compat.SessionWrapper(session)
+
+        self.failed = bool(compat_session.testsfailed)
         if self.cov_controller is not None:
             self.cov_controller.finish()
 
@@ -214,7 +213,7 @@ class CovPlugin(object):
             assert self.cov_total is not None, 'Test coverage should never be `None`'
             if self._failed_cov_total():
                 # make sure we get the EXIT_TESTSFAILED exit code
-                session.testsfailed += 1
+                compat_session.testsfailed += 1
 
     def pytest_terminal_summary(self, terminalreporter):
         if self.cov_controller is None:
