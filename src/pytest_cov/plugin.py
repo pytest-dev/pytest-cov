@@ -1,11 +1,13 @@
 """Coverage plugin for pytest."""
 import os
+
 import pytest
 import argparse
 from coverage.misc import CoverageException
 
 from . import embed
 from . import engine
+from . import compat
 
 
 class CoverageError(Exception):
@@ -117,6 +119,8 @@ class CovPlugin(object):
         self.pid = None
         self.cov = None
         self.cov_controller = None
+        self.cov_report = compat.StringIO()
+        self.cov_total = None
         self.failed = False
         self._started = False
         self.options = options
@@ -180,30 +184,55 @@ class CovPlugin(object):
         self.cov_controller.testnodedown(node, error)
     pytest_testnodedown.optionalhook = True
 
-    def pytest_sessionfinish(self, session, exitstatus):
-        """Delegate to our implementation."""
-        self.failed = exitstatus != 0
+    def _should_report(self):
+        return not (self.failed and self.options.no_cov_on_fail)
+
+    def _failed_cov_total(self):
+        cov_fail_under = self.options.cov_fail_under
+        return cov_fail_under is not None and self.cov_total < cov_fail_under
+
+    # we need to wrap pytest_runtestloop. by the time pytest_sessionfinish
+    # runs, it's too late to set testsfailed
+    @compat.hookwrapper
+    def pytest_runtestloop(self, session):
+        yield
+
+        compat_session = compat.SessionWrapper(session)
+
+        self.failed = bool(compat_session.testsfailed)
         if self.cov_controller is not None:
             self.cov_controller.finish()
 
+        if self._should_report():
+            try:
+                self.cov_total = self.cov_controller.summary(self.cov_report)
+            except CoverageException as exc:
+                raise pytest.UsageError(
+                    'Failed to generate report: %s\n' % exc
+                )
+            assert self.cov_total is not None, 'Test coverage should never be `None`'
+            if self._failed_cov_total():
+                # make sure we get the EXIT_TESTSFAILED exit code
+                compat_session.testsfailed += 1
+
     def pytest_terminal_summary(self, terminalreporter):
-        """Delegate to our implementation."""
         if self.cov_controller is None:
             return
-        if not (self.failed and self.options.no_cov_on_fail):
-            try:
-                total = self.cov_controller.summary(terminalreporter.writer)
-            except CoverageException as exc:
-                terminalreporter.writer.write('Failed to generate report: %s\n' % exc)
-                total = 0
-            assert total is not None, 'Test coverage should never be `None`'
-            cov_fail_under = self.options.cov_fail_under
-            if cov_fail_under is not None and total < cov_fail_under:
-                raise pytest.UsageError(
-                    'Required test coverage of %d%% not '
-                    'reached. Total coverage: %.2f%%\n'
-                    % (self.options.cov_fail_under, total)
-                )
+
+        if self.cov_total is None:
+            # we shouldn't report, or report generation failed (error raised above)
+            return
+
+        terminalreporter.write('\n' + self.cov_report.getvalue() + '\n')
+
+        if self._failed_cov_total():
+            markup = {'red': True, 'bold': True}
+            msg = (
+                'FAIL Required test coverage of %d%% not '
+                'reached. Total coverage: %.2f%%\n'
+                % (self.options.cov_fail_under, self.cov_total)
+            )
+            terminalreporter.write(msg, **markup)
 
     def pytest_runtest_setup(self, item):
         if os.getpid() != self.pid:

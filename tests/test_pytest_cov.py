@@ -8,7 +8,7 @@ import coverage
 import py
 import pytest
 import virtualenv
-from process_tests import TestProcess
+from process_tests import TestProcess as _TestProcess
 from process_tests import dump_on_error
 from process_tests import wait_for_strings
 
@@ -419,6 +419,20 @@ def test_no_cov_on_fail(testdir):
     result.stdout.fnmatch_lines(['*1 failed*'])
 
 
+def test_cov_and_failure_report_on_fail(testdir):
+    script = testdir.makepyfile(SCRIPT + SCRIPT_FAIL)
+
+    result = testdir.runpytest('-v',
+                               '--cov=%s' % script.dirpath(),
+                               '--cov-fail-under=100',
+                               script)
+
+    assert 'coverage: platform' in result.stdout.str()
+    assert 'FAIL Required test coverage of 100% not reached' in result.stdout.str()
+    assert 'assert False' in result.stdout.str()
+    result.stdout.fnmatch_lines(['*10 failed*'])
+
+
 def test_dist_combine_racecondition(testdir):
     script = testdir.makepyfile("""
 import pytest
@@ -626,7 +640,7 @@ def test_dist_subprocess_not_collocated(testdir, tmpdir):
     assert result.ret == 0
 
 
-def test_empty_report(testdir):
+def test_invalid_coverage_source(testdir):
     script = testdir.makepyfile(SCRIPT)
 
     result = testdir.runpytest('-v',
@@ -635,10 +649,22 @@ def test_empty_report(testdir):
                                script)
 
     result.stdout.fnmatch_lines([
-        '*- coverage: platform *, python * -*',
         '*10 passed*'
     ])
-    assert result.ret == 0
+    result.stderr.fnmatch_lines([
+        'Coverage.py warning: No data was collected.'
+    ])
+
+    if StrictVersion(coverage.__version__) <= StrictVersion("3.8"):
+        # older `coverage report` doesn't error on missing imports
+        assert result.ret == 0
+    else:
+        # newer `coverage report` errors on missing importts
+        result.stderr.fnmatch_lines([
+            'ERROR: Failed to generate report: No data to report.',
+        ])
+        assert result.ret != 0
+
     matching_lines = [line for line in result.outlines if '%' in line]
     assert not matching_lines
 
@@ -760,7 +786,7 @@ def test_cover_looponfail(testdir, monkeypatch):
     testdir.makeconftest(CONFTEST)
     script = testdir.makepyfile(BASIC_TEST)
 
-    monkeypatch.setattr(testdir, 'run', lambda *args: TestProcess(*map(str, args)))
+    monkeypatch.setattr(testdir, 'run', lambda *args: _TestProcess(*map(str, args)))
     with testdir.runpytest('-v',
                            '--cov=%s' % script.dirpath(),
                            '--looponfail',
@@ -887,7 +913,7 @@ def test_dist_boxed(testdir):
 
 def test_not_started_plugin_does_not_fail(testdir):
     plugin = pytest_cov.plugin.CovPlugin(None, None, start=False)
-    plugin.pytest_sessionfinish(None, None)
+    plugin.pytest_runtestloop(None)
     plugin.pytest_terminal_summary(None)
 
 

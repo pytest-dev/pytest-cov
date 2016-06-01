@@ -1,10 +1,14 @@
 Changelog
 =========
 
-2.2.2 (tba)
+2.3.0 (tba)
 ------------------
 
 * Add support for specifying output location for html, xml, and annotate report.
+* Fix bug hiding test failure when cov-fail-under failed
+* For coverage >= 4.0, match the default behaviour of `coverage report` and
+  error if coverage fails to find the source instead of just printing a warning
+
 
 2.2.1 (2016-01-30)
 ------------------
