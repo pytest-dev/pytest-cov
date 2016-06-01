@@ -5,9 +5,11 @@ Changelog
 ------------------
 
 * Add support for specifying output location for html, xml, and annotate report.
-* Fix bug hiding test failure when cov-fail-under failed
+  Contributed by Patrick Lannigan in `PR#113 <https://github.com/pytest-dev/pytest-cov/pull/113>`_.
+* Fix bug hiding test failure when cov-fail-under failed.
 * For coverage >= 4.0, match the default behaviour of `coverage report` and
-  error if coverage fails to find the source instead of just printing a warning
+  error if coverage fails to find the source instead of just printing a warning.
+  Contributed by David Szotten in `PR#116 <https://github.com/pytest-dev/pytest-cov/pull/116>`_.
 
 
 2.2.1 (2016-01-30)
