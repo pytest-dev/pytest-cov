@@ -911,6 +911,23 @@ def test_dist_boxed(testdir):
     assert result.ret == 0
 
 
+@pytest.mark.skipif('sys.platform == "win32"')
+def test_dist_bare_cov(testdir):
+    script = testdir.makepyfile(SCRIPT_SIMPLE)
+
+    result = testdir.runpytest('-v',
+                               '--cov',
+                               '-n', '1',
+                               script)
+
+    result.stdout.fnmatch_lines([
+        '*- coverage: platform *, python * -*',
+        'test_dist_bare_cov* %s*' % SCRIPT_SIMPLE_RESULT,
+        '*1 passed*'
+    ])
+    assert result.ret == 0
+
+
 def test_not_started_plugin_does_not_fail(testdir):
     plugin = pytest_cov.plugin.CovPlugin(None, None, start=False)
     plugin.pytest_runtestloop(None)
@@ -1041,4 +1058,3 @@ def test_do_not_append_coverage(testdir, opts):
         'test_1* 0%',
         'test_2* %s*' % SCRIPT2_RESULT,
     ])
-

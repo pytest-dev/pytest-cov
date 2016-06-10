@@ -93,6 +93,8 @@ def pytest_configure(config):
         if not config.pluginmanager.hasplugin('_cov'):
             if not config.option.cov_report:
                 config.option.cov_report = ['term']
+            if config.option.cov_source == [True]:
+                config.option.cov_source = None
 
             plugin = CovPlugin(config.option, config.pluginmanager,
                                start=False)
