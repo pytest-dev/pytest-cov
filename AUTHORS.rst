@@ -15,3 +15,4 @@ Authors
 * Alec Nikolas Reiter - https://github.com/justanr
 * Patrick Lannigan - https://github.com/unholysampler
 * David Szotten - https://github.com/davidszotten
+* Michael Elovskikh - https://github.com/wronglink

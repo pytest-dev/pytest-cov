@@ -10,6 +10,8 @@ Changelog
 * For coverage >= 4.0, match the default behaviour of `coverage report` and
   error if coverage fails to find the source instead of just printing a warning.
   Contributed by David Szotten in `PR#116 <https://github.com/pytest-dev/pytest-cov/pull/116>`_.
+* Fixed bug occurred when bare ``--cov`` parameter was used with xdist.
+  Contributed by Michael Elovskikh in `PR#120 <https://github.com/pytest-dev/pytest-cov/pull/120>`_.
 
 
 2.2.1 (2016-01-30)
