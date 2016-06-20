@@ -225,7 +225,7 @@ The terminal report with line numbers::
 
 The terminal report with skip covered::
 
-    py.test --cov-report term-skip-covered --cov=myproj tests/
+    py.test --cov-report term:skip-covered --cov=myproj tests/
 
     -------------------- coverage: platform linux2, python 2.6.4-final-0 ---------------------
     Name                 Stmts   Miss  Cover
@@ -236,6 +236,8 @@ The terminal report with skip covered::
     TOTAL                  353     20    94%
 
     1 files skipped due to complete coverage.
+
+You can use ``skip-covered`` with ``term-missing`` as well. e.g. ``--cov-report term-missing:skip-covered``
 
 These three report options output to files without showing anything on the terminal::
 

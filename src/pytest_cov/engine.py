@@ -83,14 +83,16 @@ class CovController(object):
                 self.sep(stream, ' ', '%s' % node_desc)
 
         # Produce terminal report if wanted.
-        if any(x in self.cov_report for x in ['term', 'term-missing', 'term-skip-covered']):
+        if any(x in self.cov_report for x in ['term', 'term-missing']):
             options = {
                 'show_missing': ('term-missing' in self.cov_report) or None,
                 'ignore_errors': True,
                 'file': stream,
             }
-            if hasattr(coverage, 'version_info') and coverage.version_info[0] >= 4:
-                options.update({'skip_covered': ('term-skip-covered' in self.cov_report) or None})
+            skip_covered = isinstance(self.cov_report, dict) and 'skip-covered' in self.cov_report.values()
+            if skip_covered:
+                if hasattr(coverage, 'version_info') and coverage.version_info[0] >= 4:
+                    options.update({'skip_covered': skip_covered or None})
             total = self.cov.report(**options)
 
         # Produce annotated source code report if wanted.

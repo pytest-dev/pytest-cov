@@ -883,13 +883,27 @@ SKIP_COVERED_RESULT = '1 file skipped due to complete coverage.'
 
 
 @pytest.mark.skipif('StrictVersion(coverage.__version__) < StrictVersion("4.0")')
-def test_coveragerc_skip_covered(testdir):
+@pytest.mark.parametrize('report_option', [
+    'term-missing:skip-covered',
+    'term:skip-covered'])
+def test_skip_covered_cli(testdir, report_option):
+    testdir.makefile('', coveragerc=SKIP_COVERED_COVERAGERC)
+    script = testdir.makepyfile(SKIP_COVERED_TEST)
+    result = testdir.runpytest('-v',
+                               '--cov=%s' % script.dirpath(),
+                               '--cov-report=%s' % report_option,
+                               script)
+    assert result.ret == 0
+    result.stdout.fnmatch_lines([SKIP_COVERED_RESULT])
+
+
+@pytest.mark.skipif('StrictVersion(coverage.__version__) < StrictVersion("4.0")')
+def test_skip_covered_coveragerc_config(testdir):
     testdir.makefile('', coveragerc=SKIP_COVERED_COVERAGERC)
     script = testdir.makepyfile(SKIP_COVERED_TEST)
     result = testdir.runpytest('-v',
                                '--cov-config=coveragerc',
                                '--cov=%s' % script.dirpath(),
-                               '--cov-report=term-skip-covered',
                                script)
     assert result.ret == 0
     result.stdout.fnmatch_lines([SKIP_COVERED_RESULT])
