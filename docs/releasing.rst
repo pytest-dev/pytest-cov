@@ -10,12 +10,12 @@ The process for releasing should follow these steps:
 #. Update ``CHANGELOG.rst`` and ``AUTHORS.rst`` to be up to date.
 #. Bump the version by running ``bumpversion [ major | minor | patch ]``. This will automatically add a tag.
 
-   Alternativelly, you can manually edit the files and run ``git tag v1.2.3`` yourself.
+   Alternatively, you can manually edit the files and run ``git tag v1.2.3`` yourself.
 #. Push changes and tags with::
 
     git push
     git push --tags
-#. Wait for `AppVeyor <https://ci.appveyor.com/project/schlamar/pytest-cov>`_
+#. Wait for `AppVeyor <https://ci.appveyor.com/project/pytestbot/pytest-cov>`_
    and `Travis <https://travis-ci.org/schlamar/pytest-cov>`_ to give the green builds.
 #. Check that the docs on `ReadTheDocs <https://readthedocs.org/projects/pytest-cov>`_ are built.
 #. Make sure you have a clean checkout, run ``git status`` to verify.

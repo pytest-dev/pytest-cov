@@ -294,7 +294,7 @@ Where the .coveragerc file contains file globs::
 
 For full details refer to the `coverage config file`_ documentation.
 
-.. _`coverage config file`: http://nedbatchelder.com/code/coverage/config.html
+.. _`coverage config file`: https://coverage.readthedocs.io/en/latest/config.html
 
 Note that this plugin controls some options and setting the option in the config file will have no
 effect.  These include specifying source to be measured (source option) and all data file handling

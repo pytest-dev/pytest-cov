@@ -10,7 +10,7 @@ Authors
 * Guillaume Ayoub - http://www.yabz.fr/
 * Federico Ceratto - http://firelet.net/
 * Josh Kalderimis - http://blog.cookiestack.com/
-* Ionel Cristian Mărieș - http://blog.ionelmc.ro
+* Ionel Cristian Mărieș - https://blog.ionelmc.ro
 * Christian Ledermann - https://github.com/cleder
 * Alec Nikolas Reiter - https://github.com/justanr
 * Patrick Lannigan - https://github.com/unholysampler
