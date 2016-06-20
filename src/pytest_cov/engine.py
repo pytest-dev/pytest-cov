@@ -90,9 +90,8 @@ class CovController(object):
                 'file': stream,
             }
             skip_covered = isinstance(self.cov_report, dict) and 'skip-covered' in self.cov_report.values()
-            if skip_covered:
-                if hasattr(coverage, 'version_info') and coverage.version_info[0] >= 4:
-                    options.update({'skip_covered': skip_covered or None})
+            if hasattr(coverage, 'version_info') and coverage.version_info[0] >= 4:
+                options.update({'skip_covered': skip_covered or None})
             total = self.cov.report(**options)
 
         # Produce annotated source code report if wanted.

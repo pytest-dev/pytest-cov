@@ -567,6 +567,7 @@ parallel = true
     ])
     assert result.ret == 0
 
+
 def test_central_subprocess_no_subscript(testdir):
     script = testdir.makepyfile("""
 import subprocess, sys
