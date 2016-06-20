@@ -17,6 +17,7 @@ class CoverageError(Exception):
 def validate_report(arg):
     file_choices = ['annotate', 'html', 'xml']
     term_choices = ['term', 'term-missing']
+    term_modifier_choices = ['skip-covered']
     all_choices = term_choices + file_choices
     values = arg.split(":", 1)
     report_type = values[0]
@@ -26,6 +27,10 @@ def validate_report(arg):
 
     if len(values) == 1:
         return report_type, None
+
+    report_modifier = values[1]
+    if report_type in term_choices and report_modifier in term_modifier_choices:
+        return report_type, report_modifier
 
     if report_type not in file_choices:
         msg = 'output specifier not supported for: "{}" (choose from "{}")'.format(arg,
@@ -54,6 +59,7 @@ def pytest_addoption(parser):
                     metavar='type', type=validate_report,
                     help='type of report to generate: term, term-missing, '
                     'annotate, html, xml (multi-allowed). '
+                    'term, term-missing maybe followed by ":skip-covered".'
                     'annotate, html and xml may be be followed by ":DEST" '
                     'where DEST specifies the output location.')
     group.addoption('--cov-config', action='store', default='.coveragerc',

@@ -16,3 +16,4 @@ Authors
 * Patrick Lannigan - https://github.com/unholysampler
 * David Szotten - https://github.com/davidszotten
 * Michael Elovskikh - https://github.com/wronglink
+* Saurabh Kumar - https://github.com/theskumar

@@ -567,6 +567,7 @@ parallel = true
     ])
     assert result.ret == 0
 
+
 def test_central_subprocess_no_subscript(testdir):
     script = testdir.makepyfile("""
 import subprocess, sys
@@ -861,6 +862,52 @@ def test_coveragerc_dist(testdir):
     assert result.ret == 0
     result.stdout.fnmatch_lines(
         ['test_coveragerc_dist* %s' % EXCLUDED_RESULT])
+
+
+SKIP_COVERED_COVERAGERC = '''
+[report]
+skip_covered = True
+
+'''
+
+SKIP_COVERED_TEST = '''
+
+def func():
+    return "full coverage"
+
+def test_basic():
+    assert func() == "full coverage"
+
+'''
+
+SKIP_COVERED_RESULT = '1 file skipped due to complete coverage.'
+
+
+@pytest.mark.skipif('StrictVersion(coverage.__version__) < StrictVersion("4.0")')
+@pytest.mark.parametrize('report_option', [
+    'term-missing:skip-covered',
+    'term:skip-covered'])
+def test_skip_covered_cli(testdir, report_option):
+    testdir.makefile('', coveragerc=SKIP_COVERED_COVERAGERC)
+    script = testdir.makepyfile(SKIP_COVERED_TEST)
+    result = testdir.runpytest('-v',
+                               '--cov=%s' % script.dirpath(),
+                               '--cov-report=%s' % report_option,
+                               script)
+    assert result.ret == 0
+    result.stdout.fnmatch_lines([SKIP_COVERED_RESULT])
+
+
+@pytest.mark.skipif('StrictVersion(coverage.__version__) < StrictVersion("4.0")')
+def test_skip_covered_coveragerc_config(testdir):
+    testdir.makefile('', coveragerc=SKIP_COVERED_COVERAGERC)
+    script = testdir.makepyfile(SKIP_COVERED_TEST)
+    result = testdir.runpytest('-v',
+                               '--cov-config=coveragerc',
+                               '--cov=%s' % script.dirpath(),
+                               script)
+    assert result.ret == 0
+    result.stdout.fnmatch_lines([SKIP_COVERED_RESULT])
 
 
 CLEAR_ENVIRON_TEST = '''
