@@ -58,7 +58,8 @@ def pytest_addoption(parser):
     group.addoption('--cov-report', action=StoreReport, default={},
                     metavar='type', type=validate_report,
                     help='type of report to generate: term, term-missing, '
-                    'term-skip-covered, annotate, html, xml (multi-allowed). '
+                    'annotate, html, xml (multi-allowed). '
+                    'term, term-missing maybe followed by ":skip-covered".'
                     'annotate, html and xml may be be followed by ":DEST" '
                     'where DEST specifies the output location.')
     group.addoption('--cov-config', action='store', default='.coveragerc',
