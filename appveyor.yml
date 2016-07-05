@@ -50,6 +50,19 @@ environment:
       PYTHON_VERSION: '2.7'
       PYTHON_ARCH: '64'
 
+    - TOXENV: 'py27-27-42'
+      TOXPYTHON: C:\Python27\python.exe
+      PYTHON_HOME: C:\Python27
+      PYTHON_VERSION: '2.7'
+      PYTHON_ARCH: '32'
+
+    - TOXENV: 'py27-27-42'
+      TOXPYTHON: C:\Python27-x64\python.exe
+      WINDOWS_SDK_VERSION: v7.0
+      PYTHON_HOME: C:\Python27-x64
+      PYTHON_VERSION: '2.7'
+      PYTHON_ARCH: '64'
+
     - TOXENV: 'py27-28-37'
       TOXPYTHON: C:\Python27\python.exe
       PYTHON_HOME: C:\Python27
@@ -83,6 +96,19 @@ environment:
       PYTHON_ARCH: '32'
 
     - TOXENV: 'py27-28-41'
+      TOXPYTHON: C:\Python27-x64\python.exe
+      WINDOWS_SDK_VERSION: v7.0
+      PYTHON_HOME: C:\Python27-x64
+      PYTHON_VERSION: '2.7'
+      PYTHON_ARCH: '64'
+
+    - TOXENV: 'py27-28-42'
+      TOXPYTHON: C:\Python27\python.exe
+      PYTHON_HOME: C:\Python27
+      PYTHON_VERSION: '2.7'
+      PYTHON_ARCH: '32'
+
+    - TOXENV: 'py27-28-42'
       TOXPYTHON: C:\Python27-x64\python.exe
       WINDOWS_SDK_VERSION: v7.0
       PYTHON_HOME: C:\Python27-x64
@@ -128,6 +154,19 @@ environment:
       PYTHON_VERSION: '2.7'
       PYTHON_ARCH: '64'
 
+    - TOXENV: 'py27-29-42'
+      TOXPYTHON: C:\Python27\python.exe
+      PYTHON_HOME: C:\Python27
+      PYTHON_VERSION: '2.7'
+      PYTHON_ARCH: '32'
+
+    - TOXENV: 'py27-29-42'
+      TOXPYTHON: C:\Python27-x64\python.exe
+      WINDOWS_SDK_VERSION: v7.0
+      PYTHON_HOME: C:\Python27-x64
+      PYTHON_VERSION: '2.7'
+      PYTHON_ARCH: '64'
+
     - TOXENV: 'py34-27-37'
       TOXPYTHON: C:\Python34\python.exe
       PYTHON_HOME: C:\Python34
@@ -161,6 +200,19 @@ environment:
       PYTHON_ARCH: '32'
 
     - TOXENV: 'py34-27-41'
+      TOXPYTHON: C:\Python34-x64\python.exe
+      WINDOWS_SDK_VERSION: v7.1
+      PYTHON_HOME: C:\Python34-x64
+      PYTHON_VERSION: '3.4'
+      PYTHON_ARCH: '64'
+
+    - TOXENV: 'py34-27-42'
+      TOXPYTHON: C:\Python34\python.exe
+      PYTHON_HOME: C:\Python34
+      PYTHON_VERSION: '3.4'
+      PYTHON_ARCH: '32'
+
+    - TOXENV: 'py34-27-42'
       TOXPYTHON: C:\Python34-x64\python.exe
       WINDOWS_SDK_VERSION: v7.1
       PYTHON_HOME: C:\Python34-x64
@@ -206,6 +258,19 @@ environment:
       PYTHON_VERSION: '3.4'
       PYTHON_ARCH: '64'
 
+    - TOXENV: 'py34-28-42'
+      TOXPYTHON: C:\Python34\python.exe
+      PYTHON_HOME: C:\Python34
+      PYTHON_VERSION: '3.4'
+      PYTHON_ARCH: '32'
+
+    - TOXENV: 'py34-28-42'
+      TOXPYTHON: C:\Python34-x64\python.exe
+      WINDOWS_SDK_VERSION: v7.1
+      PYTHON_HOME: C:\Python34-x64
+      PYTHON_VERSION: '3.4'
+      PYTHON_ARCH: '64'
+
     - TOXENV: 'py34-29-37'
       TOXPYTHON: C:\Python34\python.exe
       PYTHON_HOME: C:\Python34
@@ -239,6 +304,19 @@ environment:
       PYTHON_ARCH: '32'
 
     - TOXENV: 'py34-29-41'
+      TOXPYTHON: C:\Python34-x64\python.exe
+      WINDOWS_SDK_VERSION: v7.1
+      PYTHON_HOME: C:\Python34-x64
+      PYTHON_VERSION: '3.4'
+      PYTHON_ARCH: '64'
+
+    - TOXENV: 'py34-29-42'
+      TOXPYTHON: C:\Python34\python.exe
+      PYTHON_HOME: C:\Python34
+      PYTHON_VERSION: '3.4'
+      PYTHON_ARCH: '32'
+
+    - TOXENV: 'py34-29-42'
       TOXPYTHON: C:\Python34-x64\python.exe
       WINDOWS_SDK_VERSION: v7.1
       PYTHON_HOME: C:\Python34-x64
@@ -281,6 +359,18 @@ environment:
       PYTHON_VERSION: '3.5'
       PYTHON_ARCH: '64'
 
+    - TOXENV: 'py35-27-42'
+      TOXPYTHON: C:\Python35\python.exe
+      PYTHON_HOME: C:\Python35
+      PYTHON_VERSION: '3.5'
+      PYTHON_ARCH: '32'
+
+    - TOXENV: 'py35-27-42'
+      TOXPYTHON: C:\Python35-x64\python.exe
+      PYTHON_HOME: C:\Python35-x64
+      PYTHON_VERSION: '3.5'
+      PYTHON_ARCH: '64'
+
     - TOXENV: 'py35-28-37'
       TOXPYTHON: C:\Python35\python.exe
       PYTHON_HOME: C:\Python35
@@ -317,6 +407,18 @@ environment:
       PYTHON_VERSION: '3.5'
       PYTHON_ARCH: '64'
 
+    - TOXENV: 'py35-28-42'
+      TOXPYTHON: C:\Python35\python.exe
+      PYTHON_HOME: C:\Python35
+      PYTHON_VERSION: '3.5'
+      PYTHON_ARCH: '32'
+
+    - TOXENV: 'py35-28-42'
+      TOXPYTHON: C:\Python35-x64\python.exe
+      PYTHON_HOME: C:\Python35-x64
+      PYTHON_VERSION: '3.5'
+      PYTHON_ARCH: '64'
+
     - TOXENV: 'py35-29-37'
       TOXPYTHON: C:\Python35\python.exe
       PYTHON_HOME: C:\Python35
@@ -348,6 +450,18 @@ environment:
       PYTHON_ARCH: '32'
 
     - TOXENV: 'py35-29-41'
+      TOXPYTHON: C:\Python35-x64\python.exe
+      PYTHON_HOME: C:\Python35-x64
+      PYTHON_VERSION: '3.5'
+      PYTHON_ARCH: '64'
+
+    - TOXENV: 'py35-29-42'
+      TOXPYTHON: C:\Python35\python.exe
+      PYTHON_HOME: C:\Python35
+      PYTHON_VERSION: '3.5'
+      PYTHON_ARCH: '32'
+
+    - TOXENV: 'py35-29-42'
       TOXPYTHON: C:\Python35-x64\python.exe
       PYTHON_HOME: C:\Python35-x64
       PYTHON_VERSION: '3.5'
