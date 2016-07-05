@@ -1,7 +1,7 @@
 Changelog
 =========
 
-2.3.0 (tba)
+2.3.0 (2016-07-05)
 ------------------
 
 * Add support for specifying output location for html, xml, and annotate report.
