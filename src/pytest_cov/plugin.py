@@ -254,10 +254,9 @@ class CovPlugin(object):
             self.cov = None
 
 
-def pytest_funcarg__cov(request):
-    """A pytest funcarg that provides access to the underlying coverage
-    object.
-    """
+@pytest.fixture
+def cov(request):
+    """A pytest fixture to provide access to the underlying coverage object."""
 
     # Check with hasplugin to avoid getplugin exception in older pytest.
     if request.config.pluginmanager.hasplugin('_cov'):
