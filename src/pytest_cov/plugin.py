@@ -165,11 +165,13 @@ class CovPlugin(object):
         if self.options.cov_fail_under is None and hasattr(cov_config, 'fail_under'):
             self.options.cov_fail_under = cov_config.fail_under
 
+    def _is_slave(self, session):
+        return hasattr(session.config, 'slaveinput')
+
     def pytest_sessionstart(self, session):
         """At session start determine our implementation and delegate to it."""
         self.pid = os.getpid()
-        is_slave = hasattr(session.config, 'slaveinput')
-        if is_slave:
+        if self._is_slave(session):
             nodeid = session.config.slaveinput.get('slaveid',
                                                    getattr(session, 'nodeid'))
             self.start(engine.DistSlave, session.config, nodeid)
@@ -211,7 +213,7 @@ class CovPlugin(object):
         if self.cov_controller is not None:
             self.cov_controller.finish()
 
-        if self._should_report():
+        if not self._is_slave(session) and self._should_report():
             try:
                 self.cov_total = self.cov_controller.summary(self.cov_report)
             except CoverageException as exc:
