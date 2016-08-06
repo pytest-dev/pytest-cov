@@ -3,6 +3,7 @@ import os
 import subprocess
 import sys
 from distutils.version import StrictVersion
+from itertools import chain
 
 import coverage
 import py
@@ -447,15 +448,17 @@ def test_foo(foo):
     result = testdir.runpytest('-v',
                                '--cov=%s' % script.dirpath(),
                                '--cov-report=term-missing',
-                               '-n', '5',
+                               '-n', '5', '-s',
                                script)
     result.stdout.fnmatch_lines([
         '*- coverage: platform *, python * -*',
         'test_dist_combine_racecondition* 2002 * 0 * 100%*',
         '*1000 passed*'
     ])
-    for line in result.stdout.lines:
+
+    for line in chain(result.stdout.lines, result.stderr.lines):
         assert 'The following slaves failed to return coverage data' not in line
+        assert 'INTERNALERROR' not in line
     assert result.ret == 0
 
 
