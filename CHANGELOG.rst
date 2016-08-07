@@ -1,6 +1,16 @@
 Changelog
 =========
 
+2.3.1 (2016-08-07)
+------------------
+
+* Fixed regression causing spurious errors when xdist was used. See `#124
+  <https://github.com/pytest-dev/pytest-cov/issues/124>`_.
+* Fixed DeprecationWarning about incorrect `addoption` use. Contributed by Florian Bruhin in `PR#127
+  <https://github.com/pytest-dev/pytest-cov/pull/127>`_.
+* Fixed deprecated use of funcarg fixture API. Contributed by Daniel Hahler in `PR#125
+  <https://github.com/pytest-dev/pytest-cov/pull/125>`_.
+
 2.3.0 (2016-07-05)
 ------------------
 
