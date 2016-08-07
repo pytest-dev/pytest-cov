@@ -673,6 +673,7 @@ def test_invalid_coverage_source(testdir):
     assert not matching_lines
 
 
+@pytest.mark.skipif("'dev' in pytest.__version__")
 def test_dist_missing_data(testdir):
     venv_path = os.path.join(str(testdir.tmpdir), 'venv')
     virtualenv.create_environment(venv_path)
