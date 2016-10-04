@@ -420,6 +420,19 @@ def test_no_cov_on_fail(testdir):
     result.stdout.fnmatch_lines(['*1 failed*'])
 
 
+def test_no_cov(testdir):
+    script = testdir.makepyfile(SCRIPT)
+
+    result = testdir.runpytest('-v',
+                               '--cov=%s' % script.dirpath(),
+                               '--cov-report=term-missing',
+                               '--no-cov',
+                               script)
+
+    assert 'WARNING: Coverage disabled by user!' in result.stdout.str()
+    assert result.ret == 0
+
+
 def test_cov_and_failure_report_on_fail(testdir):
     script = testdir.makepyfile(SCRIPT + SCRIPT_FAIL)
 

@@ -68,6 +68,9 @@ def pytest_addoption(parser):
     group.addoption('--no-cov-on-fail', action='store_true', default=False,
                     help='do not report coverage if test run fails, '
                          'default: False')
+    group.addoption('--no-cov', action='store_true', default=False,
+                    help='Disable coverage report completely (useful for debuggers) '
+                         'default: False')
     group.addoption('--cov-fail-under', action='store', metavar='MIN', type=int,
                     help='Fail if the total coverage is less than MIN.')
     group.addoption('--cov-append', action='store_true', default=False,
@@ -131,11 +134,16 @@ class CovPlugin(object):
         self.cov_total = None
         self.failed = False
         self._started = False
+        self._disabled = False
         self.options = options
 
         is_dist = (getattr(options, 'numprocesses', False) or
                    getattr(options, 'distload', False) or
                    getattr(options, 'dist', 'no') != 'no')
+        if options.no_cov:
+            self._disabled = True
+            return
+
         if is_dist and start:
             self.start(engine.DistMaster)
         elif start:
@@ -144,6 +152,7 @@ class CovPlugin(object):
         # slave is started in pytest hook
 
     def start(self, controller_cls, config=None, nodeid=None):
+
         if config is None:
             # fake config option for engine
             class Config(object):
@@ -170,6 +179,12 @@ class CovPlugin(object):
 
     def pytest_sessionstart(self, session):
         """At session start determine our implementation and delegate to it."""
+
+        if self.options.no_cov:
+            # Coverage can be disabled because it does not cooperate with debuggers well.py
+            self._disabled = True
+            return
+
         self.pid = os.getpid()
         if self._is_slave(session):
             nodeid = session.config.slaveinput.get('slaveid',
@@ -207,6 +222,9 @@ class CovPlugin(object):
     def pytest_runtestloop(self, session):
         yield
 
+        if self._disabled:
+            return
+
         compat_session = compat.SessionWrapper(session)
 
         self.failed = bool(compat_session.testsfailed)
@@ -226,6 +244,13 @@ class CovPlugin(object):
                 compat_session.testsfailed += 1
 
     def pytest_terminal_summary(self, terminalreporter):
+        if self._disabled:
+            markup = {'red': True, 'bold': True}
+            msg = (
+                'WARNING: Coverage disabled by user!'
+            )
+            terminalreporter.write(msg, **markup)
+            return
         if self.cov_controller is None:
             return
 

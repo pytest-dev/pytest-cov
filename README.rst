@@ -312,6 +312,19 @@ subprocess.  The python used by the subprocess must have pytest-cov installed.  
 do normal site initialisation so that the environment variables can be detected and coverage
 started.
 
+Coverage and debuggers
+----------------------
+
+When it comes to TDD one obviously would like to debug tests. Debuggers in Python use mostly the sys.settrace function
+to gain access to context. Coverage uses the same technique to get access to the lines executed. Coverage does not play
+well with other tracers simultaneously running. This manifests itself in behaviour that PyCharm might not hit a
+breakpoint no matter what the user does. Since it is common practice to have coverage configuration in the pytest.ini
+file and pytest does not support removeopts or similar the `--no-cov` flag can disable coverage completely.
+
+At the reporting part a warning message will show on screen
+
+    WARNING: Coverage disabled by user!
+
 Acknowledgements
 ================
 
