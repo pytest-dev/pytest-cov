@@ -323,7 +323,7 @@ file and pytest does not support removeopts or similar the `--no-cov` flag can d
 
 At the reporting part a warning message will show on screen
 
-    WARNING: Coverage disabled by user!
+    Coverage disabled via --no-cov switch!
 
 Acknowledgements
 ================
