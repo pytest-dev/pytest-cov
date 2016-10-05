@@ -427,9 +427,10 @@ def test_no_cov(testdir):
                                '--cov=%s' % script.dirpath(),
                                '--cov-report=term-missing',
                                '--no-cov',
+                               '-rw',
                                script)
 
-    assert 'WCOV-U1 None Coverage disabled via --no-cov switch!' in result.stderr.str()
+    assert 'WCOV-U1 None Coverage disabled via --no-cov switch!' in result.stdout.str()
     assert result.ret == 0
 
 
