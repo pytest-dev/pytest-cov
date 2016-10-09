@@ -245,9 +245,8 @@ class CovPlugin(object):
 
     def pytest_terminal_summary(self, terminalreporter):
         if self._disabled:
-            msg = (
-                'Coverage disabled via --no-cov switch!'
-            )
+            msg = 'Coverage disabled via --no-cov switch!'
+            terminalreporter.write('WARNING: %s' % msg, red=True, bold=True)
             terminalreporter.config.warn(code='COV-U1', message=msg)
             return
         if self.cov_controller is None:

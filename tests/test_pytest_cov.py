@@ -429,7 +429,7 @@ def test_no_cov(testdir):
                                '--no-cov',
                                '-rw',
                                script)
-
+    assert 'WARNING: Coverage disabled via --no-cov switch!' in result.stdout.str()
     assert 'WCOV-U1 None Coverage disabled via --no-cov switch!' in result.stdout.str()
     assert result.ret == 0
 
