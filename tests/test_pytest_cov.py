@@ -337,7 +337,7 @@ def test_central_nonspecific(testdir):
     ])
 
     # multi-module coverage report
-    assert any(line.startswith('TOTAL ') for line in result.stdout.lines[-4:])
+    assert any(line.startswith('TOTAL ') for line in result.stdout.lines)
 
     assert result.ret == 0
 
