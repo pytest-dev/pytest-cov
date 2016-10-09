@@ -140,7 +140,7 @@ class CovPlugin(object):
         is_dist = (getattr(options, 'numprocesses', False) or
                    getattr(options, 'distload', False) or
                    getattr(options, 'dist', 'no') != 'no')
-        if options.no_cov:
+        if getattr(options, 'no_cov', False):
             self._disabled = True
             return
 
