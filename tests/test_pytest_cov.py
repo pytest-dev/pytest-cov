@@ -423,15 +423,16 @@ def test_no_cov_on_fail(testdir):
 def test_no_cov(testdir):
     script = testdir.makepyfile(SCRIPT)
 
-    result = testdir.runpytest('-v',
+    result = testdir.runpytest('-vvv',
                                '--cov=%s' % script.dirpath(),
                                '--cov-report=term-missing',
                                '--no-cov',
                                '-rw',
                                script)
-    assert 'WARNING: Coverage disabled via --no-cov switch!' in result.stdout.str()
-    assert 'WCOV-U1' in result.stdout.str()
-    assert result.ret == 0
+    result.stdout.fnmatch_lines_random([
+        'WARNING: Coverage disabled via --no-cov switch!',
+        '*1 warnings*' if pytest.__version__.startswith('2.7') else 'WCOV-U1*Coverage disabled via --no-cov switch!',
+    ])
 
 
 def test_cov_and_failure_report_on_fail(testdir):
@@ -442,10 +443,12 @@ def test_cov_and_failure_report_on_fail(testdir):
                                '--cov-fail-under=100',
                                script)
 
-    assert 'coverage: platform' in result.stdout.str()
-    assert 'FAIL Required test coverage of 100% not reached' in result.stdout.str()
-    assert 'assert False' in result.stdout.str()
-    result.stdout.fnmatch_lines(['*10 failed*'])
+    result.stdout.fnmatch_lines_random([
+        '*10 failed*'
+        '*coverage: platform*',
+        '*FAIL Required test coverage of 100% not reached*',
+        '*assert False*',
+    ])
 
 
 def test_dist_combine_racecondition(testdir):
