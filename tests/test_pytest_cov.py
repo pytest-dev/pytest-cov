@@ -444,7 +444,7 @@ def test_cov_and_failure_report_on_fail(testdir):
                                script)
 
     result.stdout.fnmatch_lines_random([
-        '*10 failed*'
+        '*10 failed*',
         '*coverage: platform*',
         '*FAIL Required test coverage of 100% not reached*',
         '*assert False*',
