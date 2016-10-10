@@ -1,6 +1,16 @@
 Changelog
 =========
 
+2.4.0 (2016-10-10)
+------------------
+
+* Added a "disarm" option: ``--no-cov``. It will disable coverage measurements. Contributed by Zoltan Kozma in
+  `PR#135 <https://github.com/pytest-dev/pytest-cov/pull/135>`_.
+
+  **WARNING: Do not put this in your configuration files, it's meant to be an one-off for situations where you want to
+  disable coverage from command line.**
+* Fixed broken exception handling on ``.pth`` file. See `#136 <https://github.com/pytest-dev/pytest-cov/issues/136>`_.
+
 2.3.1 (2016-08-07)
 ------------------
 
