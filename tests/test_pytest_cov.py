@@ -1126,3 +1126,24 @@ def test_do_not_append_coverage(testdir, opts):
         'test_1* 0%',
         'test_2* %s*' % SCRIPT2_RESULT,
     ])
+
+
+def test_cov_summary(testdir):
+    script = testdir.makepyfile(SCRIPT)
+
+    result = testdir.runpytest('-v',
+                               '--cov=%s' % script.dirpath(),
+                               '--cov-summary',
+                               script)
+    result.stdout.fnmatch_lines([
+        'Total coverage: *'
+    ])
+    result = testdir.runpytest('-v',
+                               '--cov=%s' % script.dirpath(),
+                               '--cov-fail-under=50',
+                               '--cov-summary',
+                               script)
+    result.stdout.fnmatch_lines([
+        'Required coverage: *',
+        'Total coverage: *'
+    ])

@@ -76,6 +76,9 @@ def pytest_addoption(parser):
     group.addoption('--cov-append', action='store_true', default=False,
                     help='do not delete coverage but append to current, '
                          'default: False')
+    group.addoption('--cov-summary', action='store_true', default=False,
+                    help='show coverage summary in terminal, '
+                         'default: False')
 
 
 @pytest.mark.tryfirst
@@ -257,6 +260,11 @@ class CovPlugin(object):
             return
 
         terminalreporter.write('\n' + self.cov_report.getvalue() + '\n')
+
+        if self.options.cov_summary:
+            if self.options.cov_fail_under is not None:
+                terminalreporter.write('Required coverage: %d%%\n' % self.options.cov_fail_under)
+            terminalreporter.write('Total coverage: %.2f%%\n' % self.cov_total)
 
         if self._failed_cov_total():
             markup = {'red': True, 'bold': True}
