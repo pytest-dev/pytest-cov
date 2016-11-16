@@ -296,6 +296,9 @@ def test_cov_min_100(testdir):
                                script)
 
     assert result.ret != 0
+    result.stdout.fnmatch_lines([
+        'FAIL Required test coverage of 100% not reached. Total coverage: *%'
+    ])
 
 
 def test_cov_min_50(testdir):
@@ -308,6 +311,9 @@ def test_cov_min_50(testdir):
                                script)
 
     assert result.ret == 0
+    result.stdout.fnmatch_lines([
+        'Required test coverage of 50% reached. Total coverage: *%'
+    ])
 
 
 def test_cov_min_no_report(testdir):
@@ -320,6 +326,9 @@ def test_cov_min_no_report(testdir):
                                script)
 
     assert result.ret == 0
+    result.stdout.fnmatch_lines([
+        'Required test coverage of 50% reached. Total coverage: *%'
+    ])
 
 
 def test_central_nonspecific(testdir):

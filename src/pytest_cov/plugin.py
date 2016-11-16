@@ -258,13 +258,21 @@ class CovPlugin(object):
 
         terminalreporter.write('\n' + self.cov_report.getvalue() + '\n')
 
-        if self._failed_cov_total():
-            markup = {'red': True, 'bold': True}
-            msg = (
-                'FAIL Required test coverage of %d%% not '
-                'reached. Total coverage: %.2f%%\n'
-                % (self.options.cov_fail_under, self.cov_total)
-            )
+        if self.options.cov_fail_under is not None and self.options.cov_fail_under > 0:
+            if self.cov_total < self.options.cov_fail_under:
+                markup = {'red': True, 'bold': True}
+                msg = (
+                    'FAIL Required test coverage of %d%% not '
+                    'reached. Total coverage: %.2f%%\n'
+                    % (self.options.cov_fail_under, self.cov_total)
+                )
+            else:
+                markup = {'green': True}
+                msg = (
+                    'Required test coverage of %d%% '
+                    'reached. Total coverage: %.2f%%\n'
+                    % (self.options.cov_fail_under, self.cov_total)
+                )
             terminalreporter.write(msg, **markup)
 
     def pytest_runtest_setup(self, item):
