@@ -80,6 +80,7 @@ class GeneratePTH(Command):
                     'exec(%r)' % sh.read().replace('    ', ' ')
                 )
 
+
 setup(
     name='pytest-cov',
     version='2.4.0',
