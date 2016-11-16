@@ -1,6 +1,12 @@
 Changelog
 =========
 
+2.5.0 (2016-11-??)
+------------------
+
+* Always show a summary when ``--cov-fail-under`` is used. Contributed by Francis Niu in `PR#141
+  <https://github.com/pytest-dev/pytest-cov/pull/141>`_.
+
 2.4.0 (2016-10-10)
 ------------------
 
