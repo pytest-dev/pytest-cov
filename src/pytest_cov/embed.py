@@ -16,7 +16,7 @@ info passed via env vars.
 import os
 
 
-def multiprocessing_start(obj):
+def multiprocessing_start(_):
     cov = init()
     if cov:
         multiprocessing.util.Finalize(None, multiprocessing_finish, args=(cov,), exitpriority=1000)
@@ -32,7 +32,7 @@ try:
 except ImportError:
     pass
 else:
-    multiprocessing.util.register_after_fork(multiprocessing_start, multiprocessing_start)
+    multiprocessing.util.register_after_fork(None, multiprocessing_start)
 
 
 def init():
