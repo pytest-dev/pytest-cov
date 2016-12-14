@@ -135,19 +135,6 @@ def test_foo(cov):
     assert cov is None
 '''
 
-MULTIPROCESSING_SCRIPT = '''
-import multiprocessing
-
-def target_fn():
-    a = True
-    return a
-
-def test_run_target():
-    p = multiprocessing.Process(target=target_fn)
-    p.start()
-    p.join()
-'''
-
 SCRIPT_FAIL = '''
 def test_fail():
     assert False
@@ -761,7 +748,18 @@ def test_funcarg_not_active(testdir):
 def test_multiprocessing_subprocess(testdir):
     py.test.importorskip('multiprocessing.util')
 
-    script = testdir.makepyfile(MULTIPROCESSING_SCRIPT)
+    script = testdir.makepyfile('''
+import multiprocessing
+
+def target_fn():
+    a = True
+    return a
+
+def test_run_target():
+    p = multiprocessing.Process(target=target_fn)
+    p.start()
+    p.join()
+''')
 
     result = testdir.runpytest('-v',
                                '--cov=%s' % script.dirpath(),
@@ -775,6 +773,41 @@ def test_multiprocessing_subprocess(testdir):
     ])
     assert result.ret == 0
 
+
+def test_multiprocessing_subprocess_with_terminate(testdir):
+    py.test.importorskip('multiprocessing.util')
+
+    script = testdir.makepyfile('''
+import multiprocessing
+import time
+from pytest_cov.embed import cleanup_on_sigterm
+cleanup_on_sigterm()
+
+event = multiprocessing.Event()
+
+def target_fn():
+    a = True
+    event.set()
+    time.sleep(5)
+
+def test_run_target():
+    p = multiprocessing.Process(target=target_fn)
+    p.start()
+    event.wait(1)
+    p.terminate()
+''')
+
+    result = testdir.runpytest('-v',
+                               '--cov=%s' % script.dirpath(),
+                               '--cov-report=term-missing',
+                               script)
+
+    result.stdout.fnmatch_lines([
+        '*- coverage: platform *, python * -*',
+        'test_multiprocessing_subprocess* 14 * 100%*',
+        '*1 passed*'
+    ])
+    assert result.ret == 0
 
 MODULE = '''
 def func():

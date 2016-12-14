@@ -283,7 +283,7 @@ class CovPlugin(object):
 
     def pytest_runtest_teardown(self, item):
         if self.cov is not None:
-            embed.multiprocessing_finish(self.cov)
+            embed.cleanup(self.cov)
             self.cov = None
 
 

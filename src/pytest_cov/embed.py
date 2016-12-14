@@ -14,18 +14,15 @@ that code coverage is being collected we activate coverage based on
 info passed via env vars.
 """
 import os
+import signal
+
+active_cov = None
 
 
 def multiprocessing_start(_):
     cov = init()
     if cov:
-        multiprocessing.util.Finalize(None, multiprocessing_finish, args=(cov,), exitpriority=1000)
-
-
-def multiprocessing_finish(cov):
-    cov.stop()
-    cov.save()
-
+        multiprocessing.util.Finalize(None, cleanup, args=(cov,), exitpriority=1000)
 
 try:
     import multiprocessing.util
@@ -38,6 +35,7 @@ else:
 def init():
     # Only continue if ancestor process has set everything needed in
     # the env.
+    global active_cov
 
     cov_source = os.environ.get('COV_CORE_SOURCE')
     cov_config = os.environ.get('COV_CORE_CONFIG')
@@ -55,7 +53,7 @@ def init():
             cov_config = True
 
         # Activate coverage for this process.
-        cov = coverage.coverage(
+        cov = active_cov = coverage.coverage(
             source=cov_source,
             data_suffix=True,
             config_file=cov_config,
@@ -67,3 +65,25 @@ def init():
         cov._warn_no_data = False
         cov._warn_unimported_source = False
         return cov
+
+def _cleanup(cov):
+    cov.stop()
+    cov.save()
+
+def cleanup(cov=None):
+    global active_cov
+
+    if cov:
+        _cleanup(cov)
+    if active_cov is not cov:
+        _cleanup(active_cov)
+    active_cov = None
+multiprocessing_finish = cleanup  # in case someone dared to use this internal
+
+
+def _sigterm_handler(*_):
+    cleanup()
+
+
+def cleanup_on_sigterm():
+    signal.signal(signal.SIGTERM, _sigterm_handler)
