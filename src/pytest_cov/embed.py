@@ -32,7 +32,7 @@ try:
 except ImportError:
     pass
 else:
-    multiprocessing.util.register_after_fork(None, multiprocessing_start)
+    multiprocessing.util.register_after_fork(multiprocessing_start, multiprocessing_start)
 
 
 def init():
