@@ -24,6 +24,7 @@ def multiprocessing_start(_):
     if cov:
         multiprocessing.util.Finalize(None, cleanup, args=(cov,), exitpriority=1000)
 
+
 try:
     import multiprocessing.util
 except ImportError:
@@ -66,9 +67,11 @@ def init():
         cov._warn_unimported_source = False
         return cov
 
+
 def _cleanup(cov):
     cov.stop()
     cov.save()
+
 
 def cleanup(cov=None):
     global active_cov
@@ -78,6 +81,8 @@ def cleanup(cov=None):
     if active_cov is not cov:
         _cleanup(active_cov)
     active_cov = None
+
+
 multiprocessing_finish = cleanup  # in case someone dared to use this internal
 
 
