@@ -69,15 +69,15 @@ def init():
 
 
 def _cleanup(cov):
-    cov.stop()
-    cov.save()
+    if cov is not None:
+        cov.stop()
+        cov.save()
 
 
 def cleanup(cov=None):
     global active_cov
 
-    if cov:
-        _cleanup(cov)
+    _cleanup(cov)
     if active_cov is not cov:
         _cleanup(active_cov)
     active_cov = None
