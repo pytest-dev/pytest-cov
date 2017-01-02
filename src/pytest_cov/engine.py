@@ -152,8 +152,16 @@ class Central(CovController):
 
         self.unset_env()
         self.cov.stop()
+        self.cov.save()
+
+        # Create a new coverage instance to combine the files.
+        # Replace the old instance with the new one so that it is
+        # used for reporting.
+        self.cov = coverage.coverage(source=self.cov_source,
+                                     config_file=self.cov_config)
         self.cov.combine()
         self.cov.save()
+
         node_desc = self.get_node_desc(sys.platform, sys.version_info)
         self.node_descs.add(node_desc)
 
