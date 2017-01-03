@@ -795,6 +795,7 @@ def test_run_target():
     p.start()
     event.wait(1)
     p.terminate()
+    p.join()
 ''')
 
     result = testdir.runpytest('-v',
@@ -804,7 +805,7 @@ def test_run_target():
 
     result.stdout.fnmatch_lines([
         '*- coverage: platform *, python * -*',
-        'test_multiprocessing_subprocess* 14 * 100%*',
+        'test_multiprocessing_subprocess* 15 * 100%*',
         '*1 passed*'
     ])
     assert result.ret == 0
