@@ -375,6 +375,41 @@ def test_central_coveragerc(testdir):
     assert result.ret == 0
 
 
+def test_central_with_path_aliasing(testdir, monkeypatch):
+    mod1 = testdir.mkdir('src').join('mod.py')
+    mod1.write(SCRIPT)
+    mod2 = testdir.mkdir('aliased').join('mod.py')
+    mod2.write(SCRIPT)
+    script = testdir.makepyfile('''
+from mod import *
+''')
+    testdir.tmpdir.join('.coveragerc').write("""
+[paths]
+source =
+    src
+    aliased
+[run]
+source = mod
+parallel = true
+""")
+
+    monkeypatch.setitem(os.environ, 'PYTHONPATH', os.pathsep.join([os.environ.get('PYTHONPATH',''), 'aliased']))
+    result = testdir.runpytest('-v',
+                               '--cov',
+                               '--cov-report=term-missing',
+                               script)
+
+    result.stdout.fnmatch_lines([
+        '*- coverage: platform *, python * -*',
+        'src/mod* %s *' % SCRIPT_RESULT,
+        '*10 passed*',
+    ])
+
+    # single-module coverage report
+    assert all(not line.startswith('TOTAL ') for line in result.stdout.lines[-4:])
+
+    assert result.ret == 0
+
 def test_show_missing_coveragerc(testdir):
     script = testdir.makepyfile(SCRIPT)
     testdir.tmpdir.join('.coveragerc').write("""
