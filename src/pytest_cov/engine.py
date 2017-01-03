@@ -139,6 +139,7 @@ class Central(CovController):
             self.cov.load()
         else:
             self.cov.erase()
+        self.data_file = os.path.abspath(self.cov.config.data_file)
         self.cov.start()
         self.set_env()
 
@@ -153,7 +154,9 @@ class Central(CovController):
         # Replace the old instance with the new one so that it is
         # used for reporting.
         self.cov = coverage.coverage(source=self.cov_source,
+                                     data_file=self.data_file,
                                      config_file=self.cov_config)
+        self.cov.load()
         self.cov.combine()
         self.cov.save()
 
@@ -229,6 +232,14 @@ class DistMaster(CovController):
 
         # Combine all the suffix files into the data file.
         self.cov.stop()
+
+        # Create a new coverage instance to combine the files.
+        # Replace the old instance with the new one so that it is
+        # used for reporting.
+        self.cov = coverage.coverage(source=self.cov_source,
+                                     data_file=self.data_file,
+                                     config_file=self.cov_config)
+        self.cov.load()
         self.cov.combine()
         self.cov.save()
 
