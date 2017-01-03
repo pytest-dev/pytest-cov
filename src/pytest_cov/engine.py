@@ -24,6 +24,7 @@ class CovController(object):
         self.nodeid = nodeid
 
         self.cov = None
+        self.data_file = None
         self.node_descs = set()
         self.failed_slaves = []
         self.topdir = os.getcwd()
@@ -178,6 +179,7 @@ class DistMaster(CovController):
             self.cov.load()
         else:
             self.cov.erase()
+        self.data_file = os.path.abspath(self.cov.config.data_file)
         self.cov.start()
         self.cov.config.paths['source'] = [self.topdir]
 
