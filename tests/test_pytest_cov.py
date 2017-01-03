@@ -588,8 +588,8 @@ parallel = true
 
     result.stdout.fnmatch_lines([
         '*- coverage: platform *, python * -*',
-        'child_script* %s*' % CHILD_SCRIPT_RESULT,
-        'parent_script* 100%*',
+        '*child_script* %s*' % CHILD_SCRIPT_RESULT,
+        '*parent_script* 100%*',
     ])
     assert result.ret == 0
 
