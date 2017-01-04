@@ -410,18 +410,18 @@ def test_central_with_path_aliasing(testdir, monkeypatch, opts, prop):
     script = testdir.makepyfile('''
 from mod import *
 ''')
-    testdir.tmpdir.join('.coveragerc').write("""
-[paths]
+    testdir.tmpdir.join('setup.cfg').write("""
+[coverage:paths]
 source =
     src
     aliased
-[run]
+[coverage:run]
 source = mod
 parallel = true
 """)
 
     monkeypatch.setitem(os.environ, 'PYTHONPATH', os.pathsep.join([os.environ.get('PYTHONPATH',''), 'aliased']))
-    result = testdir.runpytest('-v',
+    result = testdir.runpytest('-v', '-s',
                                '--cov',
                                '--cov-report=term-missing',
                                script, *opts.split())
