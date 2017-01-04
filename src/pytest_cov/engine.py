@@ -18,7 +18,7 @@ class CovController(object):
         """Get some common config used by multiple derived classes."""
         self.cov_source = cov_source
         self.cov_report = cov_report
-        self.cov_config = os.path.abspath(cov_config)
+        self.cov_config = os.path.abspath(cov_config) if os.path.exists(cov_config) else cov_config
         self.cov_append = cov_append
         self.config = config
         self.nodeid = nodeid
