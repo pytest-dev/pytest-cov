@@ -18,7 +18,7 @@ class CovController(object):
         """Get some common config used by multiple derived classes."""
         self.cov_source = cov_source
         self.cov_report = cov_report
-        self.cov_config = os.path.abspath(cov_config) if os.path.exists(cov_config) else cov_config
+        self.cov_config = cov_config
         self.cov_append = cov_append
         self.config = config
         self.nodeid = nodeid
@@ -36,10 +36,7 @@ class CovController(object):
             os.environ['COV_CORE_SOURCE'] = ''
         else:
             os.environ['COV_CORE_SOURCE'] = os.pathsep.join(self.cov_source)
-        if os.path.exists(self.cov_config):
-            os.environ['COV_CORE_CONFIG'] = self.cov_config
-        else:
-            os.environ['COV_CORE_CONFIG'] = ''
+        os.environ['COV_CORE_CONFIG'] = laxabspath(self.cov_config, '')
         os.environ['COV_CORE_DATAFILE'] = os.path.abspath('.coverage')
 
     @staticmethod
@@ -301,3 +298,12 @@ class DistSlave(CovController):
         """Only the master reports so do nothing."""
 
         pass
+
+
+def laxabspath(path_or_something, *replacemet):
+    if path_or_something and os.path.exists(path_or_something):
+        return os.path.abspath(path_or_something)
+    else:
+        if replacemet:
+            path_or_something, = replacemet
+        return path_or_something
