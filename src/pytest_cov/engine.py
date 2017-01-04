@@ -24,6 +24,7 @@ class CovController(object):
         self.nodeid = nodeid
 
         self.cov = None
+        self.combining_cov = None
         self.data_file = None
         self.node_descs = set()
         self.failed_slaves = []
@@ -132,14 +133,15 @@ class Central(CovController):
 
     def start(self):
         """Erase any previous coverage data and start coverage."""
-
         self.cov = coverage.coverage(source=self.cov_source,
                                      config_file=self.cov_config)
+        self.combining_cov = coverage.coverage(source=self.cov_source,
+                                               data_file=os.path.abspath(self.cov.config.data_file),
+                                               config_file=self.cov_config)
         if self.cov_append:
             self.cov.load()
         else:
             self.cov.erase()
-        self.data_file = os.path.abspath(self.cov.config.data_file)
         self.cov.start()
         self.set_env()
 
@@ -149,13 +151,6 @@ class Central(CovController):
         self.unset_env()
         self.cov.stop()
         self.cov.save()
-
-        # Create a new coverage instance to combine the files.
-        # Replace the old instance with the new one so that it is
-        # used for reporting.
-        self.cov = coverage.coverage(source=self.cov_source,
-                                     data_file=self.data_file,
-                                     config_file=self.cov_config)
         self.cov.load()
         self.cov.combine()
         self.cov.save()
@@ -175,11 +170,13 @@ class DistMaster(CovController):
 
         self.cov = coverage.coverage(source=self.cov_source,
                                      config_file=self.cov_config)
+        self.combining_cov = coverage.coverage(source=self.cov_source,
+                                               data_file=os.path.abspath(self.cov.config.data_file),
+                                               config_file=self.cov_config)
         if self.cov_append:
             self.cov.load()
         else:
             self.cov.erase()
-        self.data_file = os.path.abspath(self.cov.config.data_file)
         self.cov.start()
         self.cov.config.paths['source'] = [self.topdir]
 
@@ -233,13 +230,8 @@ class DistMaster(CovController):
 
         # Combine all the suffix files into the data file.
         self.cov.stop()
-
-        # Create a new coverage instance to combine the files.
-        # Replace the old instance with the new one so that it is
-        # used for reporting.
-        self.cov = coverage.coverage(source=self.cov_source,
-                                     data_file=self.data_file,
-                                     config_file=self.cov_config)
+        self.cov.save()
+        self.cov = self.combining_cov
         self.cov.load()
         self.cov.combine()
         self.cov.save()
