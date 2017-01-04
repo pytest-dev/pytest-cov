@@ -156,6 +156,8 @@ class Central(CovController):
         self.unset_env()
         self.cov.stop()
         self.cov.save()
+
+        self.cov = self.combining_cov
         self.cov.load()
         self.cov.combine()
         self.cov.save()
