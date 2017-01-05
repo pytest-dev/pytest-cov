@@ -3,7 +3,6 @@ import os
 import subprocess
 import sys
 from distutils.version import StrictVersion
-from io import StringIO
 from itertools import chain
 
 import coverage
@@ -13,6 +12,12 @@ import virtualenv
 from process_tests import TestProcess as _TestProcess
 from process_tests import dump_on_error
 from process_tests import wait_for_strings
+from six import exec_
+
+try:
+    from StringIO import StringIO
+except ImportError:
+    from io import StringIO
 
 import pytest_cov.plugin
 
@@ -1189,6 +1194,6 @@ def test_pth_failure(monkeypatch):
     monkeypatch.setattr(embed, 'init', bad_init)
     monkeypatch.setattr(sys, 'stderr', buff)
     monkeypatch.setitem(os.environ, 'COV_CORE_SOURCE', 'foobar')
-    exec(payload)
+    exec_(payload)
     assert buff.getvalue() == '''pytest-cov: Failed to setup subprocess coverage. Environ: {'COV_CORE_SOURCE': 'foobar'} Exception: SpecificError()
 '''
