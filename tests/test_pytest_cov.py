@@ -3,6 +3,7 @@ import os
 import subprocess
 import sys
 from distutils.version import StrictVersion
+from io import StringIO
 from itertools import chain
 
 import coverage
@@ -1169,3 +1170,25 @@ def test_do_not_append_coverage(testdir, opts):
         'test_1* 0%',
         'test_2* %s*' % SCRIPT2_RESULT,
     ])
+
+
+def test_pth_failure(monkeypatch):
+    with open('src/pytest-cov.pth') as fh:
+        payload = fh.read()
+
+    class SpecificError(Exception):
+        pass
+
+    def bad_init():
+        raise SpecificError()
+
+    buff = StringIO()
+
+    from pytest_cov import embed
+
+    monkeypatch.setattr(embed, 'init', bad_init)
+    monkeypatch.setattr(sys, 'stderr', buff)
+    monkeypatch.setitem(os.environ, 'COV_CORE_SOURCE', 'foobar')
+    exec(payload)
+    assert buff.getvalue() == '''pytest-cov: Failed to setup subprocess coverage. Environ: {'COV_CORE_SOURCE': 'foobar'} Exception: SpecificError()
+'''
