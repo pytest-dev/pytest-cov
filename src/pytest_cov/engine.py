@@ -148,7 +148,6 @@ class Central(CovController):
         self.unset_env()
         self.cov.stop()
         self.cov.save()
-
         self.cov = self.combining_cov
         self.cov.load()
         self.cov.combine()
@@ -302,10 +301,10 @@ class DistSlave(CovController):
         pass
 
 
-def laxabspath(path_or_something, *replacemet):
+def laxabspath(path_or_something, *replacement):
     if path_or_something and os.path.exists(path_or_something):
         return os.path.abspath(path_or_something)
     else:
-        if replacemet:
-            path_or_something, = replacemet
+        if replacement:
+            path_or_something, = replacement
         return path_or_something
