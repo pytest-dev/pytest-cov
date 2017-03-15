@@ -349,8 +349,7 @@ def test_central_nonspecific(testdir, prop):
     result = testdir.runpytest('-v',
                                '--cov',
                                '--cov-report=term-missing',
-                               *prop.args,
-                               script)
+                               script, *prop.args)
 
     result.stdout.fnmatch_lines([
         '*- coverage: platform *, python * -*',
@@ -387,8 +386,7 @@ def test_central_coveragerc(testdir, prop):
     result = testdir.runpytest('-v',
                                '--cov',
                                '--cov-report=term-missing',
-                               *prop.args,
-                               script)
+                               script, *prop.args)
 
     result.stdout.fnmatch_lines([
         '*- coverage: platform *, python * -*',
@@ -416,8 +414,7 @@ show_missing = true
     result = testdir.runpytest('-v',
                                '--cov',
                                '--cov-report=term',
-                               *prop.args,
-                               script)
+                               script, *prop.args)
 
     result.stdout.fnmatch_lines([
         '*- coverage: platform *, python * -*',
@@ -513,8 +510,7 @@ def test_dist_collocated(testdir, prop):
                                '--dist=load',
                                '--tx=2*popen',
                                '--max-slave-restart=0',
-                               *prop.args,
-                               script)
+                               script, *prop.args)
 
     result.stdout.fnmatch_lines([
         '*- coverage: platform *, python * -*',
@@ -539,8 +535,7 @@ def test_dist_not_collocated(testdir, prop):
                                '--tx=popen//chdir=%s' % dir2,
                                '--rsyncdir=%s' % script.basename,
                                '--max-slave-restart=0', '-s',
-                               *prop.args,
-                               script)
+                               script, *prop.args)
 
     result.stdout.fnmatch_lines([
         '*- coverage: platform *, python * -*',
@@ -1167,8 +1162,7 @@ def xtest_append_coverage(testdir, opts, prop):
     result = testdir.runpytest('-v',
                                '--cov=%s' % script.dirpath(),
                                script,
-                               *opts.split(),
-                               *prop.args)
+                               *opts.split()+prop.args)
     result.stdout.fnmatch_lines([
         'test_1* %s*' % prop.result,
     ])
@@ -1177,8 +1171,7 @@ def xtest_append_coverage(testdir, opts, prop):
                                '--cov-append',
                                '--cov=%s' % script2.dirpath(),
                                script2,
-                               *opts.split(),
-                               *prop.args)
+                               *opts.split()+prop.args)
     result.stdout.fnmatch_lines([
         'test_1* %s*' % prop.result,
         'test_2* %s*' % prop.result2,
@@ -1192,8 +1185,7 @@ def xtest_do_not_append_coverage(testdir, opts, prop):
     result = testdir.runpytest('-v',
                                '--cov=%s' % script.dirpath(),
                                script,
-                               *opts.split(),
-                               *prop.args)
+                               *opts.split()+prop.args)
     result.stdout.fnmatch_lines([
         'test_1* %s*' % prop.result,
     ])
@@ -1201,8 +1193,7 @@ def xtest_do_not_append_coverage(testdir, opts, prop):
     result = testdir.runpytest('-v',
                                '--cov=%s' % script2.dirpath(),
                                script2,
-                               *opts.split(),
-                               *prop.args)
+                               *opts.split()+prop.args)
     result.stdout.fnmatch_lines([
         'test_1* 0%',
         'test_2* %s*' % prop.result2,
