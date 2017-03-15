@@ -14,12 +14,13 @@ from .compat import StringIO
 class CovController(object):
     """Base class for different plugin implementations."""
 
-    def __init__(self, cov_source, cov_report, cov_config, cov_append, config=None, nodeid=None):
+    def __init__(self, cov_source, cov_report, cov_config, cov_append, cov_branch, config=None, nodeid=None):
         """Get some common config used by multiple derived classes."""
         self.cov_source = cov_source
         self.cov_report = cov_report
         self.cov_config = cov_config
         self.cov_append = cov_append
+        self.cov_branch = cov_branch
         self.config = config
         self.nodeid = nodeid
 
@@ -40,6 +41,8 @@ class CovController(object):
         else:
             os.environ['COV_CORE_CONFIG'] = ''
         os.environ['COV_CORE_DATAFILE'] = os.path.abspath('.coverage')
+        if self.cov_branch:
+            os.environ['COV_CORE_BRANCH'] = 'enabled'
 
     @staticmethod
     def unset_env():
@@ -47,6 +50,7 @@ class CovController(object):
         os.environ.pop('COV_CORE_SOURCE', None)
         os.environ.pop('COV_CORE_CONFIG', None)
         os.environ.pop('COV_CORE_DATAFILE', None)
+        os.environ.pop('COV_CORE_BRANCH', None)
 
     @staticmethod
     def get_node_desc(platform, version_info):
@@ -134,6 +138,7 @@ class Central(CovController):
         """Erase any previous coverage data and start coverage."""
 
         self.cov = coverage.coverage(source=self.cov_source,
+                                     branch=self.cov_branch,
                                      config_file=self.cov_config)
         if self.cov_append:
             self.cov.load()
@@ -163,6 +168,7 @@ class DistMaster(CovController):
             self.config.option.rsyncdir.append(self.cov_config)
 
         self.cov = coverage.coverage(source=self.cov_source,
+                                     branch=self.cov_branch,
                                      config_file=self.cov_config)
         if self.cov_append:
             self.cov.load()
@@ -197,6 +203,7 @@ class DistMaster(CovController):
                 )
 
             cov = coverage.coverage(source=self.cov_source,
+                                    branch=self.cov_branch,
                                     data_suffix=data_suffix,
                                     config_file=self.cov_config)
             cov.start()
@@ -245,6 +252,7 @@ class DistSlave(CovController):
 
         # Erase any previous data and start coverage.
         self.cov = coverage.coverage(source=self.cov_source,
+                                     branch=self.cov_branch,
                                      data_suffix=True,
                                      config_file=self.cov_config)
         if self.cov_append:
