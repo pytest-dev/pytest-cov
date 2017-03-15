@@ -82,7 +82,13 @@ def pytest_addoption(parser):
 
 
 def _prepare_cov_source(cov_source):
-    return [path for path in cov_source if path is not True] or None
+    """
+    Prepare cov_source so that:
+
+     --cov --cov=foobar is equivalent to --cov (cov_source=None)
+     --cov=foo --cov=bar is equivalent to cov_source=['foo', 'bar']
+    """
+    return None if True in cov_source else [path for path in cov_source if path is not True]
 
 
 @pytest.mark.tryfirst
