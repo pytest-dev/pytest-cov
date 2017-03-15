@@ -6,6 +6,9 @@ Changelog
 
 * Always show a summary when ``--cov-fail-under`` is used. Contributed by Francis Niu in `PR#141
   <https://github.com/pytest-dev/pytest-cov/pull/141>`_.
+* Added ``--cov-branch`` option. Fixes `#85 <https://github.com/pytest-dev/pytest-cov/issues/85>`_.
+* Improve exception handling in subprocess setup. Fixes `#144 <https://github.com/pytest-dev/pytest-cov/issues/144>`_.
+* Fixed handling when ``--cov`` is used multiple times. Fixes `#151 <https://github.com/pytest-dev/pytest-cov/issues/151>`_.
 
 2.4.0 (2016-10-10)
 ------------------
