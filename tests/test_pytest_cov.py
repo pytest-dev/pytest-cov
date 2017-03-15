@@ -524,16 +524,16 @@ def test_dist_not_collocated(testdir, prop):
     script = testdir.makepyfile(prop.code)
     dir1 = testdir.mkdir('dir1')
     dir2 = testdir.mkdir('dir2')
-    testdir.tmpdir.join('cov.conf').write(prop.fullconf)
+    testdir.tmpdir.join('.coveragerc').write(prop.fullconf)
 
     result = testdir.runpytest('-v',
                                '--cov=%s' % script.dirpath(),
                                '--cov-report=term-missing',
-                               '--cov-config=cov.conf',
                                '--dist=load',
                                '--tx=popen//chdir=%s' % dir1,
                                '--tx=popen//chdir=%s' % dir2,
                                '--rsyncdir=%s' % script.basename,
+                               '--rsyncdir=.coveragerc',
                                '--max-slave-restart=0', '-s',
                                script, *prop.args)
 
@@ -1220,3 +1220,31 @@ def test_pth_failure(monkeypatch):
     exec_(payload)
     assert buff.getvalue() == '''pytest-cov: Failed to setup subprocess coverage. Environ: {'COV_CORE_SOURCE': 'foobar'} Exception: SpecificError()
 '''
+
+
+def test_double_cov(testdir):
+    script = testdir.makepyfile(SCRIPT_SIMPLE)
+    result = testdir.runpytest('-v',
+                               '--cov', '--cov=%s' % script.dirpath(),
+                               script)
+
+    result.stdout.fnmatch_lines([
+        '*- coverage: platform *, python * -*',
+        'test_dist_boxed* %s*' % SCRIPT_SIMPLE_RESULT,
+        '*1 passed*'
+    ])
+    assert result.ret == 0
+
+
+def test_double_cov2(testdir):
+    script = testdir.makepyfile(SCRIPT_SIMPLE)
+    result = testdir.runpytest('-v',
+                               '--cov', '--cov',
+                               script)
+
+    result.stdout.fnmatch_lines([
+        '*- coverage: platform *, python * -*',
+        'test_dist_boxed* %s*' % SCRIPT_SIMPLE_RESULT,
+        '*1 passed*'
+    ])
+    assert result.ret == 0
