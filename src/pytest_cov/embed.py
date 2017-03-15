@@ -41,6 +41,8 @@ def init():
     cov_source = os.environ.get('COV_CORE_SOURCE')
     cov_config = os.environ.get('COV_CORE_CONFIG')
     cov_datafile = os.environ.get('COV_CORE_DATAFILE')
+    cov_branch = True if os.environ.get('COV_CORE_BRANCH') == 'enabled' else None
+
     if cov_datafile:
         # Import what we need to activate coverage.
         import coverage
@@ -56,6 +58,7 @@ def init():
         # Activate coverage for this process.
         cov = active_cov = coverage.coverage(
             source=cov_source,
+            branch=cov_branch,
             data_suffix=True,
             config_file=cov_config,
             auto_data=True,

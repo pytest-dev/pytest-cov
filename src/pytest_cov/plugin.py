@@ -77,6 +77,8 @@ def pytest_addoption(parser):
     group.addoption('--cov-append', action='store_true', default=False,
                     help='do not delete coverage but append to current, '
                          'default: False')
+    group.addoption('--cov-branch', action='store_true', default=None,
+                    help='Enable branch coverage.')
 
 
 @pytest.mark.tryfirst
@@ -166,6 +168,7 @@ class CovPlugin(object):
             self.options.cov_report,
             self.options.cov_config,
             self.options.cov_append,
+            self.options.cov_branch,
             config,
             nodeid
         )

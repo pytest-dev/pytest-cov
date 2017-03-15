@@ -13,6 +13,7 @@ from process_tests import TestProcess as _TestProcess
 from process_tests import dump_on_error
 from process_tests import wait_for_strings
 from six import exec_
+from fields import Namespace
 
 try:
     from StringIO import StringIO
@@ -147,8 +148,6 @@ def test_fail():
 
 '''
 
-SCRIPT_RESULT = '9 * 89%'
-SCRIPT2_RESULT = '3 * 100%'
 CHILD_SCRIPT_RESULT = '[56] * 100%'
 PARENT_SCRIPT_RESULT = '8 * 100%'
 DEST_DIR = 'cov_dest'
@@ -157,17 +156,37 @@ REPORT_NAME = 'cov.xml'
 xdist = pytest.mark.parametrize('opts', ['', '-n 1'], ids=['nodist', 'xdist'])
 
 
-def test_central(testdir):
-    script = testdir.makepyfile(SCRIPT)
+@pytest.fixture(params=[
+    ('branch=true', '--cov-branch', '9 * 85%', '3 * 100%'),
+    ('branch=true', '',             '9 * 85%', '3 * 100%'),
+    ('',            '--cov-branch', '9 * 85%', '3 * 100%'),
+    ('',            '',             '9 * 89%', '3 * 100%'),
+], ids=['branch2x', 'branch1c', 'branch1a', 'nobranch'])
+def prop(request):
+    return Namespace(
+        code=SCRIPT,
+        code2=SCRIPT2,
+        conf=request.param[0],
+        fullconf='[run]\n%s\n' % request.param[0],
+        args=request.param[1].split(),
+        result=request.param[2],
+        result2=request.param[3],
+    )
+
+
+def test_central(testdir, prop):
+    script = testdir.makepyfile(prop.code)
+    testdir.tmpdir.join('.coveragerc').write(prop.fullconf)
 
     result = testdir.runpytest('-v',
                                '--cov=%s' % script.dirpath(),
                                '--cov-report=term-missing',
-                               script)
+                               script,
+                               *prop.args)
 
     result.stdout.fnmatch_lines([
         '*- coverage: platform *, python * -*',
-        'test_central* %s *' % SCRIPT_RESULT,
+        'test_central* %s *' % prop.result,
         '*10 passed*'
     ])
     assert result.ret == 0
@@ -208,7 +227,7 @@ def test_annotate_output_dir(testdir):
     assert result.ret == 0
 
 
-def test_html_output_dir(testdir):
+def test_html_output_dir(testdir,prop):
     script = testdir.makepyfile(SCRIPT)
 
     result = testdir.runpytest('-v',
@@ -324,17 +343,18 @@ def test_cov_min_no_report(testdir):
     ])
 
 
-def test_central_nonspecific(testdir):
-    script = testdir.makepyfile(SCRIPT)
-
+def test_central_nonspecific(testdir, prop):
+    script = testdir.makepyfile(prop.code)
+    testdir.tmpdir.join('.coveragerc').write(prop.fullconf)
     result = testdir.runpytest('-v',
                                '--cov',
                                '--cov-report=term-missing',
+                               *prop.args,
                                script)
 
     result.stdout.fnmatch_lines([
         '*- coverage: platform *, python * -*',
-        'test_central_nonspecific* %s *' % SCRIPT_RESULT,
+        'test_central_nonspecific* %s *' % prop.result,
         '*10 passed*'
     ])
 
@@ -360,18 +380,19 @@ fail_under = 100
     assert result.ret != 0
 
 
-def test_central_coveragerc(testdir):
-    script = testdir.makepyfile(SCRIPT)
-    testdir.tmpdir.join('.coveragerc').write(COVERAGERC_SOURCE)
+def test_central_coveragerc(testdir, prop):
+    script = testdir.makepyfile(prop.code)
+    testdir.tmpdir.join('.coveragerc').write(COVERAGERC_SOURCE + prop.conf)
 
     result = testdir.runpytest('-v',
                                '--cov',
                                '--cov-report=term-missing',
+                               *prop.args,
                                script)
 
     result.stdout.fnmatch_lines([
         '*- coverage: platform *, python * -*',
-        'test_central_coveragerc* %s *' % SCRIPT_RESULT,
+        'test_central_coveragerc* %s *' % prop.result,
         '*10 passed*',
     ])
 
@@ -381,25 +402,27 @@ def test_central_coveragerc(testdir):
     assert result.ret == 0
 
 
-def test_show_missing_coveragerc(testdir):
-    script = testdir.makepyfile(SCRIPT)
+def test_show_missing_coveragerc(testdir, prop):
+    script = testdir.makepyfile(prop.code)
     testdir.tmpdir.join('.coveragerc').write("""
 [run]
 source = .
+%s
 
 [report]
 show_missing = true
-""")
+""" % prop.conf)
 
     result = testdir.runpytest('-v',
                                '--cov',
                                '--cov-report=term',
+                               *prop.args,
                                script)
 
     result.stdout.fnmatch_lines([
         '*- coverage: platform *, python * -*',
         'Name * Stmts * Miss * Cover * Missing',
-        'test_show_missing_coveragerc* %s * 11' % SCRIPT_RESULT,
+        'test_show_missing_coveragerc* %s * 11*' % prop.result,
         '*10 passed*',
     ])
 
@@ -481,43 +504,47 @@ def test_foo(foo):
     assert result.ret == 0
 
 
-def test_dist_collocated(testdir):
-    script = testdir.makepyfile(SCRIPT)
-
+def test_dist_collocated(testdir, prop):
+    script = testdir.makepyfile(prop.code)
+    testdir.tmpdir.join('.coveragerc').write(prop.fullconf)
     result = testdir.runpytest('-v',
                                '--cov=%s' % script.dirpath(),
                                '--cov-report=term-missing',
                                '--dist=load',
                                '--tx=2*popen',
                                '--max-slave-restart=0',
+                               *prop.args,
                                script)
 
     result.stdout.fnmatch_lines([
         '*- coverage: platform *, python * -*',
-        'test_dist_collocated* %s *' % SCRIPT_RESULT,
+        'test_dist_collocated* %s *' % prop.result,
         '*10 passed*'
     ])
     assert result.ret == 0
 
 
-def test_dist_not_collocated(testdir):
-    script = testdir.makepyfile(SCRIPT)
+def test_dist_not_collocated(testdir, prop):
+    script = testdir.makepyfile(prop.code)
     dir1 = testdir.mkdir('dir1')
     dir2 = testdir.mkdir('dir2')
+    testdir.tmpdir.join('cov.conf').write(prop.fullconf)
 
     result = testdir.runpytest('-v',
                                '--cov=%s' % script.dirpath(),
                                '--cov-report=term-missing',
+                               '--cov-config=cov.conf',
                                '--dist=load',
                                '--tx=popen//chdir=%s' % dir1,
                                '--tx=popen//chdir=%s' % dir2,
                                '--rsyncdir=%s' % script.basename,
                                '--max-slave-restart=0', '-s',
+                               *prop.args,
                                script)
 
     result.stdout.fnmatch_lines([
         '*- coverage: platform *, python * -*',
-        'test_dist_not_collocated* %s *' % SCRIPT_RESULT,
+        'test_dist_not_collocated* %s *' % prop.result,
         '*10 passed*'
     ])
     assert result.ret == 0
@@ -572,7 +599,6 @@ def test_central_subprocess_change_cwd_with_pythonpath(testdir, monkeypatch):
     stuff.join('child_script.py').write(SCRIPT_CHILD)
     testdir.makefile('', coveragerc="""
 [run]
-branch = true
 parallel = true
 """)
 
@@ -581,6 +607,7 @@ parallel = true
                                '--cov=child_script',
                                '--cov-config=coveragerc',
                                '--cov-report=term-missing',
+                               '--cov-branch',
                                parent_script)
 
     result.stdout.fnmatch_lines([
@@ -599,14 +626,15 @@ def test_foo():
 """)
     testdir.makefile('', coveragerc="""
 [run]
-branch = true
 parallel = true
 omit =
     */__init__.py
 """)
     result = testdir.runpytest('-v',
                                '--cov-config=coveragerc',
-                               '--cov=%s' % script.dirpath(), script)
+                               '--cov=%s' % script.dirpath(),
+                               '--cov-branch',
+                               script)
     result.stdout.fnmatch_lines([
         '*- coverage: platform *, python * -*',
         'test_central_subprocess_no_subscript* * 3 * 0 * 100%*',
@@ -1133,47 +1161,51 @@ def test_external_data_file_negative(testdir):
 
 
 @xdist
-def test_append_coverage(testdir, opts):
-    script = testdir.makepyfile(test_1=SCRIPT)
-    testdir.tmpdir.join('.coveragerc').write("")
+def xtest_append_coverage(testdir, opts, prop):
+    script = testdir.makepyfile(test_1=prop.code)
+    testdir.tmpdir.join('.coveragerc').write(prop.fullconf)
     result = testdir.runpytest('-v',
                                '--cov=%s' % script.dirpath(),
                                script,
-                               *opts.split())
+                               *opts.split(),
+                               *prop.args)
     result.stdout.fnmatch_lines([
-        'test_1* %s*' % SCRIPT_RESULT,
+        'test_1* %s*' % prop.result,
     ])
-    script2 = testdir.makepyfile(test_2=SCRIPT2)
+    script2 = testdir.makepyfile(test_2=prop.code2)
     result = testdir.runpytest('-v',
                                '--cov-append',
                                '--cov=%s' % script2.dirpath(),
                                script2,
-                               *opts.split())
+                               *opts.split(),
+                               *prop.args)
     result.stdout.fnmatch_lines([
-        'test_1* %s*' % SCRIPT_RESULT,
-        'test_2* %s*' % SCRIPT2_RESULT,
+        'test_1* %s*' % prop.result,
+        'test_2* %s*' % prop.result2,
     ])
 
 
 @xdist
-def test_do_not_append_coverage(testdir, opts):
-    script = testdir.makepyfile(test_1=SCRIPT)
+def xtest_do_not_append_coverage(testdir, opts, prop):
+    script = testdir.makepyfile(test_1=prop.code)
     testdir.tmpdir.join('.coveragerc').write("")
     result = testdir.runpytest('-v',
                                '--cov=%s' % script.dirpath(),
                                script,
-                               *opts.split())
+                               *opts.split(),
+                               *prop.args)
     result.stdout.fnmatch_lines([
-        'test_1* %s*' % SCRIPT_RESULT,
+        'test_1* %s*' % prop.result,
     ])
-    script2 = testdir.makepyfile(test_2=SCRIPT2)
+    script2 = testdir.makepyfile(test_2=prop.code2)
     result = testdir.runpytest('-v',
                                '--cov=%s' % script2.dirpath(),
                                script2,
-                               *opts.split())
+                               *opts.split(),
+                               *prop.args)
     result.stdout.fnmatch_lines([
         'test_1* 0%',
-        'test_2* %s*' % SCRIPT2_RESULT,
+        'test_2* %s*' % prop.result2,
     ])
 
 
