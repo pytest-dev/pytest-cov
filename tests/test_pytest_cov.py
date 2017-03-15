@@ -1230,7 +1230,7 @@ def test_double_cov(testdir):
 
     result.stdout.fnmatch_lines([
         '*- coverage: platform *, python * -*',
-        'test_dist_boxed* %s*' % SCRIPT_SIMPLE_RESULT,
+        'test_double_cov* %s*' % SCRIPT_SIMPLE_RESULT,
         '*1 passed*'
     ])
     assert result.ret == 0
@@ -1244,7 +1244,7 @@ def test_double_cov2(testdir):
 
     result.stdout.fnmatch_lines([
         '*- coverage: platform *, python * -*',
-        'test_dist_boxed* %s*' % SCRIPT_SIMPLE_RESULT,
+        'test_double_cov2* %s*' % SCRIPT_SIMPLE_RESULT,
         '*1 passed*'
     ])
     assert result.ret == 0
