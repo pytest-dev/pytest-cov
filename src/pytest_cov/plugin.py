@@ -81,13 +81,15 @@ def pytest_addoption(parser):
                     help='Enable branch coverage.')
 
 
+def _prepare_cov_source(cov_source):
+    return [path for path in cov_source if path is not True] or None
+
+
 @pytest.mark.tryfirst
 def pytest_load_initial_conftests(early_config, parser, args):
     ns = parser.parse_known_args(args)
     ns.cov = bool(ns.cov_source)
-
-    if ns.cov_source == [True]:
-        ns.cov_source = None
+    ns.cov_source = _prepare_cov_source(ns.cov_source)
 
     if not ns.cov_report:
         ns.cov_report = ['term']
@@ -105,8 +107,7 @@ def pytest_configure(config):
         if not config.pluginmanager.hasplugin('_cov'):
             if not config.option.cov_report:
                 config.option.cov_report = ['term']
-            if config.option.cov_source == [True]:
-                config.option.cov_source = None
+                config.option.cov_source = _prepare_cov_source(config.option.cov_source)
 
             plugin = CovPlugin(config.option, config.pluginmanager,
                                start=False)
