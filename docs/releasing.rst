@@ -17,7 +17,7 @@ The process for releasing should follow these steps:
     git push --tags
 #. Wait for `AppVeyor <https://ci.appveyor.com/project/pytestbot/pytest-cov>`_
    and `Travis <https://travis-ci.org/schlamar/pytest-cov>`_ to give the green builds.
-#. Check that the docs on `ReadTheDocs <https://readthedocs.org/projects/pytest-cov>`_ are built.
+#. Check that the docs on `ReadTheDocs <https://pytest-cov.readthedocs.io/>`_ are built.
 #. Make sure you have a clean checkout, run ``git status`` to verify.
 #. Manually clean temporary files (that are ignored and won't show up in ``git status``)::
 
