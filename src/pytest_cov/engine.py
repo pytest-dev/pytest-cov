@@ -40,7 +40,8 @@ class CovController(object):
             os.environ['COV_CORE_CONFIG'] = config_file
         else:
             os.environ['COV_CORE_CONFIG'] = ''
-        os.environ['COV_CORE_DATAFILE'] = os.path.abspath('.coverage')
+        data_file = os.path.abspath('.coverage')
+        os.environ['COV_CORE_DATAFILE'] = getattr(self.config, 'data_file', data_file)
         if self.cov_branch:
             os.environ['COV_CORE_BRANCH'] = 'enabled'
 
