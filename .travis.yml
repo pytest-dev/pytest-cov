@@ -310,66 +310,6 @@ matrix:
     - python: '3.5'
       env:
         - TOXENV=py35-30-43
-    - python: '3.6'
-      env:
-        - TOXENV=py36-27-37
-    - python: '3.6'
-      env:
-        - TOXENV=py36-27-40
-    - python: '3.6'
-      env:
-        - TOXENV=py36-27-41
-    - python: '3.6'
-      env:
-        - TOXENV=py36-27-42
-    - python: '3.6'
-      env:
-        - TOXENV=py36-27-43
-    - python: '3.6'
-      env:
-        - TOXENV=py36-28-37
-    - python: '3.6'
-      env:
-        - TOXENV=py36-28-40
-    - python: '3.6'
-      env:
-        - TOXENV=py36-28-41
-    - python: '3.6'
-      env:
-        - TOXENV=py36-28-42
-    - python: '3.6'
-      env:
-        - TOXENV=py36-28-43
-    - python: '3.6'
-      env:
-        - TOXENV=py36-29-37
-    - python: '3.6'
-      env:
-        - TOXENV=py36-29-40
-    - python: '3.6'
-      env:
-        - TOXENV=py36-29-41
-    - python: '3.6'
-      env:
-        - TOXENV=py36-29-42
-    - python: '3.6'
-      env:
-        - TOXENV=py36-29-43
-    - python: '3.6'
-      env:
-        - TOXENV=py36-30-37
-    - python: '3.6'
-      env:
-        - TOXENV=py36-30-40
-    - python: '3.6'
-      env:
-        - TOXENV=py36-30-41
-    - python: '3.6'
-      env:
-        - TOXENV=py36-30-42
-    - python: '3.6'
-      env:
-        - TOXENV=py36-30-43
     - python: 'pypy-5.4'
       env:
         - TOXENV=pypy-27-37
@@ -432,73 +372,145 @@ matrix:
         - TOXENV=pypy-30-43
     - python: '2.7'
       env:
+        - TOXENV=py27-27-43
+    - python: '2.7'
+      env:
         - TOXENV=py27-27-44
+    - python: '2.7'
+      env:
+        - TOXENV=py27-28-43
     - python: '2.7'
       env:
         - TOXENV=py27-28-44
     - python: '2.7'
       env:
+        - TOXENV=py27-29-43
+    - python: '2.7'
+      env:
         - TOXENV=py27-29-44
+    - python: '2.7'
+      env:
+        - TOXENV=py27-30-43
     - python: '2.7'
       env:
         - TOXENV=py27-30-44
     - python: '3.3'
       env:
+        - TOXENV=py33-27-43
+    - python: '3.3'
+      env:
         - TOXENV=py33-27-44
+    - python: '3.3'
+      env:
+        - TOXENV=py33-28-43
     - python: '3.3'
       env:
         - TOXENV=py33-28-44
     - python: '3.3'
       env:
+        - TOXENV=py33-29-43
+    - python: '3.3'
+      env:
         - TOXENV=py33-29-44
+    - python: '3.3'
+      env:
+        - TOXENV=py33-30-43
     - python: '3.3'
       env:
         - TOXENV=py33-30-44
     - python: '3.4'
       env:
+        - TOXENV=py34-27-43
+    - python: '3.4'
+      env:
         - TOXENV=py34-27-44
+    - python: '3.4'
+      env:
+        - TOXENV=py34-28-43
     - python: '3.4'
       env:
         - TOXENV=py34-28-44
     - python: '3.4'
       env:
+        - TOXENV=py34-29-43
+    - python: '3.4'
+      env:
         - TOXENV=py34-29-44
+    - python: '3.4'
+      env:
+        - TOXENV=py34-30-43
     - python: '3.4'
       env:
         - TOXENV=py34-30-44
     - python: '3.5'
       env:
+        - TOXENV=py35-27-43
+    - python: '3.5'
+      env:
         - TOXENV=py35-27-44
+    - python: '3.5'
+      env:
+        - TOXENV=py35-28-43
     - python: '3.5'
       env:
         - TOXENV=py35-28-44
     - python: '3.5'
       env:
+        - TOXENV=py35-29-43
+    - python: '3.5'
+      env:
         - TOXENV=py35-29-44
+    - python: '3.5'
+      env:
+        - TOXENV=py35-30-43
     - python: '3.5'
       env:
         - TOXENV=py35-30-44
     - python: '3.6'
       env:
+        - TOXENV=py36-27-43
+    - python: '3.6'
+      env:
         - TOXENV=py36-27-44
+    - python: '3.6'
+      env:
+        - TOXENV=py36-28-43
     - python: '3.6'
       env:
         - TOXENV=py36-28-44
     - python: '3.6'
       env:
+        - TOXENV=py36-29-43
+    - python: '3.6'
+      env:
         - TOXENV=py36-29-44
+    - python: '3.6'
+      env:
+        - TOXENV=py36-30-43
     - python: '3.6'
       env:
         - TOXENV=py36-30-44
     - python: 'pypy-5.4'
       env:
+        - TOXENV=pypy-27-43
+    - python: 'pypy-5.4'
+      env:
         - TOXENV=pypy-27-44
+    - python: 'pypy-5.4'
+      env:
+        - TOXENV=pypy-28-43
     - python: 'pypy-5.4'
       env:
         - TOXENV=pypy-28-44
     - python: 'pypy-5.4'
       env:
+        - TOXENV=pypy-29-43
+    - python: 'pypy-5.4'
+      env:
         - TOXENV=pypy-29-44
+    - python: 'pypy-5.4'
+      env:
+        - TOXENV=pypy-30-43
     - python: 'pypy-5.4'
       env:
         - TOXENV=pypy-30-44
