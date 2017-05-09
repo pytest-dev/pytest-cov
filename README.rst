@@ -35,9 +35,9 @@ Overview
     :alt: PyPI Package latest release
     :target: https://pypi.python.org/pypi/pytest-cov
 
-.. |commits-since| image:: https://img.shields.io/github/commits-since/pytest-dev/pytest-cov/v2.4.0.svg
+.. |commits-since| image:: https://img.shields.io/github/commits-since/pytest-dev/pytest-cov/v2.5.0.svg
     :alt: Commits since latest release
-    :target: https://github.com/pytest-dev/pytest-cov/compare/v2.4.0...master
+    :target: https://github.com/pytest-dev/pytest-cov/compare/v2.5.0...master
 
 .. |wheel| image:: https://img.shields.io/pypi/wheel/pytest-cov.svg
     :alt: PyPI Wheel
