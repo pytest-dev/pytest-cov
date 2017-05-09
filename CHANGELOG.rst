@@ -1,7 +1,7 @@
 Changelog
 =========
 
-2.5.0 (2016-11-??)
+2.5.0 (2017-05-09)
 ------------------
 
 * Always show a summary when ``--cov-fail-under`` is used. Contributed by Francis Niu in `PR#141
