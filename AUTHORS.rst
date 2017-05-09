@@ -13,7 +13,7 @@ Authors
 * Ionel Cristian Mărieș - https://blog.ionelmc.ro
 * Christian Ledermann - https://github.com/cleder
 * Alec Nikolas Reiter - https://github.com/justanr
-* Patrick Lannigan - https://github.com/unholysampler
+* Patrick Lannigan - https://github.com/plannigan
 * David Szotten - https://github.com/davidszotten
 * Michael Elovskikh - https://github.com/wronglink
 * Saurabh Kumar - https://github.com/theskumar
