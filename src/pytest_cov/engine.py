@@ -25,6 +25,8 @@ class CovController(object):
         self.nodeid = nodeid
 
         self.cov = None
+        self.combining_cov = None
+        self.data_file = None
         self.node_descs = set()
         self.failed_slaves = []
         self.topdir = os.getcwd()
@@ -35,11 +37,7 @@ class CovController(object):
             os.environ['COV_CORE_SOURCE'] = ''
         else:
             os.environ['COV_CORE_SOURCE'] = os.pathsep.join(self.cov_source)
-        config_file = os.path.abspath(self.cov_config)
-        if os.path.exists(config_file):
-            os.environ['COV_CORE_CONFIG'] = config_file
-        else:
-            os.environ['COV_CORE_CONFIG'] = ''
+        os.environ['COV_CORE_CONFIG'] = laxabspath(self.cov_config, '')
         os.environ['COV_CORE_DATAFILE'] = os.path.abspath('.coverage')
         if self.cov_branch:
             os.environ['COV_CORE_BRANCH'] = 'enabled'
@@ -136,10 +134,12 @@ class Central(CovController):
 
     def start(self):
         """Erase any previous coverage data and start coverage."""
-
         self.cov = coverage.coverage(source=self.cov_source,
                                      branch=self.cov_branch,
                                      config_file=self.cov_config)
+        self.combining_cov = coverage.coverage(source=self.cov_source,
+                                               data_file=os.path.abspath(self.cov.config.data_file),
+                                               config_file=self.cov_config)
         if self.cov_append:
             self.cov.load()
         else:
@@ -152,8 +152,12 @@ class Central(CovController):
 
         self.unset_env()
         self.cov.stop()
+        self.cov.save()
+        self.cov = self.combining_cov
+        self.cov.load()
         self.cov.combine()
         self.cov.save()
+
         node_desc = self.get_node_desc(sys.platform, sys.version_info)
         self.node_descs.add(node_desc)
 
@@ -170,6 +174,9 @@ class DistMaster(CovController):
         self.cov = coverage.coverage(source=self.cov_source,
                                      branch=self.cov_branch,
                                      config_file=self.cov_config)
+        self.combining_cov = coverage.coverage(source=self.cov_source,
+                                               data_file=os.path.abspath(self.cov.config.data_file),
+                                               config_file=self.cov_config)
         if self.cov_append:
             self.cov.load()
         else:
@@ -228,6 +235,9 @@ class DistMaster(CovController):
 
         # Combine all the suffix files into the data file.
         self.cov.stop()
+        self.cov.save()
+        self.cov = self.combining_cov
+        self.cov.load()
         self.cov.combine()
         self.cov.save()
 
@@ -297,3 +307,12 @@ class DistSlave(CovController):
         """Only the master reports so do nothing."""
 
         pass
+
+
+def laxabspath(path_or_something, *replacement):
+    if path_or_something and os.path.exists(path_or_something):
+        return os.path.abspath(path_or_something)
+    else:
+        if replacement:
+            path_or_something, = replacement
+        return path_or_something

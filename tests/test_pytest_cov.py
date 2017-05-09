@@ -65,6 +65,7 @@ if idx == 1:
 '''
 
 SCRIPT_PARENT = '''
+import os
 import subprocess
 import sys
 
@@ -74,7 +75,7 @@ def pytest_generate_tests(metafunc):
 
 def test_foo(idx):
     out, err = subprocess.Popen(
-        [sys.executable, 'child_script.py', str(idx)],
+        [sys.executable, os.path.join(os.path.dirname(__file__), 'child_script.py'), str(idx)],
         stdout=subprocess.PIPE,
         stderr=subprocess.PIPE).communicate()
 
@@ -149,7 +150,7 @@ def test_fail():
 '''
 
 CHILD_SCRIPT_RESULT = '[56] * 100%'
-PARENT_SCRIPT_RESULT = '8 * 100%'
+PARENT_SCRIPT_RESULT = '9 * 100%'
 DEST_DIR = 'cov_dest'
 REPORT_NAME = 'cov.xml'
 
@@ -399,6 +400,77 @@ def test_central_coveragerc(testdir, prop):
 
     assert result.ret == 0
 
+@xdist
+def test_central_with_path_aliasing(testdir, monkeypatch, opts):
+    mod1 = testdir.mkdir('src').join('mod.py')
+    mod1.write(SCRIPT)
+    mod2 = testdir.mkdir('aliased').join('mod.py')
+    mod2.write(SCRIPT)
+    script = testdir.makepyfile('''
+from mod import *
+''')
+    testdir.tmpdir.join('setup.cfg').write("""
+[coverage:paths]
+source =
+    src
+    aliased
+[coverage:run]
+source = mod
+parallel = true
+""")
+
+    monkeypatch.setitem(os.environ, 'PYTHONPATH', os.pathsep.join([os.environ.get('PYTHONPATH',''), 'aliased']))
+    result = testdir.runpytest('-v', '-s',
+                               '--cov',
+                               '--cov-report=term-missing',
+                               script, *opts.split())
+
+    result.stdout.fnmatch_lines([
+        '*- coverage: platform *, python * -*',
+        'src[\\/]mod* %s *' % SCRIPT_RESULT,
+        '*10 passed*',
+    ])
+
+    # single-module coverage report
+    assert all(not line.startswith('TOTAL ') for line in result.stdout.lines[-4:])
+
+    assert result.ret == 0
+
+
+def test_subprocess_with_path_aliasing(testdir, monkeypatch):
+    src = testdir.mkdir('src')
+    src.join('parent_script.py').write(SCRIPT_PARENT)
+    src.join('child_script.py').write(SCRIPT_CHILD)
+    aliased = testdir.mkdir('aliased')
+    parent_script = aliased.join('parent_script.py')
+    parent_script.write(SCRIPT_PARENT)
+    aliased.join('child_script.py').write(SCRIPT_CHILD)
+
+    testdir.tmpdir.join('.coveragerc').write("""
+[paths]
+source =
+    src
+    aliased
+[run]
+source =
+    parent_script
+    child_script
+parallel = true
+""")
+
+    monkeypatch.setitem(os.environ, 'PYTHONPATH', os.pathsep.join([os.environ.get('PYTHONPATH',''), 'aliased']))
+    result = testdir.runpytest('-v',
+                               '--cov',
+                               '--cov-report=term-missing',
+                               parent_script)
+
+    result.stdout.fnmatch_lines([
+        '*- coverage: platform *, python * -*',
+        'src[\\/]child_script* %s*' % CHILD_SCRIPT_RESULT,
+        'src[\\/]parent_script* %s*' % PARENT_SCRIPT_RESULT,
+    ])
+    assert result.ret == 0
+
 
 def test_show_missing_coveragerc(testdir, prop):
     script = testdir.makepyfile(prop.code)
@@ -581,8 +653,8 @@ parallel = true
 
     result.stdout.fnmatch_lines([
         '*- coverage: platform *, python * -*',
-        'child_script* %s*' % CHILD_SCRIPT_RESULT,
-        'parent_script* 100%*',
+        '*child_script* %s*' % CHILD_SCRIPT_RESULT,
+        '*parent_script* 100%*',
     ])
     assert result.ret == 0
 
