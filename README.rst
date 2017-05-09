@@ -12,7 +12,8 @@ Overview
     * - tests
       - | |travis| |appveyor| |requires|
     * - package
-      - |version| |downloads| |wheel| |supported-versions| |supported-implementations|
+      - | |version| |wheel| |supported-versions| |supported-implementations|
+        | |commits-since|
 
 .. |docs| image:: https://readthedocs.org/projects/pytest-cov/badge/?style=flat
     :target: https://readthedocs.org/projects/pytest-cov
@@ -30,26 +31,25 @@ Overview
     :alt: Requirements Status
     :target: https://requires.io/github/pytest-dev/pytest-cov/requirements/?branch=master
 
-.. |version| image:: https://img.shields.io/pypi/v/pytest-cov.svg?style=flat
+.. |version| image:: https://img.shields.io/pypi/v/pytest-cov.svg
     :alt: PyPI Package latest release
     :target: https://pypi.python.org/pypi/pytest-cov
 
-.. |downloads| image:: https://img.shields.io/pypi/dm/pytest-cov.svg?style=flat
-    :alt: PyPI Package monthly downloads
-    :target: https://pypi.python.org/pypi/pytest-cov
+.. |commits-since| image:: https://img.shields.io/github/commits-since/pytest-dev/pytest-cov/v2.4.0.svg
+    :alt: Commits since latest release
+    :target: https://github.com/pytest-dev/pytest-cov/compare/v2.4.0...master
 
-.. |wheel| image:: https://img.shields.io/pypi/wheel/pytest-cov.svg?style=flat
+.. |wheel| image:: https://img.shields.io/pypi/wheel/pytest-cov.svg
     :alt: PyPI Wheel
     :target: https://pypi.python.org/pypi/pytest-cov
 
-.. |supported-versions| image:: https://img.shields.io/pypi/pyversions/pytest-cov.svg?style=flat
+.. |supported-versions| image:: https://img.shields.io/pypi/pyversions/pytest-cov.svg
     :alt: Supported versions
     :target: https://pypi.python.org/pypi/pytest-cov
 
-.. |supported-implementations| image:: https://img.shields.io/pypi/implementation/pytest-cov.svg?style=flat
+.. |supported-implementations| image:: https://img.shields.io/pypi/implementation/pytest-cov.svg
     :alt: Supported implementations
     :target: https://pypi.python.org/pypi/pytest-cov
-
 
 .. end-badges
 
