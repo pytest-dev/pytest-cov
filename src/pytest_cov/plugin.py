@@ -98,6 +98,14 @@ def pytest_load_initial_conftests(early_config, parser, args):
         early_config.pluginmanager.register(plugin, '_cov')
 
 
+def pytest_configure(config):
+    """Activate coverage plugin if appropriate."""
+    if config.getvalue('cov_source'):
+        if not config.pluginmanager.hasplugin('_cov'):
+            plugin = CovPlugin(config.option, config.pluginmanager, start=False)
+            config.pluginmanager.register(plugin, '_cov')
+
+
 class CovPlugin(object):
     """Use coverage package to produce code coverage reports.
 
