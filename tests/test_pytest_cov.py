@@ -707,7 +707,7 @@ def test_invalid_coverage_source(testdir):
     else:
         # newer `coverage report` errors on missing importts
         result.stderr.fnmatch_lines([
-            'ERROR: Failed to generate report: No data to report.',
+            'ERROR: Failed to generate report: No data to report.*',
         ])
         assert result.ret != 0
 
