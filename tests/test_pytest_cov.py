@@ -1071,7 +1071,10 @@ def test_dist_bare_cov(testdir):
 
 
 def test_not_started_plugin_does_not_fail(testdir):
-    plugin = pytest_cov.plugin.CovPlugin(None, None, start=False)
+    class ns:
+        cov_source = [True]
+        cov_report = ''
+    plugin = pytest_cov.plugin.CovPlugin(ns, None, start=False)
     plugin.pytest_runtestloop(None)
     plugin.pytest_terminal_summary(None)
 
