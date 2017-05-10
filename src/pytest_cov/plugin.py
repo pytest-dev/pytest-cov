@@ -93,31 +93,9 @@ def _prepare_cov_source(cov_source):
 
 @pytest.mark.tryfirst
 def pytest_load_initial_conftests(early_config, parser, args):
-    ns = parser.parse_known_args(args)
-    ns.cov = bool(ns.cov_source)
-    ns.cov_source = _prepare_cov_source(ns.cov_source)
-
-    if not ns.cov_report:
-        ns.cov_report = ['term']
-    elif len(ns.cov_report) == 1 and '' in ns.cov_report:
-        ns.cov_report = {}
-
-    if ns.cov:
-        plugin = CovPlugin(ns, early_config.pluginmanager)
+    if early_config.known_args_namespace.cov_source:
+        plugin = CovPlugin(early_config.known_args_namespace, early_config.pluginmanager)
         early_config.pluginmanager.register(plugin, '_cov')
-
-
-def pytest_configure(config):
-    """Activate coverage plugin if appropriate."""
-    if config.getvalue('cov_source'):
-        if not config.pluginmanager.hasplugin('_cov'):
-            if not config.option.cov_report:
-                config.option.cov_report = ['term']
-                config.option.cov_source = _prepare_cov_source(config.option.cov_source)
-
-            plugin = CovPlugin(config.option, config.pluginmanager,
-                               start=False)
-            config.pluginmanager.register(plugin, '_cov')
 
 
 class CovPlugin(object):
@@ -153,6 +131,12 @@ class CovPlugin(object):
         if getattr(options, 'no_cov', False):
             self._disabled = True
             return
+
+        if not self.options.cov_report:
+            self.options.cov_report = ['term']
+        elif len(self.options.cov_report) == 1 and '' in self.options.cov_report:
+            self.options.cov_report = {}
+        self.options.cov_source = _prepare_cov_source(self.options.cov_source)
 
         if is_dist and start:
             self.start(engine.DistMaster)
