@@ -22,3 +22,4 @@ Authors
 * Florian Bruhin - http://www.the-compiler.org
 * Zoltan Kozma - https://github.com/kozmaz87
 * Francis Niu - https://flniu.github.io
+* Jannis Leidel - https://github.com/jezdez

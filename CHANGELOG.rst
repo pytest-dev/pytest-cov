@@ -1,6 +1,16 @@
 Changelog
 =========
 
+2.5.1 (2017-05-11)
+------------------
+
+* Fixed xdist breakage (regression in ``2.5.0``).
+  Fixes `#157 <https://github.com/pytest-dev/pytest-cov/issues/157>`_.
+* Allow setting custom ``data_file`` name in ``.coveragerc``.
+  Fixes `#145 <https://github.com/pytest-dev/pytest-cov/issues/145>`_.
+  Contributed by Jannis Leidel & Ionel Cristian Mărieș in
+  `#156 <https://github.com/pytest-dev/pytest-cov/pull/156>`_.
+
 2.5.0 (2017-05-09)
 ------------------
 
