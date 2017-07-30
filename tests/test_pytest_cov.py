@@ -453,7 +453,7 @@ def test_no_cov(testdir):
                                script)
     result.stdout.fnmatch_lines_random([
         'WARNING: Coverage disabled via --no-cov switch!',
-        '*1 warnings*' if pytest.__version__.startswith('2.7') else 'WCOV-U1*Coverage disabled via --no-cov switch!',
+        '*Coverage disabled via --no-cov switch!',
     ])
 
 
