@@ -48,11 +48,11 @@ def init():
         import coverage
 
         # Determine all source roots.
-        if not cov_source:
+        if cov_source == os.pathsep:
             cov_source = None
         else:
             cov_source = cov_source.split(os.pathsep)
-        if not cov_config:
+        if cov_config == os.pathsep:
             cov_config = True
 
         # Activate coverage for this process.

@@ -32,14 +32,14 @@ class CovController(object):
     def set_env(self):
         """Put info about coverage into the env so that subprocesses can activate coverage."""
         if self.cov_source is None:
-            os.environ['COV_CORE_SOURCE'] = ''
+            os.environ['COV_CORE_SOURCE'] = os.pathsep
         else:
             os.environ['COV_CORE_SOURCE'] = os.pathsep.join(self.cov_source)
         config_file = os.path.abspath(self.cov_config)
         if os.path.exists(config_file):
             os.environ['COV_CORE_CONFIG'] = config_file
         else:
-            os.environ['COV_CORE_CONFIG'] = ''
+            os.environ['COV_CORE_CONFIG'] = os.pathsep
         os.environ['COV_CORE_DATAFILE'] = os.path.abspath(self.cov.config.data_file)
         if self.cov_branch:
             os.environ['COV_CORE_BRANCH'] = 'enabled'

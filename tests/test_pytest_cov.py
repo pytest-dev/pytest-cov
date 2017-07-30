@@ -803,6 +803,35 @@ def test_run_target():
     assert result.ret == 0
 
 
+def test_multiprocessing_subprocess_no_source(testdir):
+    py.test.importorskip('multiprocessing.util')
+
+    script = testdir.makepyfile('''
+import multiprocessing
+
+def target_fn():
+    a = True
+    return a
+
+def test_run_target():
+    p = multiprocessing.Process(target=target_fn)
+    p.start()
+    p.join()
+''')
+
+    result = testdir.runpytest('-v',
+                               '--cov',
+                               '--cov-report=term-missing',
+                               script)
+
+    result.stdout.fnmatch_lines([
+        '*- coverage: platform *, python * -*',
+        'test_multiprocessing_subprocess* 8 * 100%*',
+        '*1 passed*'
+    ])
+    assert result.ret == 0
+
+
 @pytest.mark.skipif('sys.platform == "win32"',
                     reason="multiprocessing don't support clean process temination on Windows")
 def test_multiprocessing_subprocess_with_terminate(testdir):
