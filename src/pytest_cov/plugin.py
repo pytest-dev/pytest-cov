@@ -238,9 +238,11 @@ class CovPlugin(object):
             try:
                 self.cov_total = self.cov_controller.summary(self.cov_report)
             except CoverageException as exc:
-                raise pytest.UsageError(
-                    'Failed to generate report: %s\n' % exc
-                )
+                message = 'Failed to generate report: %s\n' % exc
+                session.config.pluginmanager.getplugin("terminalreporter").write(
+                    'WARNING: %s\n' % message, red=True, bold=True)
+                session.config.warn(code='COV-2', message=message)
+                self.cov_total = 0
             assert self.cov_total is not None, 'Test coverage should never be `None`'
             if self._failed_cov_total():
                 # make sure we get the EXIT_TESTSFAILED exit code
@@ -248,9 +250,9 @@ class CovPlugin(object):
 
     def pytest_terminal_summary(self, terminalreporter):
         if self._disabled:
-            msg = 'Coverage disabled via --no-cov switch!'
-            terminalreporter.write('WARNING: %s\n' % msg, red=True, bold=True)
-            terminalreporter.config.warn(code='COV-U1', message=msg)
+            message = 'Coverage disabled via --no-cov switch!'
+            terminalreporter.write('WARNING: %s\n' % message, red=True, bold=True)
+            terminalreporter.config.warn(code='COV-1', message=message)
             return
         if self.cov_controller is None:
             return
@@ -264,19 +266,19 @@ class CovPlugin(object):
         if self.options.cov_fail_under is not None and self.options.cov_fail_under > 0:
             if self.cov_total < self.options.cov_fail_under:
                 markup = {'red': True, 'bold': True}
-                msg = (
+                message = (
                     'FAIL Required test coverage of %d%% not '
                     'reached. Total coverage: %.2f%%\n'
                     % (self.options.cov_fail_under, self.cov_total)
                 )
             else:
                 markup = {'green': True}
-                msg = (
+                message = (
                     'Required test coverage of %d%% '
                     'reached. Total coverage: %.2f%%\n'
                     % (self.options.cov_fail_under, self.cov_total)
                 )
-            terminalreporter.write(msg, **markup)
+            terminalreporter.write(message, **markup)
 
     def pytest_runtest_setup(self, item):
         if os.getpid() != self.pid:
