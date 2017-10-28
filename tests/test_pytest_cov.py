@@ -418,13 +418,14 @@ source =
 [coverage:run]
 source = mod
 parallel = true
-""")
+%s
+""" % prop.conf)
 
-    monkeypatch.setitem(os.environ, 'PYTHONPATH', os.pathsep.join([os.environ.get('PYTHONPATH',''), 'aliased']))
+    monkeypatch.setitem(os.environ, 'PYTHONPATH', os.pathsep.join([os.environ.get('PYTHONPATH', ''), 'aliased']))
     result = testdir.runpytest('-v', '-s',
                                '--cov',
                                '--cov-report=term-missing',
-                               script, *opts.split())
+                               script, *opts.split()+prop.args)
 
     result.stdout.fnmatch_lines([
         '*- coverage: platform *, python * -*',
