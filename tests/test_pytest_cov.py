@@ -748,15 +748,21 @@ def test_dist_subprocess_not_collocated(testdir, tmpdir):
 
     dir1 = tmpdir.mkdir('dir1')
     dir2 = tmpdir.mkdir('dir2')
-
+    testdir.tmpdir.join('.coveragerc').write('''
+[paths]
+source =
+    %s
+    */dir1
+    */dir2
+''' % scripts.dirpath())
     result = testdir.runpytest('-v',
                                '--cov=%s' % scripts.dirpath(),
-                               '--cov-report=term-missing',
                                '--dist=load',
                                '--tx=popen//chdir=%s' % dir1,
                                '--tx=popen//chdir=%s' % dir2,
                                '--rsyncdir=%s' % child_script,
                                '--rsyncdir=%s' % parent_script,
+                               '--rsyncdir=.coveragerc',
                                '--max-slave-restart=0',
                                parent_script)
 
