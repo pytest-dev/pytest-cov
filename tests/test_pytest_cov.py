@@ -169,6 +169,7 @@ def prop(request):
         code2=SCRIPT2,
         conf=request.param[0],
         fullconf='[run]\n%s\n' % request.param[0],
+        prefixedfullconf='[coverage:run]\n%s\n' % request.param[0],
         args=request.param[1].split(),
         result=request.param[2],
         result2=request.param[3],
@@ -598,7 +599,14 @@ def test_dist_not_collocated(testdir, prop):
     script = testdir.makepyfile(prop.code)
     dir1 = testdir.mkdir('dir1')
     dir2 = testdir.mkdir('dir2')
-    testdir.tmpdir.join('.coveragerc').write(prop.fullconf)
+    testdir.tmpdir.join('.coveragerc').write('''
+[run]
+%s
+[paths]
+source =
+    .
+    dir1
+    dir2''' % prop.conf)
 
     result = testdir.runpytest('-v',
                                '--cov=%s' % script.dirpath(),
