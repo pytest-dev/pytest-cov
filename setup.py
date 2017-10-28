@@ -105,7 +105,6 @@ setup(
         'Operating System :: POSIX',
         'Operating System :: Unix',
         'Programming Language :: Python',
-        'Programming Language :: Python :: 2.6',
         'Programming Language :: Python :: 2.7',
         'Programming Language :: Python :: 3',
         'Programming Language :: Python :: 3.3',
@@ -121,8 +120,8 @@ setup(
         'cover', 'coverage', 'pytest', 'py.test', 'distributed', 'parallel',
     ],
     install_requires=[
-        'pytest>=2.6.0',
-        'coverage>=3.7.1'
+        'pytest>=2.9',
+        'coverage>=4.0'
     ],
     extras_require={
     },
