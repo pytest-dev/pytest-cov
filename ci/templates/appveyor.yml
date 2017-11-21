@@ -5,7 +5,6 @@ cache:
 environment:
   matrix:
     - TOXENV: check
-    - TOXENV: '{{ py26_environments|join(",") }}'
     - TOXENV: '{{ py27_environments|join(",") }}'
     - TOXENV: '{{ py34_environments|join(",") }}'
     - TOXENV: '{{ py35_environments|join(",") }}'

@@ -12,7 +12,7 @@ from os.path import abspath
 
 if __name__ == "__main__":
     base_path = dirname(dirname(abspath(__file__)))
-    print("Project path: {0}".format(base_path))
+    print("Project path: {}".format(base_path))
     env_path = join(base_path, ".tox", "bootstrap")
     if sys.platform == "win32":
         bin_path = join(env_path, "Scripts")
@@ -20,7 +20,7 @@ if __name__ == "__main__":
         bin_path = join(env_path, "bin")
     if not exists(env_path):
         import subprocess
-        print("Making bootstrap env in: {0} ...".format(env_path))
+        print("Making bootstrap env in: {} ...".format(env_path))
         try:
             subprocess.check_call(["virtualenv", env_path])
         except Exception:
@@ -46,7 +46,7 @@ if __name__ == "__main__":
     tox_environments = [line for line in tox_environments if line not in ['clean', 'report', 'docs', 'check']]
 
     template_vars = {'tox_environments': tox_environments}
-    for py_ver in '26 27 33 34 35 py'.split():
+    for py_ver in '27 34 35 py'.split():
         template_vars['py%s_environments' % py_ver] = [x for x in tox_environments if x.startswith('py' + py_ver)]
 
     for name in os.listdir(join("ci", "templates")):
