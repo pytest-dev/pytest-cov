@@ -24,7 +24,7 @@ master_doc = 'index'
 project = 'pytest-cov'
 year = '2016'
 author = 'pytest-cov contributors'
-copyright = '{0}, {1}'.format(year, author)
+copyright = '{}, {}'.format(year, author)
 version = release = '2.5.1'
 
 pygments_style = 'trac'
