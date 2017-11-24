@@ -4,7 +4,6 @@ import os
 import pytest
 import argparse
 
-import sys
 from coverage.misc import CoverageException
 
 from . import embed
