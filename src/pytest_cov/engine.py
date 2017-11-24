@@ -221,12 +221,9 @@ class DistMaster(CovController):
                                     data_suffix=data_suffix,
                                     config_file=self.cov_config)
             cov.start()
-            if hasattr(self.cov.data, 'read_fileobj'):  # for coverage 4.0
-                data = CoverageData()
-                data.read_fileobj(StringIO(node.slaveoutput['cov_slave_data']))
-                cov.data.update(data)
-            else:
-                cov.data.lines, cov.data.arcs = node.slaveoutput['cov_slave_data']
+            data = CoverageData()
+            data.read_fileobj(StringIO(node.slaveoutput['cov_slave_data']))
+            cov.data.update(data)
             cov.stop()
             cov.save()
             path = node.slaveoutput['cov_slave_path']
@@ -303,12 +300,9 @@ class DistSlave(CovController):
             # Send all the data to the master over the channel.
             self.config.slaveoutput['cov_slave_path'] = self.topdir
             self.config.slaveoutput['cov_slave_node_id'] = self.nodeid
-            if hasattr(self.cov.data, 'write_fileobj'):  # for coverage 4.0
-                buff = StringIO()
-                self.cov.data.write_fileobj(buff)
-                self.config.slaveoutput['cov_slave_data'] = buff.getvalue()
-            else:
-                self.config.slaveoutput['cov_slave_data'] = self.cov.data.lines, self.cov.data.arcs
+            buff = StringIO()
+            self.cov.data.write_fileobj(buff)
+            self.config.slaveoutput['cov_slave_data'] = buff.getvalue()
 
     def summary(self, stream):
         """Only the master reports so do nothing."""
