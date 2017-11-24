@@ -12,6 +12,7 @@ Contents:
     debuggers
     xdist
     mp
+    plugins
     markers-fixtures
     changelog
     authors
