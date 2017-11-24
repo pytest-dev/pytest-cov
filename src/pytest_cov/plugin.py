@@ -3,6 +3,8 @@ import os
 
 import pytest
 import argparse
+
+import sys
 from coverage.misc import CoverageException
 
 from . import embed
@@ -283,6 +285,20 @@ class CovPlugin(object):
             embed.cleanup(self.cov)
             self.cov = None
 
+    @compat.hookwrapper
+    def pytest_runtest_call(self, item):
+        if item.get_marker("no_cover") or "no_cover" in item.fixturenames:
+            self.cov_controller.pause()
+            yield
+            self.cov_controller.resume()
+        else:
+            yield
+
+
+@pytest.fixture
+def no_cover():
+    pass
+
 
 @pytest.fixture
 def cov(request):
@@ -294,3 +310,7 @@ def cov(request):
         if plugin.cov_controller:
             return plugin.cov_controller.cov
     return None
+
+
+def pytest_configure(config):
+    config.addinivalue_line("markers", "no_cover: disable coverage for this test.")

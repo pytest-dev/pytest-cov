@@ -31,6 +31,14 @@ class CovController(object):
         self.failed_slaves = []
         self.topdir = os.getcwd()
 
+    def pause(self):
+        self.cov.stop()
+        self.unset_env()
+
+    def resume(self):
+        self.cov.start()
+        self.set_env()
+
     def set_env(self):
         """Put info about coverage into the env so that subprocesses can activate coverage."""
         if self.cov_source is None:

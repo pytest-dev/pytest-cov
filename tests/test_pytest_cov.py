@@ -229,7 +229,7 @@ def test_annotate_output_dir(testdir):
     assert result.ret == 0
 
 
-def test_html_output_dir(testdir,prop):
+def test_html_output_dir(testdir, prop):
     script = testdir.makepyfile(SCRIPT)
 
     result = testdir.runpytest('-v',
@@ -1013,6 +1013,46 @@ def test_cover_conftest_dist(testdir):
                                script)
     assert result.ret == 0
     result.stdout.fnmatch_lines([CONF_RESULT])
+
+
+def test_no_cover_marker(testdir):
+    testdir.makepyfile(mod=MODULE)
+    script = testdir.makepyfile('''
+import pytest
+import mod
+import subprocess
+import sys
+
+@pytest.mark.no_cover
+def test_basic():
+    mod.func()
+    subprocess.check_call([sys.executable, '-c', 'from mod import func; func()'])    
+''')
+    result = testdir.runpytest('-v', '-ra', '--strict',
+                               '--cov=%s' % script.dirpath(),
+                               '--cov-report=term-missing',
+                               script)
+    assert result.ret == 0
+    result.stdout.fnmatch_lines(['mod* 2 * 1 * 50% * 2'])
+
+
+def test_no_cover_fixture(testdir):
+    testdir.makepyfile(mod=MODULE)
+    script = testdir.makepyfile('''
+import mod
+import subprocess
+import sys
+
+def test_basic(no_cover):
+    mod.func()
+    subprocess.check_call([sys.executable, '-c', 'from mod import func; func()'])    
+''')
+    result = testdir.runpytest('-v', '-ra', '--strict',
+                               '--cov=%s' % script.dirpath(),
+                               '--cov-report=term-missing',
+                               script)
+    assert result.ret == 0
+    result.stdout.fnmatch_lines(['mod* 2 * 1 * 50% * 2'])
 
 
 COVERAGERC = '''
