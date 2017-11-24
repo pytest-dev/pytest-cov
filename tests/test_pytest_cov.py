@@ -929,7 +929,8 @@ def target_fn():
 def test_run_target():
     p = multiprocessing.Process(target=target_fn)
     p.start()
-    event.wait(1)
+    event.wait(2)
+    time.sleep(1)
     p.terminate()
     p.join()
 ''')
