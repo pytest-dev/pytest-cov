@@ -1,5 +1,1 @@
-########
-Overview
-########
-
 .. include:: ../README.rst
