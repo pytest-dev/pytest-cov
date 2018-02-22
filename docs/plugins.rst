@@ -18,7 +18,7 @@ Alternatively you can have this in ``tox.ini`` (if you're using `Tox <https://to
         COV_CORE_CONFIG={toxinidir}/.coveragerc
         COV_CORE_DATAFILE={toxinidir}/.coverage.eager
 
-And in ``pytest.ini`` / ``tox.ini`` / ``setup.cfg``:
+And in ``pytest.ini`` / ``tox.ini`` / ``setup.cfg``::
 
     [tool:pytest]
     addopts =
