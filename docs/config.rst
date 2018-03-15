@@ -25,6 +25,12 @@ Note that this plugin controls some options and setting the option in the config
 effect.  These include specifying source to be measured (source option) and all data file handling
 (data_file and parallel options).
 
+If you wish to always add pytest-cov with pytest, you can use ``addopts`` under ``pytest`` or ``tool:pytest`` section.
+For example: ::
+
+    [tool:pytest]
+    addopts = --cov=<project-name> --cov-report html
+
 Caveats
 =======
 
