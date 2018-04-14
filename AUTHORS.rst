@@ -23,3 +23,4 @@ Authors
 * Zoltan Kozma - https://github.com/kozmaz87
 * Francis Niu - https://flniu.github.io
 * Jannis Leidel - https://github.com/jezdez
+* Terence Honles - https://github.com/terencehonles

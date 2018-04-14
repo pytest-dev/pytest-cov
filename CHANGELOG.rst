@@ -1,6 +1,10 @@
 Changelog
 =========
 
+2.5.2 (2017-04-14)
+------------------
+* Fix DoctestItem has no attribute fixturenames (regression from `PR#78`)
+
 2.5.1 (2017-05-11)
 ------------------
 

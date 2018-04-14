@@ -286,7 +286,8 @@ class CovPlugin(object):
 
     @compat.hookwrapper
     def pytest_runtest_call(self, item):
-        if item.get_marker("no_cover") or "no_cover" in item.fixturenames:
+        if (item.get_marker('no_cover')
+                or 'no_cover' in getattr(item, 'fixturenames', ())):
             self.cov_controller.pause()
             yield
             self.cov_controller.resume()
