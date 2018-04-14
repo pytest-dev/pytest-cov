@@ -206,7 +206,8 @@ class CovPlugin(object):
     pytest_testnodedown.optionalhook = True
 
     def _should_report(self):
-        return not (self.failed and self.options.no_cov_on_fail)
+        return (self.options.cov_report
+                and not (self.failed and self.options.no_cov_on_fail))
 
     def _failed_cov_total(self):
         cov_fail_under = self.options.cov_fail_under

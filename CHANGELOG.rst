@@ -1,6 +1,15 @@
 Changelog
 =========
 
+2.5.2 (2018-04-14)
+------------------
+
+* Specifying ``--cov-report=`` will not output any report information and
+  will not check minimum coverage which may be specified with
+  ``--cov-fail-under=MIN`` or through the config. This change is to allow
+  using ``--cov-append`` in future runs without reporting failure too early.
+
+
 2.5.1 (2017-05-11)
 ------------------
 

@@ -309,6 +309,20 @@ def test_cov_min_100(testdir):
     ])
 
 
+def test_cov_min_100_no_report(testdir):
+    script = testdir.makepyfile(SCRIPT)
+
+    result = testdir.runpytest('-v',
+                               '--cov=%s' % script.dirpath(),
+                               '--cov-report=',
+                               '--cov-fail-under=100',
+                               script)
+
+    assert result.ret == 0
+    assert ('FAIL Required test coverage of 100% not reached.'
+            not in result.stdout.str())
+
+
 def test_cov_min_50(testdir):
     script = testdir.makepyfile(SCRIPT)
 
@@ -324,7 +338,7 @@ def test_cov_min_50(testdir):
     ])
 
 
-def test_cov_min_no_report(testdir):
+def test_cov_min_50_no_report(testdir):
     script = testdir.makepyfile(SCRIPT)
 
     result = testdir.runpytest('-v',
@@ -334,9 +348,7 @@ def test_cov_min_no_report(testdir):
                                script)
 
     assert result.ret == 0
-    result.stdout.fnmatch_lines([
-        'Required test coverage of 50% reached. Total coverage: *%'
-    ])
+    assert 'Required test coverage of 50% reached.' not in result.stdout.str()
 
 
 def test_central_nonspecific(testdir, prop):
