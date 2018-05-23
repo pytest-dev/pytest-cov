@@ -731,8 +731,6 @@ def test_foo():
     testdir.makefile('', coveragerc="""
 [run]
 parallel = true
-omit =
-    */__init__.py
 """)
     result = testdir.runpytest('-v',
                                '--cov-config=coveragerc',
