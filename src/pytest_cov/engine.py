@@ -268,8 +268,9 @@ class DistSlave(CovController):
         if not self.is_collocated:
             master_topdir = self.config.slaveinput['cov_master_topdir']
             slave_topdir = self.topdir
-            self.cov_source = [source.replace(master_topdir, slave_topdir)
-                               for source in self.cov_source]
+            if self.cov_source is not None:
+                self.cov_source = [source.replace(master_topdir, slave_topdir)
+                                   for source in self.cov_source]
             self.cov_config = self.cov_config.replace(master_topdir, slave_topdir)
 
         # Erase any previous data and start coverage.
