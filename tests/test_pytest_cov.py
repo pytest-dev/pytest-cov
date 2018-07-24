@@ -621,6 +621,39 @@ source =
     assert result.ret == 0
 
 
+def test_dist_not_collocated_coveragerc_source(testdir, prop):
+    script = testdir.makepyfile(prop.code)
+    dir1 = testdir.mkdir('dir1')
+    dir2 = testdir.mkdir('dir2')
+    testdir.tmpdir.join('.coveragerc').write('''
+[run]
+%s
+source = %s
+[paths]
+source =
+    .
+    dir1
+    dir2''' % (prop.conf, script.dirpath()))
+
+    result = testdir.runpytest('-v',
+                               '--cov',
+                               '--cov-report=term-missing',
+                               '--dist=load',
+                               '--tx=popen//chdir=%s' % dir1,
+                               '--tx=popen//chdir=%s' % dir2,
+                               '--rsyncdir=%s' % script.basename,
+                               '--rsyncdir=.coveragerc',
+                               '--max-slave-restart=0', '-s',
+                               script, *prop.args)
+
+    result.stdout.fnmatch_lines([
+        '*- coverage: platform *, python * -*',
+        'test_dist_not_collocated* %s *' % prop.result,
+        '*10 passed*'
+    ])
+    assert result.ret == 0
+
+
 def test_central_subprocess(testdir):
     scripts = testdir.makepyfile(parent_script=SCRIPT_PARENT,
                                  child_script=SCRIPT_CHILD)
