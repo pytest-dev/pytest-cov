@@ -770,7 +770,10 @@ source =
 
 def test_invalid_coverage_source(testdir):
     script = testdir.makepyfile(SCRIPT)
-
+    testdir.makeini("""
+        [pytest]
+        console_output_style=classic
+    """)
     result = testdir.runpytest('-v',
                                '--cov=non_existent_module',
                                '--cov-report=term-missing',
