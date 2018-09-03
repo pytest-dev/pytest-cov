@@ -1,9 +1,23 @@
 Changelog
 =========
 
-2.5.2 (2017-04-14)
+2.6.0 (2018-09-03)
 ------------------
-* Fix DoctestItem has no attribute fixturenames (regression from `PR#78`)
+
+* Dropped support for Python < 3.4, Pytest < 3.5 and Coverage < 4.4.
+* Fixed some documentation formatting. Contributed by Jean Jordaan and Julian.
+* Added a `no_cover` marker and fixture. Fixes
+  `#78 <https://github.com/pytest-dev/pytest-cov/issues/78>`_.
+* Fixed broken `no_cover` check when running doctests. Contributed by Terence Honles in
+  `#200 <https://github.com/pytest-dev/pytest-cov/pull/200>`_.
+* Fixed various issues with path normalization in reports (when combining coverage data from parallel mode). Fixes
+  `#130 <https://github.com/pytest-dev/pytest-cov/issues/161>`_.
+  Contributed by Ryan Hiebert & Ionel Cristian Mărieș in
+  `#178 <https://github.com/pytest-dev/pytest-cov/pull/178>`_.
+* Report generation failures don't raise exceptions anymore. A warning will be logged instead. Fixes
+  `#161 <https://github.com/pytest-dev/pytest-cov/issues/161>`_.
+* Fixed multiprocessing issue on Windows (empty env vars are not passed). Fixes
+  `#165 <https://github.com/pytest-dev/pytest-cov/issues/165>`_.
 
 2.5.1 (2017-05-11)
 ------------------
