@@ -6,6 +6,10 @@ Changelog
 
 * Dropped support for Python < 3.4, Pytest < 3.5 and Coverage < 4.4.
 * Fixed some documentation formatting. Contributed by Jean Jordaan and Julian.
+* Added an example with `addopts` in documentation. Contributed by Samuel Giffard in
+  `#195 <https://github.com/pytest-dev/pytest-cov/pull/195>`_.
+* Fixed `TypeError: 'NoneType' object is not iterable` in certain xdist configurations. Contributed by Jeremy Bowman in
+  `#213 <https://github.com/pytest-dev/pytest-cov/pull/213>`_.
 * Added a `no_cover` marker and fixture. Fixes
   `#78 <https://github.com/pytest-dev/pytest-cov/issues/78>`_.
 * Fixed broken `no_cover` check when running doctests. Contributed by Terence Honles in

@@ -25,3 +25,5 @@ Authors
 * Jannis Leidel - https://github.com/jezdez
 * Ryan Hiebert - http://ryanhiebert.com/
 * Terence Honles - https://github.com/terencehonles
+* Jeremy Bowman - https://github.com/jmbowman
+* Samuel Giffard - https://github.com/Mulugruntz
