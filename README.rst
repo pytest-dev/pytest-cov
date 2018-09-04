@@ -12,7 +12,7 @@ Overview
     * - tests
       - | |travis| |appveyor| |requires|
     * - package
-      - | |version| |wheel| |supported-versions| |supported-implementations|
+      - | |version| |conda-forge| |wheel| |supported-versions| |supported-implementations|
         | |commits-since|
 
 .. |docs| image:: https://readthedocs.org/projects/pytest-cov/badge/?style=flat
@@ -34,6 +34,9 @@ Overview
 .. |version| image:: https://img.shields.io/pypi/v/pytest-cov.svg
     :alt: PyPI Package latest release
     :target: https://pypi.python.org/pypi/pytest-cov
+
+.. |conda-forge| image:: https://img.shields.io/conda/vn/conda-forge/pytest-cov.svg
+    :target: https://anaconda.org/conda-forge/pytest-cov
 
 .. |commits-since| image:: https://img.shields.io/github/commits-since/pytest-dev/pytest-cov/v2.6.0.svg
     :alt: Commits since latest release
