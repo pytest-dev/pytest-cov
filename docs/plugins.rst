@@ -21,5 +21,4 @@ Alternatively you can have this in ``tox.ini`` (if you're using `Tox <https://to
 And in ``pytest.ini`` / ``tox.ini`` / ``setup.cfg``::
 
     [tool:pytest]
-    addopts =
-        --cov-append
+    addopts = --cov --cov-append
