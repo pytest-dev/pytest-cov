@@ -397,7 +397,7 @@ def test_central_coveragerc(testdir, prop):
 
 
 @xdist
-def test_central_with_path_aliasing(testdir, monkeypatch, opts, prop):
+def test_path_aliasing(testdir, monkeypatch, opts, prop):
     mod1 = testdir.mkdir('src').join('mod.py')
     mod1.write(SCRIPT)
     mod2 = testdir.mkdir('aliased').join('mod.py')

@@ -25,7 +25,6 @@ class CovController(object):
         self.nodeid = nodeid
 
         self.cov = None
-        self.combining_cov = None
         self.data_file = None
         self.node_descs = set()
         self.failed_slaves = []
@@ -149,10 +148,6 @@ class Central(CovController):
         self.cov = coverage.coverage(source=self.cov_source,
                                      branch=self.cov_branch,
                                      config_file=self.cov_config)
-        self.combining_cov = coverage.coverage(source=self.cov_source,
-                                               branch=self.cov_branch,
-                                               data_file=os.path.abspath(self.cov.config.data_file),
-                                               config_file=self.cov_config)
         if self.cov_append:
             self.cov.load()
         else:
@@ -166,9 +161,6 @@ class Central(CovController):
         self.unset_env()
         self.cov.stop()
         self.cov.save()
-
-        self.cov = self.combining_cov
-        self.cov.load()
         self.cov.combine()
         self.cov.save()
 
@@ -188,16 +180,11 @@ class DistMaster(CovController):
         self.cov = coverage.coverage(source=self.cov_source,
                                      branch=self.cov_branch,
                                      config_file=self.cov_config)
-        self.combining_cov = coverage.coverage(source=self.cov_source,
-                                               branch=self.cov_branch,
-                                               data_file=os.path.abspath(self.cov.config.data_file),
-                                               config_file=self.cov_config)
         if self.cov_append:
             self.cov.load()
         else:
             self.cov.erase()
         self.cov.start()
-        self.cov.config.paths['source'] = [self.topdir]
 
     def configure_node(self, node):
         """Slaves need to know if they are collocated and what files have moved."""
@@ -248,8 +235,6 @@ class DistMaster(CovController):
         # Combine all the suffix files into the data file.
         self.cov.stop()
         self.cov.save()
-        self.cov = self.combining_cov
-        self.cov.load()
         self.cov.combine()
         self.cov.save()
 
