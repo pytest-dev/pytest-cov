@@ -177,7 +177,7 @@ class CovPlugin(object):
         """At session start determine our implementation and delegate to it."""
 
         if self.options.no_cov:
-            # Coverage can be disabled because it does not cooperate with debuggers well.py
+            # Coverage can be disabled because it does not cooperate with debuggers well.
             self._disabled = True
             return
 
