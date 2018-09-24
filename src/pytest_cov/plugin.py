@@ -235,7 +235,7 @@ class CovPlugin(object):
                 message = 'Failed to generate report: %s\n' % exc
                 session.config.pluginmanager.getplugin("terminalreporter").write(
                     'WARNING: %s\n' % message, red=True, bold=True)
-                warnings.warn(code='COV-2', message=message)
+                warnings.warn(pytest.PytestWarning(message))
                 self.cov_total = 0
             assert self.cov_total is not None, 'Test coverage should never be `None`'
             if self._failed_cov_total():
@@ -246,7 +246,7 @@ class CovPlugin(object):
         if self._disabled:
             message = 'Coverage disabled via --no-cov switch!'
             terminalreporter.write('WARNING: %s\n' % message, red=True, bold=True)
-            warnings.warn(code='COV-1', message=message)
+            warnings.warn(pytest.PytestWarning(message))
             return
         if self.cov_controller is None:
             return
