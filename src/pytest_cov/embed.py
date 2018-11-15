@@ -56,7 +56,7 @@ def init():
             cov_config = True
 
         # Activate coverage for this process.
-        cov = active_cov = coverage.coverage(
+        cov = active_cov = coverage.Coverage(
             source=cov_source,
             branch=cov_branch,
             data_suffix=True,
