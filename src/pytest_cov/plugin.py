@@ -1,5 +1,6 @@
 """Coverage plugin for pytest."""
 import os
+import warnings
 
 import pytest
 import argparse
@@ -234,7 +235,10 @@ class CovPlugin(object):
                 message = 'Failed to generate report: %s\n' % exc
                 session.config.pluginmanager.getplugin("terminalreporter").write(
                     'WARNING: %s\n' % message, red=True, bold=True)
-                session.config.warn(code='COV-2', message=message)
+                if pytest.__version__ >= '3.8':
+                    warnings.warn(pytest.PytestWarning(message))
+                else:
+                    session.config.warn(code='COV-2', message=message)
                 self.cov_total = 0
             assert self.cov_total is not None, 'Test coverage should never be `None`'
             if self._failed_cov_total():
@@ -245,7 +249,10 @@ class CovPlugin(object):
         if self._disabled:
             message = 'Coverage disabled via --no-cov switch!'
             terminalreporter.write('WARNING: %s\n' % message, red=True, bold=True)
-            terminalreporter.config.warn(code='COV-1', message=message)
+            if pytest.__version__ >= '3.8':
+                warnings.warn(pytest.PytestWarning(message))
+            else:
+                terminalreporter.config.warn(code='COV-1', message=message)
             return
         if self.cov_controller is None:
             return
