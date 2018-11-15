@@ -83,17 +83,7 @@ matrix:
       dist: xenial
       sudo: required
     - python: 'pypy-5.4'
-      env: TOXENV=pypy-t35-c44
-    - python: 'pypy-5.4'
-      env: TOXENV=pypy-t35-c45
-    - python: 'pypy-5.4'
-      env: TOXENV=pypy-t36-c44
-    - python: 'pypy-5.4'
-      env: TOXENV=pypy-t36-c45
-    - python: 'pypy-5.4'
-      env: TOXENV=pypy-t37-c44
-    - python: 'pypy-5.4'
-      env: TOXENV=pypy-t37-c45
+      env: TOXENV=pypy-t40-c45
 before_install:
   - python --version
   - uname -a
