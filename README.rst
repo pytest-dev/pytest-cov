@@ -10,7 +10,7 @@ Overview
     * - docs
       - |docs|
     * - tests
-      - | |travis| |appveyor| |requires|
+      - | |travis| |appveyor| |requires| |codecov|
     * - package
       - | |version| |conda-forge| |wheel| |supported-versions| |supported-implementations|
         | |commits-since|
@@ -30,6 +30,9 @@ Overview
 .. |requires| image:: https://requires.io/github/pytest-dev/pytest-cov/requirements.svg?branch=master
     :alt: Requirements Status
     :target: https://requires.io/github/pytest-dev/pytest-cov/requirements/?branch=master
+
+.. |codecov| image:: https://codecov.io/gh/thomasrockhu/pytest-cov/branch/master/graphs/badge.svg?style=flat
+    :target: https://codecov.io/gh/thomasrockhu/pytest-cov/
 
 .. |version| image:: https://img.shields.io/pypi/v/pytest-cov.svg
     :alt: PyPI Package latest release
