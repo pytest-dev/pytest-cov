@@ -1022,7 +1022,8 @@ def test_cover_looponfail(testdir, monkeypatch):
     testdir.makeconftest(CONFTEST)
     script = testdir.makepyfile(BASIC_TEST)
 
-    monkeypatch.setattr(testdir, 'run', lambda *args: _TestProcess(*map(str, args)))
+    monkeypatch.setattr(testdir, 'run',
+                        lambda *args, **kwargs: _TestProcess(*map(str, args)))
     with testdir.runpytest('-v',
                            '--cov=%s' % script.dirpath(),
                            '--looponfail',
