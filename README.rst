@@ -103,7 +103,7 @@ Usage
 
 ::
 
-    py.test --cov=myproj tests/
+    pytest --cov=myproj tests/
 
 Would produce a report like::
 
