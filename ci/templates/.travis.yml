@@ -11,14 +11,13 @@ env:
 matrix:
   include:
 {%- for env in tox_environments %}{{ '' }}
-    - python: '{{ '{0[0]}-5.4'.format(env.split('-')) if env.startswith('pypy') else '{0[2]}.{0[3]}'.format(env) }}'
-      env:
-        - TOXENV={{ env -}}
+    - python: '{{ env.split("-")[0] if env.startswith("pypy") else "{0[2]}.{0[3]}".format(env) }}'
 {% if env.startswith('py37') %}
-
       dist: xenial
       sudo: required
-{%- endif -%}
+{% endif %}
+      env:
+        - TOXENV={{ env }}{% if 'cover' in env %},report,coveralls,codecov{% endif -%}
 {%- endfor %}{{ '' }}
 before_install:
   - python --version
@@ -30,6 +29,27 @@ install:
   - easy_install --version
   - pip --version
   - tox --version
+  - |
+    set -ex
+    if [[ $TRAVIS_PYTHON_VERSION == 'pypy' ]]; then
+        (cd $HOME
+         wget https://bitbucket.org/pypy/pypy/downloads/pypy2-v6.0.0-linux64.tar.bz2
+         tar xf pypy2-*.tar.bz2
+         pypy2-*/bin/pypy -m ensurepip
+         pypy2-*/bin/pypy -m pip install -U virtualenv)
+        export PATH=$(echo $HOME/pypy2-*/bin):$PATH
+        export TOXPYTHON=$(echo $HOME/pypy2-*/bin/pypy)
+    fi
+    if [[ $TRAVIS_PYTHON_VERSION == 'pypy3' ]]; then
+        (cd $HOME
+         wget https://bitbucket.org/pypy/pypy/downloads/pypy3-v6.0.0-linux64.tar.bz2
+         tar xf pypy3-*.tar.bz2
+         pypy3-*/bin/pypy3 -m ensurepip
+         pypy3-*/bin/pypy3 -m pip install -U virtualenv)
+        export PATH=$(echo $HOME/pypy3-*/bin):$PATH
+        export TOXPYTHON=$(echo $HOME/pypy3-*/bin/pypy3)
+    fi
+    set +x
 script:
   - tox -v
 after_failure:

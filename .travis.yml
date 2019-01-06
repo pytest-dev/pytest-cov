@@ -1,6 +1,6 @@
 language: python
 sudo: false
-cache: false
+cache: pip
 env:
   global:
     - LD_PRELOAD=/lib/x86_64-linux-gnu/libSegFault.so
@@ -11,79 +11,74 @@ env:
 matrix:
   include:
     - python: '2.7'
-      env: TOXENV=py27-t35-c44
+      env:
+        - TOXENV=py27-t310-c45
     - python: '2.7'
-      env: TOXENV=py27-t35-c45
+      env:
+        - TOXENV=py27-t40-c45
     - python: '2.7'
-      env: TOXENV=py27-t36-c44
-    - python: '2.7'
-      env: TOXENV=py27-t36-c45
-    - python: '2.7'
-      env: TOXENV=py27-t37-c44
-    - python: '2.7'
-      env: TOXENV=py27-t37-c45
+      env:
+        - TOXENV=py27-t41-c45
     - python: '3.4'
-      env: TOXENV=py34-t35-c44
+      env:
+        - TOXENV=py34-t310-c45
     - python: '3.4'
-      env: TOXENV=py34-t35-c45
+      env:
+        - TOXENV=py34-t40-c45
     - python: '3.4'
-      env: TOXENV=py34-t36-c44
-    - python: '3.4'
-      env: TOXENV=py34-t36-c45
-    - python: '3.4'
-      env: TOXENV=py34-t37-c44
-    - python: '3.4'
-      env: TOXENV=py34-t37-c45
+      env:
+        - TOXENV=py34-t41-c45
     - python: '3.5'
-      env: TOXENV=py35-t35-c44
+      env:
+        - TOXENV=py35-t310-c45
     - python: '3.5'
-      env: TOXENV=py35-t35-c45
+      env:
+        - TOXENV=py35-t40-c45
     - python: '3.5'
-      env: TOXENV=py35-t36-c44
-    - python: '3.5'
-      env: TOXENV=py35-t36-c45
-    - python: '3.5'
-      env: TOXENV=py35-t37-c44
-    - python: '3.5'
-      env: TOXENV=py35-t37-c45
+      env:
+        - TOXENV=py35-t41-c45
     - python: '3.6'
-      env: TOXENV=py36-t35-c44
+      env:
+        - TOXENV=py36-t310-c45
     - python: '3.6'
-      env: TOXENV=py36-t35-c45
+      env:
+        - TOXENV=py36-t40-c45
     - python: '3.6'
-      env: TOXENV=py36-t36-c44
-    - python: '3.6'
-      env: TOXENV=py36-t36-c45
-    - python: '3.6'
-      env: TOXENV=py36-t37-c44
-    - python: '3.6'
-      env: TOXENV=py36-t37-c45
+      env:
+        - TOXENV=py36-t41-c45
     - python: '3.7'
-      env: TOXENV=py37-t35-c44
       dist: xenial
       sudo: required
+      env:
+        - TOXENV=py37-t310-c45
     - python: '3.7'
-      env: TOXENV=py37-t35-c45
       dist: xenial
       sudo: required
+      env:
+        - TOXENV=py37-t40-c45
     - python: '3.7'
-      env: TOXENV=py37-t36-c44
       dist: xenial
       sudo: required
-    - python: '3.7'
-      env: TOXENV=py37-t36-c45
-      dist: xenial
-      sudo: required
-    - python: '3.7'
-      env: TOXENV=py37-t37-c44
-      dist: xenial
-      sudo: required
-    - python: '3.7'
-      env: TOXENV=py37-t37-c45
-      dist: xenial
-      sudo: required
-    - python: 'pypy-5.4'
-      env: TOXENV=pypy-t40-c45
+      env:
+        - TOXENV=py37-t41-c45
+    - python: 'pypy'
+      env:
+        - TOXENV=pypy-t310-c45
+    - python: 'pypy'
+      env:
+        - TOXENV=pypy-t40-c45
+    - python: 'pypy'
+      env:
+        - TOXENV=pypy-t41-c45
+    - python: 'pypy3'
+      env:
+        - TOXENV=pypy3-t310-c45
+    - python: 'pypy3'
+      env:
+        - TOXENV=pypy3-t40-c45
+    - python: 'pypy3'
+      env:
+        - TOXENV=pypy3-t41-c45
 before_install:
   - python --version
   - uname -a
@@ -94,6 +89,27 @@ install:
   - easy_install --version
   - pip --version
   - tox --version
+  - |
+    set -ex
+    if [[ $TRAVIS_PYTHON_VERSION == 'pypy' ]]; then
+        (cd $HOME
+         wget https://bitbucket.org/pypy/pypy/downloads/pypy2-v6.0.0-linux64.tar.bz2
+         tar xf pypy2-*.tar.bz2
+         pypy2-*/bin/pypy -m ensurepip
+         pypy2-*/bin/pypy -m pip install -U virtualenv)
+        export PATH=$(echo $HOME/pypy2-*/bin):$PATH
+        export TOXPYTHON=$(echo $HOME/pypy2-*/bin/pypy)
+    fi
+    if [[ $TRAVIS_PYTHON_VERSION == 'pypy3' ]]; then
+        (cd $HOME
+         wget https://bitbucket.org/pypy/pypy/downloads/pypy3-v6.0.0-linux64.tar.bz2
+         tar xf pypy3-*.tar.bz2
+         pypy3-*/bin/pypy3 -m ensurepip
+         pypy3-*/bin/pypy3 -m pip install -U virtualenv)
+        export PATH=$(echo $HOME/pypy3-*/bin):$PATH
+        export TOXPYTHON=$(echo $HOME/pypy3-*/bin/pypy3)
+    fi
+    set +x
 script:
   - tox -v
 after_failure:
