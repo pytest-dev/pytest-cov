@@ -8,7 +8,7 @@ further control of coverage use a coverage config file.
 For example if tests are contained within the directory tree being measured the tests may be
 excluded if desired by using a .coveragerc file with the omit option set::
 
-    py.test --cov-config .coveragerc
+    pytest --cov-config .coveragerc
             --cov=myproj
             myproj/tests/
 

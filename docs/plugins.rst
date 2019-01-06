@@ -8,7 +8,7 @@ See `pytest/issues/935 <https://github.com/pytest-dev/pytest/issues/935#issuecom
 
 The current way of dealing with this problem is using the append feature and manually starting ``pytest-cov``'s engine, eg:
 
-    COV_CORE_SOURCE=src COV_CORE_CONFIG=.coveragerc COV_CORE_DATAFILE=.coverage.eager py.test --cov=src --cov-append
+    COV_CORE_SOURCE=src COV_CORE_CONFIG=.coveragerc COV_CORE_DATAFILE=.coverage.eager pytest --cov=src --cov-append
 
 Alternatively you can have this in ``tox.ini`` (if you're using `Tox <https://tox.readthedocs.io/en/latest/>`_ of course)::
 
