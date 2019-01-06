@@ -805,7 +805,7 @@ source =
 def test_invalid_coverage_source(testdir):
     script = testdir.makepyfile(SCRIPT)
     testdir.makeini("""
-        [pytest]
+        [tool:pytest]
         console_output_style=classic
     """)
     result = testdir.runpytest('-v',
