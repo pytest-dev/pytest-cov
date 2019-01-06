@@ -824,7 +824,7 @@ def test_invalid_coverage_source(testdir):
     ])
     assert result.ret == 0
 
-    matching_lines = [line for line in result.outlines if '%' in line]
+    matching_lines = [line for line in result.outlines if '%' in line and 'PASSED' not in line]
     assert not matching_lines
 
 
