@@ -1,6 +1,18 @@
 Changelog
 =========
 
+2.6.1 (2019-01-07)
+------------------
+
+* Added support for Pytest 4.1. Contributed by Daniel Hahler and Семён Марьясин in
+  `#253 <https://github.com/pytest-dev/pytest-cov/pull/253>`_ and
+  `#230 <https://github.com/pytest-dev/pytest-cov/pull/230>`_.
+* Various test and docs fixes. Contributed by Daniel Hahler in
+  `#224 <https://github.com/pytest-dev/pytest-cov/pull/224>`_ and
+  `#223 <https://github.com/pytest-dev/pytest-cov/pull/223>`_.
+* Fixed the "Module already imported" issue (`#211 <https://github.com/pytest-dev/pytest-cov/issues/211>`_).
+  Contributed by Daniel Hahler in `#228 <https://github.com/pytest-dev/pytest-cov/pull/228>`_.
+
 2.6.0 (2018-09-03)
 ------------------
 
