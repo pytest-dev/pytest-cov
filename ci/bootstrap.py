@@ -9,7 +9,6 @@ from os.path import dirname
 from os.path import exists
 from os.path import join
 
-
 if __name__ == "__main__":
     base_path = dirname(dirname(abspath(__file__)))
     print("Project path: {0}".format(base_path))
@@ -51,8 +50,12 @@ if __name__ == "__main__":
     ]
     tox_environments = [line for line in tox_environments if line not in ['clean', 'report', 'docs', 'check']]
 
+    template_vars = {'tox_environments': tox_environments}
+    for py_ver in '27 34 35 py'.split():
+        template_vars['py%s_environments' % py_ver] = [x for x in tox_environments if x.startswith('py' + py_ver)]
+
     for name in os.listdir(join("ci", "templates")):
         with open(join(base_path, name), "w") as fh:
-            fh.write(jinja.get_template(name).render(tox_environments=tox_environments))
+            fh.write(jinja.get_template(name).render(**template_vars))
         print("Wrote {}".format(name))
     print("DONE.")
