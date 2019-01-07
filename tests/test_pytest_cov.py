@@ -9,11 +9,12 @@ import coverage
 import py
 import pytest
 import virtualenv
+import xdist
+from fields import Namespace
 from process_tests import TestProcess as _TestProcess
 from process_tests import dump_on_error
 from process_tests import wait_for_strings
 from six import exec_
-from fields import Namespace
 
 try:
     from StringIO import StringIO
@@ -28,10 +29,10 @@ SCRIPT = '''
 import sys, helper
 
 def pytest_generate_tests(metafunc):
-    for i in range(10):
-        metafunc.addcall()
+    for i in [10]:
+        metafunc.parametrize('p', range(i))
 
-def test_foo():
+def test_foo(p):
     x = True
     helper.do_stuff()  # get some coverage in some other completely different location
     if sys.version_info[0] > 5:
@@ -70,8 +71,8 @@ import subprocess
 import sys
 
 def pytest_generate_tests(metafunc):
-    for i in range(2):
-        metafunc.addcall(funcargs=dict(idx=i))
+    for i in [2]:
+        metafunc.parametrize('idx', range(i))
 
 def test_foo(idx):
     out, err = subprocess.Popen(
@@ -90,8 +91,8 @@ import sys
 import os
 
 def pytest_generate_tests(metafunc):
-    for i in range(2):
-        metafunc.addcall(funcargs=dict(idx=i))
+    for i in [2]:
+        metafunc.parametrize('idx', range(i))
 
 def test_foo(idx):
     os.mkdir("foobar")
@@ -114,8 +115,8 @@ import sys
 import os
 
 def pytest_generate_tests(metafunc):
-    for i in range(2):
-        metafunc.addcall(funcargs=dict(idx=i))
+    for i in [2]:
+        if metafunc.function is test_foo: metafunc.parametrize('idx', range(i))
 
 def test_foo(idx):
     os.mkdir("foobar")
@@ -135,7 +136,7 @@ SCRIPT_FUNCARG = '''
 import coverage
 
 def test_foo(cov):
-    assert isinstance(cov, coverage.coverage)
+    assert isinstance(cov, coverage.Coverage)
 '''
 
 SCRIPT_FUNCARG_NOT_ACTIVE = '''
@@ -143,18 +144,12 @@ def test_foo(cov):
     assert cov is None
 '''
 
-SCRIPT_FAIL = '''
-def test_fail():
-    assert False
-
-'''
-
 CHILD_SCRIPT_RESULT = '[56] * 100%'
 PARENT_SCRIPT_RESULT = '9 * 100%'
 DEST_DIR = 'cov_dest'
 REPORT_NAME = 'cov.xml'
 
-xdist = pytest.mark.parametrize('opts', ['', '-n 1'], ids=['nodist', 'xdist'])
+xdist_params = pytest.mark.parametrize('opts', ['', '-n 1'], ids=['nodist', 'xdist'])
 
 
 @pytest.fixture(params=[
@@ -396,7 +391,7 @@ def test_central_coveragerc(testdir, prop):
     assert result.ret == 0
 
 
-@xdist
+@xdist_params
 def test_central_with_path_aliasing(testdir, monkeypatch, opts, prop):
     mod1 = testdir.mkdir('src').join('mod.py')
     mod1.write(SCRIPT)
@@ -499,7 +494,11 @@ show_missing = true
 
 
 def test_no_cov_on_fail(testdir):
-    script = testdir.makepyfile(SCRIPT_FAIL)
+    script = testdir.makepyfile('''
+def test_fail():
+    assert False
+
+''')
 
     result = testdir.runpytest('-v',
                                '--cov=%s' % script.dirpath(),
@@ -527,7 +526,11 @@ def test_no_cov(testdir):
 
 
 def test_cov_and_failure_report_on_fail(testdir):
-    script = testdir.makepyfile(SCRIPT + SCRIPT_FAIL)
+    script = testdir.makepyfile(SCRIPT + '''
+def test_fail(p):
+    assert False
+
+''')
 
     result = testdir.runpytest('-v',
                                '--cov=%s' % script.dirpath(),
@@ -802,7 +805,7 @@ source =
 def test_invalid_coverage_source(testdir):
     script = testdir.makepyfile(SCRIPT)
     testdir.makeini("""
-        [pytest]
+        [tool:pytest]
         console_output_style=classic
     """)
     result = testdir.runpytest('-v',
@@ -821,7 +824,7 @@ def test_invalid_coverage_source(testdir):
     ])
     assert result.ret == 0
 
-    matching_lines = [line for line in result.outlines if '%' in line]
+    matching_lines = [line for line in result.outlines if '%' in line and 'PASSED' not in line]
     assert not matching_lines
 
 
@@ -838,7 +841,9 @@ def test_dist_missing_data(testdir):
         '-mpip',
         'install',
         'py==%s' % py.__version__,
-        'pytest==%s' % pytest.__version__
+        'pytest==%s' % pytest.__version__,
+        'pytest_xdist==%s' % xdist.__version__
+
     ])
     script = testdir.makepyfile(SCRIPT)
 
@@ -1022,7 +1027,8 @@ def test_cover_looponfail(testdir, monkeypatch):
     testdir.makeconftest(CONFTEST)
     script = testdir.makepyfile(BASIC_TEST)
 
-    monkeypatch.setattr(testdir, 'run', lambda *args: _TestProcess(*map(str, args)))
+    monkeypatch.setattr(testdir, 'run',
+                        lambda *args, **kwargs: _TestProcess(*map(str, args)))
     with testdir.runpytest('-v',
                            '--cov=%s' % script.dirpath(),
                            '--looponfail',
@@ -1340,8 +1346,8 @@ def test_external_data_file_negative(testdir):
     assert glob.glob(str(testdir.tmpdir.join('.coverage*')))
 
 
-@xdist
-def xtest_append_coverage(testdir, opts, prop):
+@xdist_params
+def test_append_coverage(testdir, opts, prop):
     script = testdir.makepyfile(test_1=prop.code)
     testdir.tmpdir.join('.coveragerc').write(prop.fullconf)
     result = testdir.runpytest('-v',
@@ -1363,10 +1369,10 @@ def xtest_append_coverage(testdir, opts, prop):
     ])
 
 
-@xdist
-def xtest_do_not_append_coverage(testdir, opts, prop):
+@xdist_params
+def test_do_not_append_coverage(testdir, opts, prop):
     script = testdir.makepyfile(test_1=prop.code)
-    testdir.tmpdir.join('.coveragerc').write("")
+    testdir.tmpdir.join('.coveragerc').write(prop.fullconf)
     result = testdir.runpytest('-v',
                                '--cov=%s' % script.dirpath(),
                                script,

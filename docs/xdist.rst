@@ -11,7 +11,7 @@ file system.  Each slave will have its subprocesses measured.
 
 Running distributed testing with dist mode set to load::
 
-    py.test --cov=myproj -n 2 tests/
+    pytest --cov=myproj -n 2 tests/
 
 Shows a terminal report::
 
@@ -27,7 +27,7 @@ Shows a terminal report::
 
 Again but spread over different hosts and different directories::
 
-    py.test --cov=myproj --dist load
+    pytest --cov=myproj --dist load
             --tx ssh=memedough@host1//chdir=testenv1
             --tx ssh=memedough@host2//chdir=/tmp/testenv2//python=/tmp/env1/bin/python
             --rsyncdir myproj --rsyncdir tests --rsync examples
@@ -54,7 +54,7 @@ environments.
 
 Running distributed testing with dist mode set to each::
 
-    py.test --cov=myproj --dist each
+    pytest --cov=myproj --dist each
             --tx popen//chdir=/tmp/testenv3//python=/usr/local/python27/bin/python
             --tx ssh=memedough@host2//chdir=/tmp/testenv4//python=/tmp/env2/bin/python
             --rsyncdir myproj --rsyncdir tests --rsync examples

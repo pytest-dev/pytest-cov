@@ -14,7 +14,7 @@ Eg:
 
 .. code-block:: python
 
-    @pytest.marker.no_cover
+    @pytest.mark.no_cover
     def test_foobar():
         # do some stuff that needs coverage disabled
 
@@ -41,7 +41,3 @@ Eg:
 For reasons that no one can remember there is a ``cov`` fixture that provides access to the underlying Coverage instance.
 Some say this is a disguised foot-gun and should be removed, and some think mysteries make life more interesting and it should
 be left alone.
-
-
-
-

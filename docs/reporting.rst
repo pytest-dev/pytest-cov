@@ -8,7 +8,7 @@ annotated source code.
 
 The terminal report without line numbers (default)::
 
-    py.test --cov-report term --cov=myproj tests/
+    pytest --cov-report term --cov=myproj tests/
 
     -------------------- coverage: platform linux2, python 2.6.4-final-0 ---------------------
     Name                 Stmts   Miss  Cover
@@ -22,7 +22,7 @@ The terminal report without line numbers (default)::
 
 The terminal report with line numbers::
 
-    py.test --cov-report term-missing --cov=myproj tests/
+    pytest --cov-report term-missing --cov=myproj tests/
 
     -------------------- coverage: platform linux2, python 2.6.4-final-0 ---------------------
     Name                 Stmts   Miss  Cover   Missing
@@ -35,7 +35,7 @@ The terminal report with line numbers::
 
 The terminal report with skip covered::
 
-    py.test --cov-report term:skip-covered --cov=myproj tests/
+    pytest --cov-report term:skip-covered --cov=myproj tests/
 
     -------------------- coverage: platform linux2, python 2.6.4-final-0 ---------------------
     Name                 Stmts   Miss  Cover
@@ -51,7 +51,7 @@ You can use ``skip-covered`` with ``term-missing`` as well. e.g. ``--cov-report 
 
 These three report options output to files without showing anything on the terminal::
 
-    py.test --cov-report html
+    pytest --cov-report html
             --cov-report xml
             --cov-report annotate
             --cov=myproj tests/
@@ -60,14 +60,14 @@ The output location for each of these reports can be specified. The output locat
 report is a file. Where as the output location for the HTML and annotated source code reports are
 directories::
 
-    py.test --cov-report html:cov_html
+    pytest --cov-report html:cov_html
             --cov-report xml:cov.xml
             --cov-report annotate:cov_annotate
             --cov=myproj tests/
 
 The final report option can also suppress printing to the terminal::
 
-    py.test --cov-report= --cov=myproj tests/
+    pytest --cov-report= --cov=myproj tests/
 
 This mode can be especially useful on continuous integration servers, where a coverage file
 is needed for subsequent processing, but no local report needs to be viewed. For example,
