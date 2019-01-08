@@ -805,7 +805,7 @@ source =
 def test_invalid_coverage_source(testdir):
     script = testdir.makepyfile(SCRIPT)
     testdir.makeini("""
-        [tool:pytest]
+        [pytest]
         console_output_style=classic
     """)
     result = testdir.runpytest('-v',
@@ -824,7 +824,7 @@ def test_invalid_coverage_source(testdir):
     ])
     assert result.ret == 0
 
-    matching_lines = [line for line in result.outlines if '%' in line and 'PASSED' not in line]
+    matching_lines = [line for line in result.outlines if '%' in line]
     assert not matching_lines
 
 
