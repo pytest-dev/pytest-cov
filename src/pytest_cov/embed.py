@@ -88,10 +88,21 @@ def cleanup(cov=None):
 
 multiprocessing_finish = cleanup  # in case someone dared to use this internal
 
+_previous_handler = None
 
-def _sigterm_handler(*_):
+
+def _sigterm_handler(num, frame):
     cleanup()
+    if _previous_handler == signal.SIG_IGN:
+        pass
+    elif _previous_handler:
+        _previous_handler(num, frame)
+    else:
+        raise SystemExit(0)
 
 
 def cleanup_on_sigterm():
+    global _previous_handler
+
+    _previous_handler = signal.getsignal(signal.SIGTERM)
     signal.signal(signal.SIGTERM, _sigterm_handler)
