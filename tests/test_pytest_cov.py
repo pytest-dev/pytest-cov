@@ -986,6 +986,174 @@ def test_run_target():
     ])
     assert result.ret == 0
 
+
+@pytest.mark.skipif('sys.platform == "win32"',
+                    reason="fork not available on Windows")
+def test_cleanup_on_sigterm(testdir):
+    script = testdir.makepyfile('''
+import os, signal, subprocess, sys, time
+
+def cleanup(num, frame):
+    print("num == signal.SIGTERM => %s" % (num == signal.SIGTERM))
+    raise Exception()
+
+def test_run():
+    proc = subprocess.Popen([sys.executable, __file__], stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+    time.sleep(1)
+    proc.terminate()
+    stdout, stderr = proc.communicate()
+    assert not stderr
+    assert stdout == b"""num == signal.SIGTERM => True
+captured Exception()
+"""
+    assert proc.returncode == 0
+
+if __name__ == "__main__":
+    signal.signal(signal.SIGTERM, cleanup)
+
+    from pytest_cov.embed import cleanup_on_sigterm
+    cleanup_on_sigterm()
+
+    try:
+        time.sleep(10)
+    except BaseException as exc:
+        print("captured %r" % exc)
+''')
+
+    result = testdir.runpytest('-vv',
+                               '--cov=%s' % script.dirpath(),
+                               '--cov-report=term-missing',
+                               script)
+
+    result.stdout.fnmatch_lines([
+        '*- coverage: platform *, python * -*',
+        'test_cleanup_on_sigterm* 26-27',
+        '*1 passed*'
+    ])
+    assert result.ret == 0
+
+
+@pytest.mark.skipif('sys.platform == "win32"', reason="fork not available on Windows")
+@pytest.mark.parametrize('setup', [
+    ('signal.signal(signal.SIGTERM, signal.SIG_DFL); cleanup_on_sigterm()', '88%   18-19'),
+    ('cleanup_on_sigterm()', '88%   18-19'),
+    ('cleanup()', '75%   16-19'),
+])
+def test_cleanup_on_sigterm_sig_dfl(testdir, setup):
+    script = testdir.makepyfile('''
+import os, signal, subprocess, sys, time
+
+def test_run():
+    proc = subprocess.Popen([sys.executable, __file__], stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+    time.sleep(1)
+    proc.terminate()
+    stdout, stderr = proc.communicate()
+    assert not stderr
+    assert stdout == b""
+    assert proc.returncode in [128 + signal.SIGTERM, -signal.SIGTERM]
+
+if __name__ == "__main__":
+    from pytest_cov.embed import cleanup_on_sigterm, cleanup
+    {0}
+
+    try:
+        time.sleep(10)
+    except BaseException as exc:
+        print("captured %r" % exc)
+'''.format(setup[0]))
+
+    result = testdir.runpytest('-vv',
+                               '--cov=%s' % script.dirpath(),
+                               '--cov-report=term-missing',
+                               script)
+
+    result.stdout.fnmatch_lines([
+        '*- coverage: platform *, python * -*',
+        'test_cleanup_on_sigterm* %s' % setup[1],
+        '*1 passed*'
+    ])
+    assert result.ret == 0
+
+
+@pytest.mark.skipif('sys.platform == "win32"', reason="fork not available on Windows")
+def test_cleanup_on_sigterm_sig_dfl_sigint(testdir):
+    script = testdir.makepyfile('''
+import os, signal, subprocess, sys, time
+
+def test_run():
+    proc = subprocess.Popen([sys.executable, __file__], stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+    time.sleep(1)
+    proc.send_signal(signal.SIGINT)
+    stdout, stderr = proc.communicate()
+    assert not stderr
+    assert stdout == b"""captured KeyboardInterrupt()
+"""
+    assert proc.returncode == 0
+
+if __name__ == "__main__":
+    from pytest_cov.embed import cleanup_on_signal
+    cleanup_on_signal(signal.SIGINT)
+
+    try:
+        time.sleep(10)
+    except BaseException as exc:
+        print("captured %r" % exc)
+''')
+
+    result = testdir.runpytest('-vv',
+                               '--cov=%s' % script.dirpath(),
+                               '--cov-report=term-missing',
+                               script)
+
+    result.stdout.fnmatch_lines([
+        '*- coverage: platform *, python * -*',
+        'test_cleanup_on_sigterm* 88%   19-20',
+        '*1 passed*'
+    ])
+    assert result.ret == 0
+
+@pytest.mark.skipif('sys.platform == "win32"', reason="fork not available on Windows")
+def test_cleanup_on_sigterm_sig_ign(testdir):
+    script = testdir.makepyfile('''
+import os, signal, subprocess, sys, time
+
+def test_run():
+    proc = subprocess.Popen([sys.executable, __file__], stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+    time.sleep(1)
+    proc.send_signal(signal.SIGINT)
+    time.sleep(1)
+    proc.terminate()
+    stdout, stderr = proc.communicate()
+    assert not stderr
+    assert stdout == b""
+    # it appears signal handling is buggy on python 2?
+    if sys.version_info == 3: assert proc.returncode in [128 + signal.SIGTERM, -signal.SIGTERM]
+
+if __name__ == "__main__":
+    signal.signal(signal.SIGINT, signal.SIG_IGN)
+
+    from pytest_cov.embed import cleanup_on_signal
+    cleanup_on_signal(signal.SIGINT)
+
+    try:
+        time.sleep(10)
+    except BaseException as exc:
+        print("captured %r" % exc)
+    ''')
+
+    result = testdir.runpytest('-vv',
+                               '--cov=%s' % script.dirpath(),
+                               '--cov-report=term-missing',
+                               script)
+
+    result.stdout.fnmatch_lines([
+        '*- coverage: platform *, python * -*',
+        'test_cleanup_on_sigterm* 89%   23-24',
+        '*1 passed*'
+    ])
+    assert result.ret == 0
+
+
 MODULE = '''
 def func():
     return 1
