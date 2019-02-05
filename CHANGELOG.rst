@@ -1,6 +1,12 @@
 Changelog
 =========
 
+2.6.2 (2019-02-05)
+------------------
+
+* Fixed ``'NoneType' object has no attribute 'configure_node'`` issue.
+  Contributed by Alexander Shadchin in `#263 <https://github.com/pytest-dev/pytest-cov/pull/263>`_.
+
 2.6.1 (2019-01-07)
 ------------------
 
