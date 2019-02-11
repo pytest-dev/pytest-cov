@@ -12,6 +12,9 @@ matrix:
   include:
     - python: '2.7'
       env:
+        - TOXENV=py27-t30-c45
+    - python: '2.7'
+      env:
         - TOXENV=py27-t310-c45
     - python: '2.7'
       env:

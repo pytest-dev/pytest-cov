@@ -29,3 +29,11 @@ class SessionWrapper(object):
     @testsfailed.setter
     def testsfailed(self, value):
         setattr(self._session, self._attr, value)
+
+
+if tuple(map(int, pytest.__version__.split(".")[:2])) >= (3, 6):
+    def get_closest_marker(item, marker):
+        return item.get_closest_marker(marker)
+else:
+    def get_closest_marker(item, marker):
+        return item.get_marker(marker)
