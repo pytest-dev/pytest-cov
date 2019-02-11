@@ -1439,3 +1439,13 @@ def test_double_cov2(testdir):
         '*1 passed*'
     ])
     assert result.ret == 0
+
+
+def test_cov_and_no_cov(testdir):
+    script = testdir.makepyfile(SCRIPT_SIMPLE)
+    result = testdir.runpytest('-v',
+                               '--cov', '--no-cov',
+                               '-n', '1',
+                               script)
+
+    assert result.ret == 0

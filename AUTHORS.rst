@@ -28,3 +28,4 @@ Authors
 * Jeremy Bowman - https://github.com/jmbowman
 * Samuel Giffard - https://github.com/Mulugruntz
 * Семён Марьясин - https://github.com/MarSoft
+* Alexander Shadchin - https://github.com/shadchin

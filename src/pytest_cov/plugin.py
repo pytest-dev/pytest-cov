@@ -195,7 +195,8 @@ class CovPlugin(object):
 
         Mark this hook as optional in case xdist is not installed.
         """
-        self.cov_controller.configure_node(node)
+        if not self._disabled:
+            self.cov_controller.configure_node(node)
     pytest_configure_node.optionalhook = True
 
     def pytest_testnodedown(self, node, error):
@@ -203,7 +204,8 @@ class CovPlugin(object):
 
         Mark this hook as optional in case xdist is not installed.
         """
-        self.cov_controller.testnodedown(node, error)
+        if not self._disabled:
+            self.cov_controller.testnodedown(node, error)
     pytest_testnodedown.optionalhook = True
 
     def _should_report(self):
