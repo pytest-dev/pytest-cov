@@ -126,6 +126,14 @@ setup(
     ],
     python_requires='>=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*',
     extras_require={
+        'testing': [
+            'fields',
+            'hunter',
+            'process-tests==2.0.0',
+            'pytest-xdist==1.25.0',
+            'six',
+            'virtualenv',
+        ]
     },
     entry_points={
         'pytest11': [
