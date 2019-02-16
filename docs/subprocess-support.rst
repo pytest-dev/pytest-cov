@@ -59,11 +59,10 @@ There's an identical issue when using the ``Process`` objects. Don't forget to u
 If you abuse ``multiprocessing.Process.terminate``
 ==================================================
 
-It appears that many people are using the ``terminate`` method and then get unreliable coverage results.
-
-On Linux usually that means a SIGTERM gets sent to the process. Unfortunately Python don't have a default handler for
-SIGTERM so you need to install your own. Because ``pytest-cov`` doesn't want to second-guess (not yet, add your thoughts
-on the issue tracker if you disagree) it doesn't install a handler by default, but you can activate it by doing this:
+It appears that many people are using the ``terminate`` method and then get unreliable coverage results. That usually
+means a SIGTERM gets sent to the process. Unfortunately Python don't have a default handler for SIGTERM so you need to
+install your own. Because ``pytest-cov`` doesn't want to second-guess (not yet, add your thoughts on the issue tracker
+if you disagree) it doesn't install a handler by default, but you can activate it by doing this:
 
 .. code-block:: python
 
@@ -73,9 +72,6 @@ on the issue tracker if you disagree) it doesn't install a handler by default, b
         pass
     else:
         cleanup_on_sigterm()
-
-
-On Windows there's no nice way to do cleanup (no signal handlers) so you're left to your own devices.
 
 If anything else
 ================
