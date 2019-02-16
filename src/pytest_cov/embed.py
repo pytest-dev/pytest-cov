@@ -20,9 +20,11 @@ active_cov = None
 
 
 def multiprocessing_start(_):
+    global active_cov
     cov = init()
     if cov:
-        multiprocessing.util.Finalize(None, cleanup, args=(cov,), exitpriority=1000)
+        active_cov = cov
+        cleanup_on_sigterm()
 
 
 try:
@@ -77,12 +79,9 @@ def _cleanup(cov):
         cov.save()
 
 
-def cleanup(cov=None):
+def cleanup():
     global active_cov
-
-    _cleanup(cov)
-    if active_cov is not cov:
-        _cleanup(active_cov)
+    _cleanup(active_cov)
     active_cov = None
 
 
@@ -96,7 +95,7 @@ def _signal_cleanup_handler(signum, frame):
     _previous_handler = _previous_handlers.get(signum)
     if _previous_handler == signal.SIG_IGN:
         return
-    elif _previous_handler:
+    elif _previous_handler is not _signal_cleanup_handler:
         _previous_handler(signum, frame)
     elif signum == signal.SIGTERM:
         os._exit(128 + signum)
