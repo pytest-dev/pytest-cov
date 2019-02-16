@@ -2,7 +2,7 @@
 Subprocess support
 ==================
 
-Although pytest-cov supports subprocesses and multiprocessing. However, there are few pitfalls that need to be
+pytest-cov supports subprocesses and multiprocessing. However, there are a few pitfalls that need to be
 explained.
 
 Normally coverage writes the data via a pretty standard atexit handler. However, if the subprocess doesn't exit on it's
