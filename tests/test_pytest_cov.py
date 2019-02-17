@@ -921,7 +921,7 @@ def test_run_target():
     assert not testdir.tmpdir.listdir(".coverage.*")
 
 
-def test_multiprocessing_subprocess(testdir):
+def test_multiprocessing_process(testdir):
     py.test.importorskip('multiprocessing.util')
 
     script = testdir.makepyfile('''
@@ -950,7 +950,7 @@ def test_run_target():
     assert result.ret == 0
 
 
-def test_multiprocessing_subprocess_no_source(testdir):
+def test_multiprocessing_process_no_source(testdir):
     py.test.importorskip('multiprocessing.util')
 
     script = testdir.makepyfile('''
@@ -981,7 +981,7 @@ def test_run_target():
 
 @pytest.mark.skipif('sys.platform == "win32"',
                     reason="multiprocessing don't support clean process temination on Windows")
-def test_multiprocessing_subprocess_with_terminate(testdir):
+def test_multiprocessing_process_with_terminate(testdir):
     py.test.importorskip('multiprocessing.util')
 
     script = testdir.makepyfile('''
