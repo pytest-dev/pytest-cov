@@ -889,6 +889,8 @@ def test_funcarg_not_active(testdir):
     assert result.ret == 0
 
 
+@pytest.mark.skipif("sys.version_info[0] < 3", reason="no context manager api on Python 2")
+@pytest.mark.skipif('sys.platform == "win32"', reason="multiprocessing support is broken on Windows")
 def test_multiprocessing_pool(testdir):
     py.test.importorskip('multiprocessing.util')
 
@@ -916,11 +918,84 @@ def test_run_target():
         '*1 passed*'
     ])
     assert result.ret == 0
-    # assert "Doesn't seem to be a coverage.py data file" not in result.stdout.str()
-    # assert "Doesn't seem to be a coverage.py data file" not in result.stderr.str()
+    assert "Doesn't seem to be a coverage.py data file" not in result.stdout.str()
+    assert "Doesn't seem to be a coverage.py data file" not in result.stderr.str()
     assert not testdir.tmpdir.listdir(".coverage.*")
 
 
+@pytest.mark.skipif('sys.platform == "win32"', reason="multiprocessing support is broken on Windows")
+def test_multiprocessing_pool_terminate(testdir):
+    py.test.importorskip('multiprocessing.util')
+
+    script = testdir.makepyfile('''
+import multiprocessing
+
+def target_fn(a):
+    return a + 1
+
+def test_run_target():
+    for i in range(100):
+        p = multiprocessing.Pool(10)
+        try:
+            p.map(target_fn, range(10))
+        finally:
+            p.terminate()
+            p.join()
+''')
+
+    result = testdir.runpytest('-v',
+                               '--cov=%s' % script.dirpath(),
+                               '--cov-report=term-missing',
+                               script)
+
+    result.stdout.fnmatch_lines([
+        '*- coverage: platform *, python * -*',
+        'test_multiprocessing_pool* 8 * 100%*',
+        '*1 passed*'
+    ])
+    assert result.ret == 0
+    assert "Doesn't seem to be a coverage.py data file" not in result.stdout.str()
+    assert "Doesn't seem to be a coverage.py data file" not in result.stderr.str()
+    assert not testdir.tmpdir.listdir(".coverage.*")
+
+
+@pytest.mark.skipif('sys.platform == "win32"', reason="multiprocessing support is broken on Windows")
+def test_multiprocessing_pool_close(testdir):
+    py.test.importorskip('multiprocessing.util')
+
+    script = testdir.makepyfile('''
+import multiprocessing
+
+def target_fn(a):
+    return a + 1
+
+def test_run_target():
+    for i in range(100):
+        p = multiprocessing.Pool(10)
+        try:
+            p.map(target_fn, range(10))
+        finally:
+            p.close()
+            p.join()
+''')
+
+    result = testdir.runpytest('-v',
+                               '--cov=%s' % script.dirpath(),
+                               '--cov-report=term-missing',
+                               script)
+
+    result.stdout.fnmatch_lines([
+        '*- coverage: platform *, python * -*',
+        'test_multiprocessing_pool* 8 * 100%*',
+        '*1 passed*'
+    ])
+    assert result.ret == 0
+    assert "Doesn't seem to be a coverage.py data file" not in result.stdout.str()
+    assert "Doesn't seem to be a coverage.py data file" not in result.stderr.str()
+    assert not testdir.tmpdir.listdir(".coverage.*")
+
+
+@pytest.mark.skipif('sys.platform == "win32"', reason="multiprocessing support is broken on Windows")
 def test_multiprocessing_process(testdir):
     py.test.importorskip('multiprocessing.util')
 
@@ -950,6 +1025,7 @@ def test_run_target():
     assert result.ret == 0
 
 
+@pytest.mark.skipif('sys.platform == "win32"', reason="multiprocessing support is broken on Windows")
 def test_multiprocessing_process_no_source(testdir):
     py.test.importorskip('multiprocessing.util')
 
@@ -979,8 +1055,7 @@ def test_run_target():
     assert result.ret == 0
 
 
-@pytest.mark.skipif('sys.platform == "win32"',
-                    reason="multiprocessing don't support clean process temination on Windows")
+@pytest.mark.skipif('sys.platform == "win32"', reason="multiprocessing support is broken on Windows")
 def test_multiprocessing_process_with_terminate(testdir):
     py.test.importorskip('multiprocessing.util')
 
@@ -1019,8 +1094,7 @@ def test_run_target():
     assert result.ret == 0
 
 
-@pytest.mark.skipif('sys.platform == "win32"',
-                    reason="fork not available on Windows")
+@pytest.mark.skipif('sys.platform == "win32"', reason="SIGTERM isn't really supported on Windows")
 def test_cleanup_on_sigterm(testdir):
     script = testdir.makepyfile('''
 import os, signal, subprocess, sys, time
@@ -1111,6 +1185,7 @@ if __name__ == "__main__":
     assert result.ret == 0
 
 
+@pytest.mark.skipif('sys.platform == "win32"', reason="SIGTERM isn't really supported on Windows")
 @pytest.mark.parametrize('setup', [
     ('signal.signal(signal.SIGTERM, signal.SIG_DFL); cleanup_on_sigterm()', '88%   18-19'),
     ('cleanup_on_sigterm()', '88%   18-19'),
@@ -1121,9 +1196,16 @@ def test_cleanup_on_sigterm_sig_dfl(testdir, setup):
 import os, signal, subprocess, sys, time
 
 def test_run():
-    proc = subprocess.Popen([sys.executable, __file__], stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+    if sys.platform == 'win32':
+        options = {'creationflags': subprocess.CREATE_NEW_PROCESS_GROUP, 'shell': True}
+        signum = signal.CTRL_BREAK_EVENT
+    else:
+        options = {}
+        signum = signal.SIGTERM
+
+    proc = subprocess.Popen([sys.executable, __file__], stdout=subprocess.PIPE, stderr=subprocess.STDOUT, **options)
     time.sleep(1)
-    proc.terminate()
+    proc.send_signal(signum)
     stdout, stderr = proc.communicate()
     assert not stderr
     assert stdout == b""
@@ -1131,13 +1213,13 @@ def test_run():
 
 if __name__ == "__main__":
     from pytest_cov.embed import cleanup_on_sigterm, cleanup
-    {0}
+    ''' + setup[0] + '''
 
     try:
         time.sleep(10)
     except BaseException as exc:
         print("captured %r" % exc)
-'''.format(setup[0]))
+''')
 
     result = testdir.runpytest('-vv',
                                '--cov=%s' % script.dirpath(),
@@ -1152,7 +1234,7 @@ if __name__ == "__main__":
     assert result.ret == 0
 
 
-@pytest.mark.skipif('sys.platform == "win32"', reason="fork not available on Windows")
+@pytest.mark.skipif('sys.platform == "win32"', reason="SIGINT is subtly broken on Windows")
 def test_cleanup_on_sigterm_sig_dfl_sigint(testdir):
     script = testdir.makepyfile('''
 import os, signal, subprocess, sys, time
