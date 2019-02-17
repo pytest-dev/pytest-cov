@@ -101,6 +101,7 @@ _cleanup_in_progress = False
 
 
 def _signal_cleanup_handler(signum, frame):
+    global _pending_signal
     if _cleanup_in_progress:
         _pending_signal = signum, frame
         return
