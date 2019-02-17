@@ -889,6 +889,38 @@ def test_funcarg_not_active(testdir):
     assert result.ret == 0
 
 
+def test_multiprocessing_pool(testdir):
+    py.test.importorskip('multiprocessing.util')
+
+    script = testdir.makepyfile('''
+import multiprocessing
+
+def target_fn(a):
+    return a + 1
+
+def test_run_target():
+    for i in range(100):
+        with multiprocessing.Pool(10) as p:
+            p.map(target_fn, range(10))
+        p.join()
+''')
+
+    result = testdir.runpytest('-v',
+                               '--cov=%s' % script.dirpath(),
+                               '--cov-report=term-missing',
+                               script)
+
+    result.stdout.fnmatch_lines([
+        '*- coverage: platform *, python * -*',
+        'test_multiprocessing_pool* 8 * 100%*',
+        '*1 passed*'
+    ])
+    assert result.ret == 0
+    # assert "Doesn't seem to be a coverage.py data file" not in result.stdout.str()
+    # assert "Doesn't seem to be a coverage.py data file" not in result.stderr.str()
+    assert not testdir.tmpdir.listdir(".coverage.*")
+
+
 def test_multiprocessing_subprocess(testdir):
     py.test.importorskip('multiprocessing.util')
 
@@ -1111,6 +1143,7 @@ if __name__ == "__main__":
         '*1 passed*'
     ])
     assert result.ret == 0
+
 
 @pytest.mark.skipif('sys.platform == "win32"', reason="fork not available on Windows")
 def test_cleanup_on_sigterm_sig_ign(testdir):
