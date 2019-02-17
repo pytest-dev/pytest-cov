@@ -108,7 +108,7 @@ def _signal_cleanup_handler(signum, frame):
     _previous_handler = _previous_handlers.get(signum)
     if _previous_handler == signal.SIG_IGN:
         return
-    elif _previous_handler is not _signal_cleanup_handler:
+    elif _previous_handler and _previous_handler is not _signal_cleanup_handler:
         _previous_handler(signum, frame)
     elif signum == signal.SIGTERM:
         os._exit(128 + signum)
