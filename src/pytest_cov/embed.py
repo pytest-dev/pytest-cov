@@ -16,14 +16,15 @@ info passed via env vars.
 import os
 import signal
 
-active_cov = None
+_active_cov = None
 
 
 def multiprocessing_start(_):
-    global active_cov
+    global _active_cov
     cov = init()
     if cov:
-        active_cov = cov
+        _active_cov = cov
+        multiprocessing.util.Finalize(None, cleanup, exitpriority=1000)
         cleanup_on_sigterm()
 
 
@@ -38,7 +39,7 @@ else:
 def init():
     # Only continue if ancestor process has set everything needed in
     # the env.
-    global active_cov
+    global _active_cov
 
     cov_source = os.environ.get('COV_CORE_SOURCE')
     cov_config = os.environ.get('COV_CORE_CONFIG')
@@ -58,7 +59,7 @@ def init():
             cov_config = True
 
         # Activate coverage for this process.
-        cov = active_cov = coverage.Coverage(
+        cov = _active_cov = coverage.Coverage(
             source=cov_source,
             branch=cov_branch,
             data_suffix=True,
@@ -80,17 +81,29 @@ def _cleanup(cov):
 
 
 def cleanup():
-    global active_cov
-    _cleanup(active_cov)
-    active_cov = None
+    global _active_cov
+    global _cleanup_in_progress
+    global _pending_signal
+
+    _cleanup_in_progress = True
+    _cleanup(_active_cov)
+    _active_cov = None
+    if _pending_signal:
+        _signal_cleanup_handler(*_pending_signal)
+        _pending_signal = None
 
 
 multiprocessing_finish = cleanup  # in case someone dared to use this internal
 
 _previous_handlers = {}
+_pending_signal = None
+_cleanup_in_progress = False
 
 
 def _signal_cleanup_handler(signum, frame):
+    if _cleanup_in_progress:
+        _pending_signal = signum, frame
+        return
     cleanup()
     _previous_handler = _previous_handlers.get(signum)
     if _previous_handler == signal.SIG_IGN:
