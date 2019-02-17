@@ -117,8 +117,10 @@ def _signal_cleanup_handler(signum, frame):
 
 
 def cleanup_on_signal(signum):
-    _previous_handlers[signum] = signal.getsignal(signum)
-    signal.signal(signum, _signal_cleanup_handler)
+    previous = signal.getsignal(signum)
+    if previous is not _signal_cleanup_handler:
+        _previous_handlers[signum] = previous
+        signal.signal(signum, _signal_cleanup_handler)
 
 
 def cleanup_on_sigterm():
