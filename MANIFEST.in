@@ -1,5 +1,5 @@
 graft docs
-graft example
+graft examples
 graft src
 graft ci
 graft tests
