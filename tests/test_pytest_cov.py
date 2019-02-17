@@ -1065,7 +1065,52 @@ if __name__ == "__main__":
     assert result.ret == 0
 
 
-@pytest.mark.skipif('sys.platform == "win32"', reason="fork not available on Windows")
+@pytest.mark.skipif('sys.platform != "win32"')
+@pytest.mark.parametrize('setup', [
+    ('signal.signal(signal.SIGBREAK, signal.SIG_DFL); cleanup_on_signal(signal.SIGBREAK)', '87%   21-22'),
+    ('cleanup_on_signal(signal.SIGBREAK)', '87%   21-22'),
+    ('cleanup()', '73%   19-22'),
+])
+def test_cleanup_on_sigterm_sig_break(testdir, setup):
+    # worth a read: https://stefan.sofa-rockers.org/2013/08/15/handling-sub-process-hierarchies-python-linux-os-x/
+    script = testdir.makepyfile('''
+import os, signal, subprocess, sys, time
+
+def test_run():
+    proc = subprocess.Popen(
+        [sys.executable, __file__],
+        stdout=subprocess.PIPE, stderr=subprocess.STDOUT,
+        creationflags=subprocess.CREATE_NEW_PROCESS_GROUP, shell=True
+    )
+    time.sleep(1)
+    proc.send_signal(signal.CTRL_BREAK_EVENT)
+    stdout, stderr = proc.communicate()
+    assert not stderr
+    assert stdout in [b"^C", b""]
+
+if __name__ == "__main__":
+    from pytest_cov.embed import cleanup_on_signal, cleanup
+    ''' + setup[0] + '''
+
+    try:
+        time.sleep(10)
+    except BaseException as exc:
+        print("captured %r" % exc)
+''')
+
+    result = testdir.runpytest('-vv',
+                               '--cov=%s' % script.dirpath(),
+                               '--cov-report=term-missing',
+                               script)
+
+    result.stdout.fnmatch_lines([
+        '*- coverage: platform *, python * -*',
+        'test_cleanup_on_sigterm* %s' % setup[1],
+        '*1 passed*'
+    ])
+    assert result.ret == 0
+
+
 @pytest.mark.parametrize('setup', [
     ('signal.signal(signal.SIGTERM, signal.SIG_DFL); cleanup_on_sigterm()', '88%   18-19'),
     ('cleanup_on_sigterm()', '88%   18-19'),
