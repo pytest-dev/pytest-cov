@@ -914,7 +914,7 @@ def target_fn(a):
     return a + 1
 
 def test_run_target():
-    for i in range(100):
+    for i in range(20):
         with multiprocessing.Pool(10) as p:
             p.map(target_fn, range(10))
         p.join()
@@ -947,7 +947,7 @@ def target_fn(a):
     return a + 1
 
 def test_run_target():
-    for i in range(100):
+    for i in range(20):
         p = multiprocessing.Pool(10)
         try:
             p.map(target_fn, range(10))
@@ -983,7 +983,7 @@ def target_fn(a):
     return a + 1
 
 def test_run_target():
-    for i in range(100):
+    for i in range(20):
         p = multiprocessing.Pool(10)
         try:
             p.map(target_fn, range(10))
