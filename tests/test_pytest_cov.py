@@ -1,5 +1,6 @@
 import glob
 import os
+import platform
 import subprocess
 import sys
 from distutils.version import StrictVersion
@@ -23,7 +24,7 @@ except ImportError:
 
 import pytest_cov.plugin
 
-coverage, StrictVersion  # required for skipif mark on test_cov_min_from_coveragerc
+coverage, platform, StrictVersion  # required for skipif mark on test_cov_min_from_coveragerc
 
 SCRIPT = '''
 import sys, helper
@@ -149,7 +150,10 @@ PARENT_SCRIPT_RESULT = '9 * 100%'
 DEST_DIR = 'cov_dest'
 REPORT_NAME = 'cov.xml'
 
-xdist_params = pytest.mark.parametrize('opts', ['', '-n 1'], ids=['nodist', 'xdist'])
+xdist_params = pytest.mark.parametrize('opts', [
+    '',
+    pytest.param('-n 1', marks=pytest.mark.skipif('sys.platform == "win32" and platform.python_implementation() == "PyPy"'))
+], ids=['nodist', 'xdist'])
 
 
 @pytest.fixture(params=[
@@ -545,6 +549,7 @@ def test_fail(p):
     ])
 
 
+@pytest.mark.skipif('sys.platform == "win32" and platform.python_implementation() == "PyPy"')
 def test_dist_combine_racecondition(testdir):
     script = testdir.makepyfile("""
 import pytest
@@ -573,6 +578,7 @@ def test_foo(foo):
     assert result.ret == 0
 
 
+@pytest.mark.skipif('sys.platform == "win32" and platform.python_implementation() == "PyPy"')
 def test_dist_collocated(testdir, prop):
     script = testdir.makepyfile(prop.code)
     testdir.tmpdir.join('.coveragerc').write(prop.fullconf)
@@ -592,6 +598,7 @@ def test_dist_collocated(testdir, prop):
     assert result.ret == 0
 
 
+@pytest.mark.skipif('sys.platform == "win32" and platform.python_implementation() == "PyPy"')
 def test_dist_not_collocated(testdir, prop):
     script = testdir.makepyfile(prop.code)
     dir1 = testdir.mkdir('dir1')
@@ -624,6 +631,7 @@ source =
     assert result.ret == 0
 
 
+@pytest.mark.skipif('sys.platform == "win32" and platform.python_implementation() == "PyPy"')
 def test_dist_not_collocated_coveragerc_source(testdir, prop):
     script = testdir.makepyfile(prop.code)
     dir1 = testdir.mkdir('dir1')
@@ -747,6 +755,7 @@ parallel = true
     assert result.ret == 0
 
 
+@pytest.mark.skipif('sys.platform == "win32" and platform.python_implementation() == "PyPy"')
 def test_dist_subprocess_collocated(testdir):
     scripts = testdir.makepyfile(parent_script=SCRIPT_PARENT,
                                  child_script=SCRIPT_CHILD)
@@ -768,6 +777,7 @@ def test_dist_subprocess_collocated(testdir):
     assert result.ret == 0
 
 
+@pytest.mark.skipif('sys.platform == "win32" and platform.python_implementation() == "PyPy"')
 def test_dist_subprocess_not_collocated(testdir, tmpdir):
     scripts = testdir.makepyfile(parent_script=SCRIPT_PARENT,
                                  child_script=SCRIPT_CHILD)
@@ -833,7 +843,10 @@ def test_dist_missing_data(testdir):
     venv_path = os.path.join(str(testdir.tmpdir), 'venv')
     virtualenv.create_environment(venv_path)
     if sys.platform == 'win32':
-        exe = os.path.join(venv_path, 'Scripts', 'python.exe')
+        if platform.python_implementation() == "PyPy":
+            exe = os.path.join(venv_path, 'bin', 'python.exe')
+        else:
+            exe = os.path.join(venv_path, 'Scripts', 'python.exe')
     else:
         exe = os.path.join(venv_path, 'bin', 'python')
     subprocess.check_call([
@@ -1350,6 +1363,7 @@ def test_cover_conftest(testdir):
     result.stdout.fnmatch_lines([CONF_RESULT])
 
 
+@pytest.mark.skipif('sys.platform == "win32" and platform.python_implementation() == "PyPy"')
 def test_cover_looponfail(testdir, monkeypatch):
     testdir.makepyfile(mod=MODULE)
     testdir.makeconftest(CONFTEST)
@@ -1369,6 +1383,7 @@ def test_cover_looponfail(testdir, monkeypatch):
             )
 
 
+@pytest.mark.skipif('sys.platform == "win32" and platform.python_implementation() == "PyPy"')
 def test_cover_conftest_dist(testdir):
     testdir.makepyfile(mod=MODULE)
     testdir.makeconftest(CONFTEST)
@@ -1458,6 +1473,7 @@ def test_coveragerc(testdir):
     result.stdout.fnmatch_lines(['test_coveragerc* %s' % EXCLUDED_RESULT])
 
 
+@pytest.mark.skipif('sys.platform == "win32" and platform.python_implementation() == "PyPy"')
 def test_coveragerc_dist(testdir):
     testdir.makefile('', coveragerc=COVERAGERC)
     script = testdir.makepyfile(EXCLUDED_TEST)
@@ -1646,6 +1662,7 @@ data_file = %s
     assert glob.glob(str(testdir.tmpdir.join('some/special/place/coverage-data*')))
 
 
+@pytest.mark.skipif('sys.platform == "win32" and platform.python_implementation() == "PyPy"')
 def test_external_data_file_xdist(testdir):
     script = testdir.makepyfile(SCRIPT)
     testdir.tmpdir.join('.coveragerc').write("""
@@ -1769,6 +1786,7 @@ def test_double_cov2(testdir):
     assert result.ret == 0
 
 
+@pytest.mark.skipif('sys.platform == "win32" and platform.python_implementation() == "PyPy"')
 def test_cov_and_no_cov(testdir):
     script = testdir.makepyfile(SCRIPT_SIMPLE)
     result = testdir.runpytest('-v',
