@@ -963,7 +963,7 @@ def test_run_target():
 
     result.stdout.fnmatch_lines([
         '*- coverage: platform *, python * -*',
-        'test_multiprocessing_pool* 8 * 100%*',
+        'test_multiprocessing_pool* 10 * 100%*',
         '*1 passed*'
     ])
     assert result.ret == 0
@@ -999,7 +999,7 @@ def test_run_target():
 
     result.stdout.fnmatch_lines([
         '*- coverage: platform *, python * -*',
-        'test_multiprocessing_pool* 8 * 100%*',
+        'test_multiprocessing_pool* 10 * 100%*',
         '*1 passed*'
     ])
     assert result.ret == 0
@@ -1032,7 +1032,7 @@ def test_run_target():
 
     result.stdout.fnmatch_lines([
         '*- coverage: platform *, python * -*',
-        'test_multiprocessing_subprocess* 8 * 100%*',
+        'test_multiprocessing_process* 8 * 100%*',
         '*1 passed*'
     ])
     assert result.ret == 0
@@ -1062,7 +1062,7 @@ def test_run_target():
 
     result.stdout.fnmatch_lines([
         '*- coverage: platform *, python * -*',
-        'test_multiprocessing_subprocess* 8 * 100%*',
+        'test_multiprocessing_process* 8 * 100%*',
         '*1 passed*'
     ])
     assert result.ret == 0
@@ -1101,7 +1101,7 @@ def test_run_target():
 
     result.stdout.fnmatch_lines([
         '*- coverage: platform *, python * -*',
-        'test_multiprocessing_subprocess* 16 * 100%*',
+        'test_multiprocessing_process* 16 * 100%*',
         '*1 passed*'
     ])
     assert result.ret == 0
@@ -1209,16 +1209,9 @@ def test_cleanup_on_sigterm_sig_dfl(testdir, setup):
 import os, signal, subprocess, sys, time
 
 def test_run():
-    if sys.platform == 'win32':
-        options = {'creationflags': subprocess.CREATE_NEW_PROCESS_GROUP, 'shell': True}
-        signum = signal.CTRL_BREAK_EVENT
-    else:
-        options = {}
-        signum = signal.SIGTERM
-
-    proc = subprocess.Popen([sys.executable, __file__], stdout=subprocess.PIPE, stderr=subprocess.STDOUT, **options)
+    proc = subprocess.Popen([sys.executable, __file__], stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
     time.sleep(1)
-    proc.send_signal(signum)
+    proc.terminate()
     stdout, stderr = proc.communicate()
     assert not stderr
     assert stdout == b""
