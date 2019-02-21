@@ -905,107 +905,115 @@ def test_funcarg_not_active(testdir):
 @pytest.mark.skipif("sys.version_info[0] < 3", reason="no context manager api on Python 2")
 @pytest.mark.skipif('sys.platform == "win32"', reason="multiprocessing support is broken on Windows")
 def test_multiprocessing_pool(testdir):
-    py.test.importorskip('multiprocessing.util')
+    pytest.importorskip('multiprocessing.util')
 
     script = testdir.makepyfile('''
 import multiprocessing
 
 def target_fn(a):
-    return a + 1
+    %sse:  # pragma: nocover
+        return None
 
 def test_run_target():
-    for i in range(20):
-        with multiprocessing.Pool(10) as p:
-            p.map(target_fn, range(10))
+    for i in range(33):
+        with multiprocessing.Pool(3) as p:
+            p.map(target_fn, [i * 3 + j for j in range(3)])
         p.join()
-''')
+''' % ''.join('''if a == %r:
+        return a
+    el''' % i for i in range(99)))
 
     result = testdir.runpytest('-v',
                                '--cov=%s' % script.dirpath(),
                                '--cov-report=term-missing',
                                script)
 
-    result.stdout.fnmatch_lines([
-        '*- coverage: platform *, python * -*',
-        'test_multiprocessing_pool* 8 * 100%*',
-        '*1 passed*'
-    ])
-    assert result.ret == 0
     assert "Doesn't seem to be a coverage.py data file" not in result.stdout.str()
     assert "Doesn't seem to be a coverage.py data file" not in result.stderr.str()
     assert not testdir.tmpdir.listdir(".coverage.*")
+    result.stdout.fnmatch_lines([
+        '*- coverage: platform *, python * -*',
+        'test_multiprocessing_pool* 100%*',
+        '*1 passed*'
+    ])
+    assert result.ret == 0
 
 
 @pytest.mark.skipif('sys.platform == "win32"', reason="multiprocessing support is broken on Windows")
 def test_multiprocessing_pool_terminate(testdir):
-    py.test.importorskip('multiprocessing.util')
+    pytest.importorskip('multiprocessing.util')
 
     script = testdir.makepyfile('''
 import multiprocessing
 
 def target_fn(a):
-    return a + 1
+    %sse:  # pragma: nocover
+        return None
 
 def test_run_target():
-    for i in range(20):
-        p = multiprocessing.Pool(10)
+    for i in range(33):
+        p = multiprocessing.Pool(3)
         try:
-            p.map(target_fn, range(10))
+            p.map(target_fn, [i * 3 + j for j in range(3)])
         finally:
             p.terminate()
             p.join()
-''')
+''' % ''.join('''if a == %r:
+        return a
+    el''' % i for i in range(99)))
 
     result = testdir.runpytest('-v',
                                '--cov=%s' % script.dirpath(),
                                '--cov-report=term-missing',
                                script)
 
-    result.stdout.fnmatch_lines([
-        '*- coverage: platform *, python * -*',
-        'test_multiprocessing_pool* 10 * 100%*',
-        '*1 passed*'
-    ])
-    assert result.ret == 0
     assert "Doesn't seem to be a coverage.py data file" not in result.stdout.str()
     assert "Doesn't seem to be a coverage.py data file" not in result.stderr.str()
     assert not testdir.tmpdir.listdir(".coverage.*")
+    result.stdout.fnmatch_lines([
+        '*- coverage: platform *, python * -*',
+        'test_multiprocessing_pool* 100%*',
+        '*1 passed*'
+    ])
+    assert result.ret == 0
 
 
 @pytest.mark.skipif('sys.platform == "win32"', reason="multiprocessing support is broken on Windows")
 def test_multiprocessing_pool_close(testdir):
-    py.test.importorskip('multiprocessing.util')
+    pytest.importorskip('multiprocessing.util')
 
     script = testdir.makepyfile('''
 import multiprocessing
 
 def target_fn(a):
-    return a + 1
+    %sse:  # pragma: nocover
+        return None
 
 def test_run_target():
-    for i in range(20):
-        p = multiprocessing.Pool(10)
+    for i in range(33):
+        p = multiprocessing.Pool(3)
         try:
-            p.map(target_fn, range(10))
+            p.map(target_fn, [i * 3 + j for j in range(3)])
         finally:
             p.close()
             p.join()
-''')
+''' % ''.join('''if a == %r:
+        return a
+    el''' % i for i in range(99)))
 
     result = testdir.runpytest('-v',
                                '--cov=%s' % script.dirpath(),
                                '--cov-report=term-missing',
                                script)
-
-    result.stdout.fnmatch_lines([
-        '*- coverage: platform *, python * -*',
-        'test_multiprocessing_pool* 10 * 100%*',
-        '*1 passed*'
-    ])
-    assert result.ret == 0
     assert "Doesn't seem to be a coverage.py data file" not in result.stdout.str()
     assert "Doesn't seem to be a coverage.py data file" not in result.stderr.str()
     assert not testdir.tmpdir.listdir(".coverage.*")
+    result.stdout.fnmatch_lines([
+        '*- coverage: platform *, python * -*',
+        'test_multiprocessing_pool* 100%*',
+        '*1 passed*'
+    ])
+    assert result.ret == 0
 
 
 @pytest.mark.skipif('sys.platform == "win32"', reason="multiprocessing support is broken on Windows")
