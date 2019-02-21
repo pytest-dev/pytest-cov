@@ -1018,7 +1018,7 @@ def test_run_target():
 
 @pytest.mark.skipif('sys.platform == "win32"', reason="multiprocessing support is broken on Windows")
 def test_multiprocessing_process(testdir):
-    py.test.importorskip('multiprocessing.util')
+    pytest.importorskip('multiprocessing.util')
 
     script = testdir.makepyfile('''
 import multiprocessing
@@ -1048,7 +1048,7 @@ def test_run_target():
 
 @pytest.mark.skipif('sys.platform == "win32"', reason="multiprocessing support is broken on Windows")
 def test_multiprocessing_process_no_source(testdir):
-    py.test.importorskip('multiprocessing.util')
+    pytest.importorskip('multiprocessing.util')
 
     script = testdir.makepyfile('''
 import multiprocessing
@@ -1078,7 +1078,7 @@ def test_run_target():
 
 @pytest.mark.skipif('sys.platform == "win32"', reason="multiprocessing support is broken on Windows")
 def test_multiprocessing_process_with_terminate(testdir):
-    py.test.importorskip('multiprocessing.util')
+    pytest.importorskip('multiprocessing.util')
 
     script = testdir.makepyfile('''
 import multiprocessing
@@ -1411,7 +1411,7 @@ import sys
 @pytest.mark.no_cover
 def test_basic():
     mod.func()
-    subprocess.check_call([sys.executable, '-c', 'from mod import func; func()'])    
+    subprocess.check_call([sys.executable, '-c', 'from mod import func; func()'])
 ''')
     result = testdir.runpytest('-v', '-ra', '--strict',
                                '--cov=%s' % script.dirpath(),
@@ -1430,7 +1430,7 @@ import sys
 
 def test_basic(no_cover):
     mod.func()
-    subprocess.check_call([sys.executable, '-c', 'from mod import func; func()'])    
+    subprocess.check_call([sys.executable, '-c', 'from mod import func; func()'])
 ''')
     result = testdir.runpytest('-v', '-ra', '--strict',
                                '--cov=%s' % script.dirpath(),
