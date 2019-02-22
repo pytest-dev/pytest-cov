@@ -1182,7 +1182,7 @@ def test_run():
     proc.send_signal(signal.CTRL_BREAK_EVENT)
     stdout, stderr = proc.communicate()
     assert not stderr
-    assert stdout in [b"^C", b""]
+    assert stdout in [b"^C", b"", "captured IOError(4, 'Interrupted function call')\n"]
 
 if __name__ == "__main__":
     from pytest_cov.embed import cleanup_on_signal, cleanup
