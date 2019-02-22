@@ -839,6 +839,7 @@ def test_invalid_coverage_source(testdir):
 
 
 @pytest.mark.skipif("'dev' in pytest.__version__")
+@pytest.mark.skipif('sys.platform == "win32" and platform.python_implementation() == "PyPy"')
 def test_dist_missing_data(testdir):
     venv_path = os.path.join(str(testdir.tmpdir), 'venv')
     virtualenv.create_environment(venv_path)
