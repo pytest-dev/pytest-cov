@@ -24,7 +24,7 @@ before_install:
   - uname -a
   - lsb_release -a
 install:
-  - pip install tox
+  - pip install tox travispls
   - virtualenv --version
   - easy_install --version
   - pip --version
@@ -51,7 +51,7 @@ install:
     fi
     set +x
 script:
-  - travis_wait 30 tox -v
+  - travis-pls tox -v
 after_failure:
   - more .tox/log/* | cat
   - more .tox/*/log/* | cat
