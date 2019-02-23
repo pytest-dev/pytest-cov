@@ -8,7 +8,7 @@ environment:
     - TOXENV: 'py27-t310-c45,py27-t40-c45,py27-t41-c45'
     - TOXENV: 'py34-t310-c45,py34-t40-c45,py34-t41-c45'
     - TOXENV: 'py35-t310-c45,py35-t40-c45,py35-t41-c45'
-    - TOXENV: 'pypy-t310-c45,pypy-t40-c45,pypy-t41-c45,pypy3-t310-c45,pypy3-t40-c45,pypy3-t41-c45'
+    - TOXENV: 'pypy-t310-c45,pypy-t40-c45,pypy-t41-c45'
 
 init:
   - ps: echo $env:TOXENV

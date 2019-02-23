@@ -52,7 +52,7 @@ if __name__ == "__main__":
 
     template_vars = {'tox_environments': tox_environments}
     for py_ver in '27 34 35 py'.split():
-        template_vars['py%s_environments' % py_ver] = [x for x in tox_environments if x.startswith('py' + py_ver)]
+        template_vars['py%s_environments' % py_ver] = [x for x in tox_environments if x.startswith('py' + py_ver + '-')]
 
     for name in os.listdir(join("ci", "templates")):
         with open(join(base_path, name), "w") as fh:
