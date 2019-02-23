@@ -905,6 +905,7 @@ def test_funcarg_not_active(testdir):
 
 @pytest.mark.skipif("sys.version_info[0] < 3", reason="no context manager api on Python 2")
 @pytest.mark.skipif('sys.platform == "win32"', reason="multiprocessing support is broken on Windows")
+@pytest.mark.skipif('platform.python_implementation() == "PyPy"', reason="often deadlocks on PyPy")
 def test_multiprocessing_pool(testdir):
     pytest.importorskip('multiprocessing.util')
 
@@ -941,6 +942,7 @@ def test_run_target():
 
 
 @pytest.mark.skipif('sys.platform == "win32"', reason="multiprocessing support is broken on Windows")
+@pytest.mark.skipif('platform.python_implementation() == "PyPy"', reason="often deadlocks on PyPy")
 def test_multiprocessing_pool_terminate(testdir):
     pytest.importorskip('multiprocessing.util')
 
