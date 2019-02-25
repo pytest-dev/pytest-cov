@@ -1,3 +1,25 @@
+try:
+    import pkg_resources
+except ImportError:
+    pass
+else:
+    def reordered_iter_entry_points(group, name=None, __original=pkg_resources.iter_entry_points):
+        if group == 'pytest11' and name is None:
+            delayed_entrypoints = []
+            for ep in __original(group):
+                if ep.name == 'pytest_cov':
+                    yield ep
+                    for delayed_ep in delayed_entrypoints:
+                        yield delayed_ep
+                    delayed_entrypoints = None
+                elif delayed_entrypoints is None:
+                    yield ep
+                else:
+                    delayed_entrypoints.append(ep)
+        else:
+            for ep in __original(group, name):
+                yield ep
+    pkg_resources.iter_entry_points = reordered_iter_entry_points
 if 'COV_CORE_SOURCE' in os.environ:
     try:
         from pytest_cov.embed import init
