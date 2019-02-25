@@ -25,7 +25,6 @@ def multiprocessing_start(_):
     if cov:
         _active_cov = cov
         multiprocessing.util.Finalize(None, cleanup, exitpriority=1000)
-        cleanup_on_sigterm()
 
 
 try:

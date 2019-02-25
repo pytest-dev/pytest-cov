@@ -12,8 +12,11 @@ few pitfalls that need to be explained.
 If you use ``multiprocessing.Pool``
 ===================================
 
-In **pytest-cov 2.6** and older a multiprocessing finalizer is automatically registered. The finalizer will only run
-reliably if the pool is closed. If you use ``multiprocessing.Pool.terminate`` or the context manager API (``__exit__``
+**pytest-cov** automatically registers a multiprocessing finalizer. The finalizer will only run reliably if the pool is
+closed. Closing the pool basically signals the workers that there will be no more work, and they will eventually exit.
+Thus one also needs to call `join` on the pool.
+
+If you use ``multiprocessing.Pool.terminate`` or the context manager API (``__exit__``
 will just call ``terminate``) then the workers can get SIGTERM and then the finalizers won't run or complete in time.
 Thus you need to make sure your ``multiprocessing.Pool`` gets a nice and clean exit:
 
@@ -33,8 +36,8 @@ Thus you need to make sure your ``multiprocessing.Pool`` gets a nice and clean e
             p.join()   # Waits for workers to exit.
 
 
-In **pytest-cov 2.7** a SIGTERM handler is also automatically registered if multiprocessing is used. Thus you can use
-the convenient context manger API:
+If you must use the context manager API (e.g.: the pool is managed in third party code you can't change) then you can
+register a cleaning SIGTERM handler like so:
 
 .. code-block:: python
 
@@ -44,6 +47,13 @@ the convenient context manger API:
         return x*x
 
     if __name__ == '__main__':
+        try:
+            from pytest_cov.embed import cleanup_on_sigterm
+        except ImportError:
+            pass
+        else:
+            cleanup_on_sigterm()
+
         with Pool(5) as p:
             print(p.map(f, [1, 2, 3]))
 
@@ -60,6 +70,13 @@ There's similar issue when using the ``Process`` objects. Don't forget to use ``
         print('hello', name)
 
     if __name__ == '__main__':
+        try:
+            from pytest_cov.embed import cleanup_on_sigterm
+        except ImportError:
+            pass
+        else:
+            cleanup_on_sigterm()
+
         p = Process(target=f, args=('bob',))
         try:
             p.start()
@@ -120,8 +137,14 @@ Alternatively you can do this:
 If you use Windows
 ==================
 
-On Windows you can register a handler for SIGTERM but it doesn't actually work. However you can have a working handler
-for SIGBREAK:
+On Windows you can register a handler for SIGTERM but it doesn't actually work. It will work if you
+`os.kill(os.getpid(), signal.SIGTERM)` (send SIGTERM to the current process) but for most intents and purposes that's
+completely useless.
+
+Consequently this means that if you use multiprocessing you got no choice but to use the close/join pattern as described
+above. Using the context manager API or `terminate` won't work as it relies on SIGTERM.
+
+However you can have a working handler for SIGBREAK (with some caveats):
 
 .. code-block:: python
 
@@ -139,8 +162,8 @@ for SIGBREAK:
     else:
         cleanup_on_signal(signal.SIGBREAK)
 
-Note that `SIGBREAK is tricky
-<https://stefan.sofa-rockers.org/2013/08/15/handling-sub-process-hierarchies-python-linux-os-x/>`_:
+The `caveats <https://stefan.sofa-rockers.org/2013/08/15/handling-sub-process-hierarchies-python-linux-os-x/>`_ being
+roughly:
 
 * you need to deliver ``signal.CTRL_BREAK_EVENT``
 * it gets delivered to the whole process group, and that can have unforeseen consequences

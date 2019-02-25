@@ -917,6 +917,9 @@ def target_fn(a):
         return None
 
 def test_run_target():
+    from pytest_cov.embed import cleanup_on_sigterm
+    cleanup_on_sigterm()
+
     for i in range(33):
         with multiprocessing.Pool(3) as p:
             p.map(target_fn, [i * 3 + j for j in range(3)])
@@ -954,6 +957,9 @@ def target_fn(a):
         return None
 
 def test_run_target():
+    from pytest_cov.embed import cleanup_on_sigterm
+    cleanup_on_sigterm()
+
     for i in range(33):
         p = multiprocessing.Pool(3)
         try:
