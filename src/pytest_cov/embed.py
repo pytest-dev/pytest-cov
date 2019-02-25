@@ -95,6 +95,7 @@ def cleanup():
     _cleanup_in_progress = True
     _cleanup(_active_cov)
     _active_cov = None
+    _cleanup_in_progress = False
     if _pending_signal:
         _signal_cleanup_handler(*_pending_signal)
         _pending_signal = None
