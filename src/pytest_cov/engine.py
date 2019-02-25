@@ -8,6 +8,7 @@ import sys
 import coverage
 from coverage.data import CoverageData
 
+from .embed import cleanup
 from .compat import StringIO
 
 
@@ -145,7 +146,8 @@ class Central(CovController):
     """Implementation for centralised operation."""
 
     def start(self):
-        """Erase any previous coverage data and start coverage."""
+        cleanup()
+
         self.cov = coverage.Coverage(source=self.cov_source,
                                      branch=self.cov_branch,
                                      config_file=self.cov_config)
@@ -153,6 +155,8 @@ class Central(CovController):
                                                branch=self.cov_branch,
                                                data_file=os.path.abspath(self.cov.config.data_file),
                                                config_file=self.cov_config)
+
+        # Erase or load any previous coverage data and start coverage.
         if self.cov_append:
             self.cov.load()
         else:
@@ -180,8 +184,9 @@ class DistMaster(CovController):
     """Implementation for distributed master."""
 
     def start(self):
-        """Ensure coverage rc file rsynced if appropriate."""
+        cleanup()
 
+        # Ensure coverage rc file rsynced if appropriate.
         if self.cov_config and os.path.exists(self.cov_config):
             self.config.option.rsyncdir.append(self.cov_config)
 
@@ -258,7 +263,7 @@ class DistSlave(CovController):
     """Implementation for distributed slaves."""
 
     def start(self):
-        """Determine what data file and suffix to contribute to and start coverage."""
+        cleanup()
 
         # Determine whether we are collocated with master.
         self.is_collocated = (socket.gethostname() == self.config.slaveinput['cov_master_host'] and

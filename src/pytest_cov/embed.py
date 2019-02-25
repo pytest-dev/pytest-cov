@@ -46,6 +46,8 @@ def init():
     cov_branch = True if os.environ.get('COV_CORE_BRANCH') == 'enabled' else None
 
     if cov_datafile:
+        if _active_cov:
+            cleanup()
         # Import what we need to activate coverage.
         import coverage
 
