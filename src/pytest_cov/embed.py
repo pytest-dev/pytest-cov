@@ -53,7 +53,7 @@ def init():
         import coverage
 
         # Determine all source roots.
-        if cov_source == os.pathsep:
+        if cov_source in os.pathsep:
             cov_source = None
         else:
             cov_source = cov_source.split(os.pathsep)
