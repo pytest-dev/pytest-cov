@@ -13,6 +13,7 @@ For python startup when an ancestor process has set the env indicating
 that code coverage is being collected we activate coverage based on
 info passed via env vars.
 """
+import atexit
 import os
 import signal
 
@@ -79,6 +80,11 @@ def _cleanup(cov):
     if cov is not None:
         cov.stop()
         cov.save()
+        cov._auto_save = False  # prevent autosaving from cov._atexit in case the interpreter lacks atexit.unregister
+        try:
+            atexit.unregister(cov._atexit)
+        except Exception:
+            pass
 
 
 def cleanup():
