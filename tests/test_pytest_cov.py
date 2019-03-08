@@ -412,10 +412,10 @@ parallel = true
 """ % prop.conf)
 
     monkeypatch.setitem(os.environ, 'PYTHONPATH', os.pathsep.join([os.environ.get('PYTHONPATH', ''), 'aliased']))
-    result = testdir.runpytest('-v', '-s',
-                               '--cov',
-                               '--cov-report=term-missing',
-                               script, *opts.split()+prop.args)
+    result = testdir.runpytest_subprocess('-v', '-s',
+                                          '--cov',
+                                          '--cov-report=term-missing',
+                                          script, *opts.split()+prop.args)
 
     result.stdout.fnmatch_lines([
         '*- coverage: platform *, python * -*',
@@ -1197,10 +1197,10 @@ def test_cover_looponfail(testdir, monkeypatch):
 
     monkeypatch.setattr(testdir, 'run',
                         lambda *args, **kwargs: _TestProcess(*map(str, args)))
-    with testdir.runpytest('-v',
-                           '--cov=%s' % script.dirpath(),
-                           '--looponfail',
-                           script) as process:
+    with testdir.runpytest_subprocess('-v',
+                                      '--cov=%s' % script.dirpath(),
+                                      '--looponfail',
+                                      script) as process:
         with dump_on_error(process.read):
             wait_for_strings(
                 process.read,
