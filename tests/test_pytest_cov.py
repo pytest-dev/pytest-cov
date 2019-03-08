@@ -467,7 +467,8 @@ source =
 parallel = true
 """)
 
-    monkeypatch.setitem(os.environ, 'PYTHONPATH', os.pathsep.join([os.environ.get('PYTHONPATH',''), 'aliased']))
+    monkeypatch.setitem(os.environ, 'PYTHONPATH', os.pathsep.join([
+        os.environ.get('PYTHONPATH', ''), 'aliased']))
     result = testdir.runpytest('-v',
                                '--cov',
                                '--cov-report=term-missing',
@@ -1129,6 +1130,7 @@ if __name__ == "__main__":
     ])
     assert result.ret == 0
 
+
 @pytest.mark.skipif('sys.platform == "win32"', reason="fork not available on Windows")
 def test_cleanup_on_sigterm_sig_ign(testdir):
     script = testdir.makepyfile('''
@@ -1252,7 +1254,7 @@ import sys
 @pytest.mark.no_cover
 def test_basic():
     mod.func()
-    subprocess.check_call([sys.executable, '-c', 'from mod import func; func()'])    
+    subprocess.check_call([sys.executable, '-c', 'from mod import func; func()'])
 ''')
     result = testdir.runpytest('-v', '-ra', '--strict',
                                '--cov=%s' % script.dirpath(),
@@ -1271,7 +1273,7 @@ import sys
 
 def test_basic(no_cover):
     mod.func()
-    subprocess.check_call([sys.executable, '-c', 'from mod import func; func()'])    
+    subprocess.check_call([sys.executable, '-c', 'from mod import func; func()'])
 ''')
     result = testdir.runpytest('-v', '-ra', '--strict',
                                '--cov=%s' % script.dirpath(),
