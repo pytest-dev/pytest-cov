@@ -129,7 +129,9 @@ setup(
         'testing': [
             'fields',
             'hunter',
+            # TODO: unpin?!
             'process-tests==2.0.0',
+            # TODO: unpin?!
             'pytest-xdist==1.25.0',
             'six',
             'virtualenv',
