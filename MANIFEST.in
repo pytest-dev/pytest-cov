@@ -1,5 +1,10 @@
 graft docs
 graft examples
+prune examples/*/.tox
+prune examples/*/htmlcov
+prune examples/adhoc-layout/*.egg-info
+prune examples/src-layout/src/*.egg-info
+
 graft src
 graft ci
 graft tests
@@ -19,4 +24,4 @@ include README.rst
 
 include tox.ini .travis.yml appveyor.yml
 
-global-exclude *.py[cod] __pycache__ *.so
+global-exclude *.py[cod] __pycache__ *.so .coverage
