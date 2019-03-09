@@ -55,11 +55,11 @@ def pytest_addoption(parser):
         'cov', 'coverage reporting with distributed testing support')
     group.addoption('--cov', action='append', default=[], metavar='path',
                     nargs='?', const=True, dest='cov_source',
-                    help='measure coverage for filesystem path '
+                    help='Measure coverage for filesystem path. '
                     '(multi-allowed)')
     group.addoption('--cov-report', action=StoreReport, default={},
                     metavar='type', type=validate_report,
-                    help='type of report to generate: term, term-missing, '
+                    help='Type of report to generate: term, term-missing, '
                     'annotate, html, xml (multi-allowed). '
                     'term, term-missing may be followed by ":skip-covered". '
                     'annotate, html and xml may be followed by ":DEST" '
@@ -67,18 +67,18 @@ def pytest_addoption(parser):
                     'Use --cov-report= to not generate any output.')
     group.addoption('--cov-config', action='store', default='.coveragerc',
                     metavar='path',
-                    help='config file for coverage, default: .coveragerc')
+                    help='Config file for coverage. Default: .coveragerc')
     group.addoption('--no-cov-on-fail', action='store_true', default=False,
-                    help='do not report coverage if test run fails, '
-                         'default: False')
+                    help='Do not report coverage if test run fails. '
+                         'Default: False')
     group.addoption('--no-cov', action='store_true', default=False,
-                    help='Disable coverage report completely (useful for debuggers) '
-                         'default: False')
+                    help='Disable coverage report completely (useful for debuggers). '
+                         'Default: False')
     group.addoption('--cov-fail-under', action='store', metavar='MIN', type=int,
                     help='Fail if the total coverage is less than MIN.')
     group.addoption('--cov-append', action='store_true', default=False,
-                    help='do not delete coverage but append to current, '
-                         'default: False')
+                    help='Do not delete coverage but append to current. '
+                         'Default: False')
     group.addoption('--cov-branch', action='store_true', default=None,
                     help='Enable branch coverage.')
 
