@@ -549,7 +549,7 @@ def test_fail(p):
     ])
 
 
-@pytest.mark.skipif('sys.platform == "win32" and platform.python_implementation() == "PyPy"')
+@pytest.mark.skipif('sys.platform == "win32" or platform.python_implementation() == "PyPy"')
 def test_dist_combine_racecondition(testdir):
     script = testdir.makepyfile("""
 import pytest
