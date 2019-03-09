@@ -11,7 +11,7 @@ Contents:
     reporting
     debuggers
     xdist
-    mp
+    subprocess-support
     plugins
     markers-fixtures
     changelog

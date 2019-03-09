@@ -118,7 +118,6 @@ class CovPlugin(object):
 
         # Our implementation is unknown at this time.
         self.pid = None
-        self.cov = None
         self.cov_controller = None
         self.cov_report = compat.StringIO()
         self.cov_total = None
@@ -286,12 +285,10 @@ class CovPlugin(object):
         if os.getpid() != self.pid:
             # test is run in another process than session, run
             # coverage manually
-            self.cov = embed.init()
+            embed.init()
 
     def pytest_runtest_teardown(self, item):
-        if self.cov is not None:
-            embed.cleanup(self.cov)
-            self.cov = None
+        embed.cleanup()
 
     @compat.hookwrapper
     def pytest_runtest_call(self, item):

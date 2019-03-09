@@ -14,9 +14,9 @@ Alternatively you can have this in ``tox.ini`` (if you're using `Tox <https://to
 
     [testenv]
     setenv =
-        COV_CORE_SOURCE={toxinidir}/src
+        COV_CORE_SOURCE=
         COV_CORE_CONFIG={toxinidir}/.coveragerc
-        COV_CORE_DATAFILE={toxinidir}/.coverage.eager
+        COV_CORE_DATAFILE={toxinidir}/.coverage
 
 And in ``pytest.ini`` / ``tox.ini`` / ``setup.cfg``::
 
