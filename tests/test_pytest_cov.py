@@ -156,6 +156,23 @@ xdist_params = pytest.mark.parametrize('opts', [
 ], ids=['nodist', 'xdist'])
 
 
+@pytest.fixture(scope='session', autouse=True)
+def adjust_sys_path():
+    """Adjust PYTHONPATH during tests to make "helper" importable in SCRIPT."""
+    orig_path = os.environ.get('PYTHONPATH', None)
+    new_path = os.path.dirname(__file__)
+    if orig_path is not None:
+        new_path = os.pathsep.join([new_path, orig_path])
+    os.environ['PYTHONPATH'] = new_path
+
+    yield
+
+    if orig_path is None:
+        del os.environ['PYTHONPATH']
+    else:
+        os.environ['PYTHONPATH'] = orig_path
+
+
 @pytest.fixture(params=[
     ('branch=true', '--cov-branch', '9 * 85%', '3 * 100%'),
     ('branch=true', '',             '9 * 85%', '3 * 100%'),
@@ -454,7 +471,8 @@ source =
 parallel = true
 """)
 
-    monkeypatch.setitem(os.environ, 'PYTHONPATH', os.pathsep.join([os.environ.get('PYTHONPATH',''), 'aliased']))
+    monkeypatch.setitem(os.environ, 'PYTHONPATH', os.pathsep.join([
+        os.environ.get('PYTHONPATH', ''), 'aliased']))
     result = testdir.runpytest('-v',
                                '--cov',
                                '--cov-report=term-missing',
