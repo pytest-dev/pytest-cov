@@ -5,74 +5,108 @@ env:
   global:
     - LD_PRELOAD=/lib/x86_64-linux-gnu/libSegFault.so
     - SEGFAULT_SIGNALS=all
-  matrix:
-    - TOXENV=check
-    - TOXENV=docs
-matrix:
+stages:
+  - lint
+  - examples
+  - tests
+jobs:
   include:
-    - python: '2.7'
+    - stage: lint
+      env:
+        - TOXENV=check
+    - stage: lint
+      env:
+        - TOXENV=docs
+    - stage: tests
+      python: '2.7'
       env:
         - TOXENV=py27-t310-c45
-    - python: '2.7'
+    - stage: tests
+      python: '2.7'
       env:
         - TOXENV=py27-t40-c45
-    - python: '2.7'
+    - stage: tests
+      python: '2.7'
       env:
         - TOXENV=py27-t41-c45
-    - python: '3.4'
+    - stage: tests
+      python: '3.4'
       env:
         - TOXENV=py34-t310-c45
-    - python: '3.4'
+    - stage: tests
+      python: '3.4'
       env:
         - TOXENV=py34-t40-c45
-    - python: '3.4'
+    - stage: tests
+      python: '3.4'
       env:
         - TOXENV=py34-t41-c45
-    - python: '3.5'
+    - stage: tests
+      python: '3.5'
       env:
         - TOXENV=py35-t310-c45
-    - python: '3.5'
+    - stage: tests
+      python: '3.5'
       env:
         - TOXENV=py35-t40-c45
-    - python: '3.5'
+    - stage: tests
+      python: '3.5'
       env:
         - TOXENV=py35-t41-c45
-    - python: '3.6'
+    - stage: tests
+      python: '3.6'
       env:
         - TOXENV=py36-t310-c45
-    - python: '3.6'
+    - stage: tests
+      python: '3.6'
       env:
         - TOXENV=py36-t40-c45
-    - python: '3.6'
+    - stage: tests
+      python: '3.6'
       env:
         - TOXENV=py36-t41-c45
-    - python: '3.7'
+    - stage: tests
+      python: '3.7'
       env:
         - TOXENV=py37-t310-c45
-    - python: '3.7'
+    - stage: tests
+      python: '3.7'
       env:
         - TOXENV=py37-t40-c45
-    - python: '3.7'
+    - stage: tests
+      python: '3.7'
       env:
         - TOXENV=py37-t41-c45
-    - python: 'pypy2.7-6.0'
+    - stage: tests
+      python: 'pypy2.7-6.0'
       env:
         - TOXENV=pypy-t310-c45
-    - python: 'pypy2.7-6.0'
+    - stage: tests
+      python: 'pypy2.7-6.0'
       env:
         - TOXENV=pypy-t40-c45
-    - python: 'pypy2.7-6.0'
+    - stage: tests
+      python: 'pypy2.7-6.0'
       env:
         - TOXENV=pypy-t41-c45
-    - python: 'pypy3.5-6.0'
+    - stage: tests
+      python: 'pypy3.5-6.0'
       env:
         - TOXENV=pypy3-t310-c45
-    - python: 'pypy3.5-6.0'
+    - stage: tests
+      python: 'pypy3.5-6.0'
       env:
         - TOXENV=pypy3-t40-c45
-    - python: 'pypy3.5-6.0'
+    - stage: tests
+      python: 'pypy3.5-6.0'
       env:
         - TOXENV=pypy3-t41-c45
+    - stage: examples
+      python: '3.6'
+      script: cd examples/src-layout; tox -v
+    - stage: examples
+      python: '3.6'
+      script: cd examples/adhoc-layout; tox -v
 before_install:
   - python --version
   - uname -a
