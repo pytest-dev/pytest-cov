@@ -103,10 +103,14 @@ jobs:
         - TOXENV=pypy3-t41-c45
     - stage: examples
       python: '3.6'
-      script: cd examples/src-layout; tox -v
+      script: cd $TARGET; tox -v
+      env:
+          - TARGET=examples/src-layout
     - stage: examples
       python: '3.6'
-      script: cd examples/adhoc-layout; tox -v
+      script: cd $TARGET; tox -v
+      env:
+          - TARGET=examples/adhoc-layout
 before_install:
   - python --version
   - uname -a
