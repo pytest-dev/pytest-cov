@@ -12,6 +12,7 @@ Contents:
     debuggers
     xdist
     subprocess-support
+    tox
     plugins
     markers-fixtures
     changelog
