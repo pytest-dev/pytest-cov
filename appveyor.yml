@@ -1,3 +1,4 @@
+# NOTE: this file is auto-generated via ci/bootstrap.py (ci/templates/appveyor.yml).
 version: '{branch}-{build}'
 build: off
 cache:

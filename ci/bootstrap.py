@@ -56,6 +56,7 @@ if __name__ == "__main__":
 
     for name in os.listdir(join("ci", "templates")):
         with open(join(base_path, name), "w") as fh:
+            fh.write('# NOTE: this file is auto-generated via ci/bootstrap.py (ci/templates/%s).\n' % name)
             fh.write(jinja.get_template(name).render(**template_vars))
         print("Wrote {}".format(name))
     print("DONE.")
