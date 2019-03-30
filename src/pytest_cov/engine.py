@@ -46,9 +46,8 @@ class CovController(object):
             os.environ['COV_CORE_SOURCE'] = os.pathsep
         else:
             os.environ['COV_CORE_SOURCE'] = os.pathsep.join(self.cov_source)
-        config_file = os.path.abspath(self.cov_config)
-        if os.path.exists(config_file):
-            os.environ['COV_CORE_CONFIG'] = config_file
+        if self.abs_cov_config_file:
+            os.environ['COV_CORE_CONFIG'] = self.abs_cov_config_file
         else:
             os.environ['COV_CORE_CONFIG'] = os.pathsep
         os.environ['COV_CORE_DATAFILE'] = os.path.abspath(self.cov.config.data_file)
@@ -151,10 +150,20 @@ class Central(CovController):
         self.cov = coverage.Coverage(source=self.cov_source,
                                      branch=self.cov_branch,
                                      config_file=self.cov_config)
+
+        # Get absolute location of used config file.
+        parsed_config_file = self.cov.config.config_file
+        if parsed_config_file:
+            parsed_config_file = os.path.abspath(parsed_config_file)
+            assert os.path.exists(parsed_config_file)
+            self.abs_cov_config_file = parsed_config_file
+        else:
+            self.abs_cov_config_file = False
+
         self.combining_cov = coverage.Coverage(source=self.cov_source,
                                                branch=self.cov_branch,
                                                data_file=os.path.abspath(self.cov.config.data_file),
-                                               config_file=self.cov_config)
+                                               config_file=parsed_config_file)
 
         # Erase or load any previous coverage data and start coverage.
         if self.cov_append:
