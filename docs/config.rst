@@ -31,17 +31,6 @@ For example: ::
     [tool:pytest]
     addopts = --cov=<project-name> --cov-report html
 
-Caveats
-=======
-
-A unfortunate consequence of coverage.py's history is that ``.coveragerc`` is a magic name: it's the default file but it also
-means "try to also lookup coverage configuration in ``tox.ini`` or ``setup.cfg``".
-
-In practical terms this means that if you have your coverage configuration in ``tox.ini`` or ``setup.cfg`` it is paramount
-that you also use ``--cov-config=tox.ini`` or ``--cov-config=setup.cfg``.
-
-You might not be affected but it's unlikely that you won't ever use ``chdir`` in a test.
-
 Reference
 =========
 
