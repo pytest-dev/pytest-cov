@@ -81,6 +81,8 @@ def pytest_addoption(parser):
                          'Default: False')
     group.addoption('--cov-branch', action='store_true', default=None,
                     help='Enable branch coverage.')
+    group.addoption('--cov-context', action='store_true', default=None,
+                    help='Enable dynamic context collection for each test.')
 
 
 def _prepare_cov_source(cov_source):
@@ -282,16 +284,25 @@ class CovPlugin(object):
             terminalreporter.write(message, **markup)
 
     def pytest_runtest_setup(self, item):
+        if self.options.cov_context:
+            context = "{item.nodeid}|setup".format(item=item)
+            self.cov_controller.cov.switch_context(context)
         if os.getpid() != self.pid:
             # test is run in another process than session, run
             # coverage manually
             embed.init()
 
     def pytest_runtest_teardown(self, item):
+        if self.options.cov_context:
+            context = "{item.nodeid}|teardown".format(item=item)
+            self.cov_controller.cov.switch_context(context)
         embed.cleanup()
 
     @compat.hookwrapper
     def pytest_runtest_call(self, item):
+        if self.options.cov_context:
+            context = "{item.nodeid}|call".format(item=item)
+            self.cov_controller.cov.switch_context(context)
         if (item.get_closest_marker('no_cover')
                 or 'no_cover' in getattr(item, 'fixturenames', ())):
             self.cov_controller.pause()
