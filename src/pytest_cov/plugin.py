@@ -1,15 +1,14 @@
 """Coverage plugin for pytest."""
+import argparse
 import os
 import warnings
 
 import pytest
-import argparse
-
 from coverage.misc import CoverageException
 
+from . import compat
 from . import embed
 from . import engine
-from . import compat
 
 
 class CoverageError(Exception):
@@ -53,20 +52,20 @@ def pytest_addoption(parser):
 
     group = parser.getgroup(
         'cov', 'coverage reporting with distributed testing support')
-    group.addoption('--cov', action='append', default=[], metavar='path',
+    group.addoption('--cov', action='append', default=[], metavar='SOURCE',
                     nargs='?', const=True, dest='cov_source',
-                    help='Measure coverage for filesystem path. '
-                    '(multi-allowed)')
+                    help='Path or package name to measure during execution (multi-allowed). '
+                         'Use --cov= to not do any source filtering and record everything.')
     group.addoption('--cov-report', action=StoreReport, default={},
-                    metavar='type', type=validate_report,
+                    metavar='TYPE', type=validate_report,
                     help='Type of report to generate: term, term-missing, '
-                    'annotate, html, xml (multi-allowed). '
-                    'term, term-missing may be followed by ":skip-covered". '
-                    'annotate, html and xml may be followed by ":DEST" '
-                    'where DEST specifies the output location. '
-                    'Use --cov-report= to not generate any output.')
+                         'annotate, html, xml (multi-allowed). '
+                         'term, term-missing may be followed by ":skip-covered". '
+                         'annotate, html and xml may be followed by ":DEST" '
+                         'where DEST specifies the output location. '
+                         'Use --cov-report= to not generate any output.')
     group.addoption('--cov-config', action='store', default='.coveragerc',
-                    metavar='path',
+                    metavar='PATH',
                     help='Config file for coverage. Default: .coveragerc')
     group.addoption('--no-cov-on-fail', action='store_true', default=False,
                     help='Do not report coverage if test run fails. '
