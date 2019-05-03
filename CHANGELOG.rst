@@ -1,11 +1,26 @@
 Changelog
 =========
 
-2.6.2 (2019-02-05)
+2.7.0 (2019-05-03)
 ------------------
 
-* Fixed ``'NoneType' object has no attribute 'configure_node'`` issue.
+* Fixed ``AttributeError: 'NoneType' object has no attribute 'configure_node'`` error when ``--no-cov`` is used.
   Contributed by Alexander Shadchin in `#263 <https://github.com/pytest-dev/pytest-cov/pull/263>`_.
+* Various testing and CI improvements. Contributed by Daniel Hahler in
+  `#255 <https://github.com/pytest-dev/pytest-cov/pull/255>`_,
+  `#266 <https://github.com/pytest-dev/pytest-cov/pull/266>`_,
+  `#272 <https://github.com/pytest-dev/pytest-cov/pull/272>`_,
+  `#271 <https://github.com/pytest-dev/pytest-cov/pull/271>`_ and
+  `#269 <https://github.com/pytest-dev/pytest-cov/pull/269>`_.
+* Improved documentation regarding subprocess and multiprocessing.
+  Contributed in `#265 <https://github.com/pytest-dev/pytest-cov/pull/265>`_.
+* Improved ``pytest_cov.embed.cleanup_on_sigterm`` to be reentrant (signal deliveries while signal handling is
+  running won't break stuff).
+* Added ``pytest_cov.embed.cleanup_on_signal`` for customized cleanup.
+* Improved cleanup code and fixed various issues with leftover data files. All contributed in
+  `#265 <https://github.com/pytest-dev/pytest-cov/pull/265>`_ or
+  `#262 <https://github.com/pytest-dev/pytest-cov/pull/262>`_.
+* Improved help text for CLI options.
 
 2.6.1 (2019-01-07)
 ------------------
