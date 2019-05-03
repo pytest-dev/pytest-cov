@@ -20,6 +20,9 @@ Changelog
 * Improved cleanup code and fixed various issues with leftover data files. All contributed in
   `#265 <https://github.com/pytest-dev/pytest-cov/pull/265>`_ or
   `#262 <https://github.com/pytest-dev/pytest-cov/pull/262>`_.
+* Improved examples. Now there are two examples for the common project layouts, complete with working coverage
+  configuration. The examples have CI testing. Contributed in
+  `#267 <https://github.com/pytest-dev/pytest-cov/pull/267>`_.
 * Improved help text for CLI options.
 
 2.6.1 (2019-01-07)
