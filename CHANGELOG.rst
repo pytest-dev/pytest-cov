@@ -1,6 +1,11 @@
 Changelog
 =========
 
+2.7.1 (2019-05-03)
+------------------
+
+* Fixed source distribution manifest so that garbage ain't included in the tarball.
+
 2.7.0 (2019-05-03)
 ------------------
 

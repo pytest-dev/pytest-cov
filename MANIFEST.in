@@ -2,6 +2,7 @@ graft docs
 graft examples
 prune examples/*/.tox
 prune examples/*/htmlcov
+prune examples/*/*/htmlcov
 prune examples/adhoc-layout/*.egg-info
 prune examples/src-layout/src/*.egg-info
 
