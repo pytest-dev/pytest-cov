@@ -6,10 +6,10 @@ cache:
 environment:
   matrix:
     - TOXENV: check
-    - TOXENV: 'py27-t310-c45,py27-t43-c45'
-    - TOXENV: 'py34-t310-c45,py34-t43-c45'
-    - TOXENV: 'py35-t310-c45,py35-t43-c45'
-    - TOXENV: 'pypy-t310-c45,pypy-t43-c45'
+    - TOXENV: 'py27-t310-c45,py27-t43-c45,py27-t44-c45'
+    - TOXENV: 'py34-t310-c45,py34-t43-c45,py34-t44-c45'
+    - TOXENV: 'py35-t310-c45,py35-t43-c45,py35-t44-c45'
+    - TOXENV: 'pypy-t310-c45,pypy-t43-c45,pypy-t44-c45'
 
 init:
   - ps: echo $env:TOXENV
