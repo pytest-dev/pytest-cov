@@ -73,6 +73,8 @@ jobs:
       python: 'pypy3.5-6.0'
     - env: TOXENV=pypy3-t45-c45
       python: 'pypy3.5-6.0'
+    - env: TOXENV=py37-t44-c50
+      python: '3.7'
 
     - stage: examples
       python: '3.6'
