@@ -302,6 +302,7 @@ class CovPlugin(object):
 
 @pytest.fixture
 def no_cover():
+    """A pytest fixture to disable coverage."""
     pass
 
 
