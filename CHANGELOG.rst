@@ -143,7 +143,7 @@ Changelog
   (automatically activated if there's a ``[report] fail_under = ...`` in ``.coveragerc``).
 * Changed ``--cov-report=term`` to automatically upgrade to ``--cov-report=term-missing``
   if there's ``[run] show_missing = True`` in ``.coveragerc``.
-* Changed ``--cov`` so it can be used with no path argument (in wich case the source
+* Changed ``--cov`` so it can be used with no path argument (in which case the source
   settings from ``.coveragerc`` will be used instead).
 * Fixed `.pth` installation to work in all cases (install, easy_install, wheels, develop etc).
 * Fixed `.pth` uninstallation to work for wheel installs.
