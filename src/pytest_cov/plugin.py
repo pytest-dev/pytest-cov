@@ -1,5 +1,6 @@
 """Coverage plugin for pytest."""
 import argparse
+import logging
 import os
 import warnings
 
@@ -248,7 +249,7 @@ class CovPlugin(object):
     def pytest_terminal_summary(self, terminalreporter):
         if self._disabled:
             message = 'Coverage disabled via --no-cov switch!'
-            terminalreporter.write('WARNING: %s\n' % message, red=True, bold=True)
+            logging.debug(message)
             if pytest.__version__ >= '3.8':
                 warnings.warn(pytest.PytestWarning(message))
             else:
