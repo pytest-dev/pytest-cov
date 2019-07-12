@@ -4,7 +4,7 @@ Subprocess support
 
 Normally coverage writes the data via a pretty standard atexit handler. However, if the subprocess doesn't exit on its
 own then the atexit handler might not run. Why that happens is best left to the adventurous to discover by waddling
-though the Python bug tracker.
+through the Python bug tracker.
 
 pytest-cov supports subprocesses and multiprocessing, and works around these atexit limitations. However, there are a
 few pitfalls that need to be explained.
