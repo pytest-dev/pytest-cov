@@ -343,6 +343,20 @@ def test_cov_min_50(testdir):
     ])
 
 
+def test_cov_min_float_value(testdir):
+    script = testdir.makepyfile(SCRIPT)
+
+    result = testdir.runpytest('-v',
+                               '--cov=%s' % script.dirpath(),
+                               '--cov-report=term-missing',
+                               '--cov-fail-under=51.03',
+                               script)
+    assert result.ret == 0
+    result.stdout.fnmatch_lines([
+        'Required test coverage of 51.03% reached. Total coverage: *%'
+    ])
+
+
 def test_cov_min_no_report(testdir):
     script = testdir.makepyfile(SCRIPT)
 
