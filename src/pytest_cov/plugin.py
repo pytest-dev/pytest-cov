@@ -73,7 +73,7 @@ def pytest_addoption(parser):
     group.addoption('--no-cov', action='store_true', default=False,
                     help='Disable coverage report completely (useful for debuggers). '
                          'Default: False')
-    group.addoption('--cov-fail-under', action='store', metavar='MIN', type=int,
+    group.addoption('--cov-fail-under', action='store', metavar='MIN', type=float,
                     help='Fail if the total coverage is less than MIN.')
     group.addoption('--cov-append', action='store_true', default=False,
                     help='Do not delete coverage but append to current. '
@@ -263,20 +263,24 @@ class CovPlugin(object):
 
         terminalreporter.write('\n' + self.cov_report.getvalue() + '\n')
 
-        if self.options.cov_fail_under is not None and self.options.cov_fail_under > 0:
-            if self.cov_total < self.options.cov_fail_under:
+        fail_under = self.options.cov_fail_under
+        if fail_under is not None and fail_under > 0:
+            str_fail_under = str(
+                round(fail_under, 2) if fail_under % 1 else int(fail_under)
+            )
+            if self.cov_total < fail_under:
                 markup = {'red': True, 'bold': True}
                 message = (
-                    'FAIL Required test coverage of %d%% not '
+                    'FAIL Required test coverage of %s%% not '
                     'reached. Total coverage: %.2f%%\n'
-                    % (self.options.cov_fail_under, self.cov_total)
+                    % (str_fail_under, self.cov_total)
                 )
             else:
                 markup = {'green': True}
                 message = (
-                    'Required test coverage of %d%% '
+                    'Required test coverage of %s%% '
                     'reached. Total coverage: %.2f%%\n'
-                    % (self.options.cov_fail_under, self.cov_total)
+                    % (str_fail_under, self.cov_total)
                 )
             terminalreporter.write(message, **markup)
 
