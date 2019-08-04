@@ -1658,7 +1658,11 @@ def test_disabled_output(testdir):
                                '--cov-report=',
                                script)
 
-    assert 'coverage' not in result.stdout.str()
+    stdout = result.stdout.str()
+    # We don't want the path to the executable to fail the test if we happen
+    # to put the project in a directory with "coverage" in it.
+    stdout = stdout.replace(sys.executable, "<SYS.EXECUTABLE>")
+    assert 'coverage' not in stdout
     assert result.ret == 0
 
 
