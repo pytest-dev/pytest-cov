@@ -23,12 +23,10 @@ install:
   - echo PyPy installed
   - pypy --version
 
-  # Upgrade virtualenv for e.g. more-itertools to be handled properly.
-  - C:\Python35\python -m pip install -U virtualenv==16.7.2
   - C:\Python35\python -m pip install tox
 
 test_script:
-  - C:\Python35\python -m tox
+  - C:\Python35\python -m tox -v
 
 on_failure:
   - ps: dir "env:"
