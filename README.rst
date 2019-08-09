@@ -101,20 +101,37 @@ Under certain scenarios a stray ``.pth`` file may be left around in site-package
 Usage
 =====
 
+With a repository structure such as:
+
 ::
 
-    pytest --cov=myproj tests/
+   ─── repository
+       ├── myproj
+       │   ├── __init__.py
+       │   ├── feature4286.py
+       │   └── myproj.py
+       └── tests
+           ├── __init__.py
+           └── test_myproj.py
 
-Would produce a report like::
+Test the coverage of your project with:
 
-    -------------------- coverage: ... ---------------------
-    Name                 Stmts   Miss  Cover
-    ----------------------------------------
-    myproj/__init__          2      0   100%
-    myproj/myproj          257     13    94%
-    myproj/feature4286      94      7    92%
-    ----------------------------------------
-    TOTAL                  353     20    94%
+::
+
+   pytest --cov=myproj tests/
+
+Would produce a report like:
+
+::
+
+       -------------------- coverage: ... ---------------------
+       Name                 Stmts   Miss  Cover
+       ----------------------------------------
+       myproj/__init__          2      0   100%
+       myproj/myproj          257     13    94%
+       myproj/feature4286      94      7    92%
+       ----------------------------------------
+       TOTAL                  353     20    94%
 
 Documentation
 =============
