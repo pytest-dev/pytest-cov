@@ -263,9 +263,14 @@ class DistMaster(CovController):
                                     data_suffix=data_suffix,
                                     config_file=self.cov_config)
             cov.start()
-            data = CoverageData()
-            data.read_fileobj(StringIO(output['cov_worker_data']))
-            cov.data.update(data)
+            if coverage.version_info < (5, 0):
+                data = CoverageData()
+                data.read_fileobj(StringIO(output['cov_worker_data']))
+                cov.data.update(data)
+            else:
+                data = CoverageData(no_disk=True)
+                data.loads(output['cov_worker_data'])
+                cov.get_data().update(data)
             cov.stop()
             cov.save()
             path = output['cov_worker_path']
@@ -341,12 +346,17 @@ class DistWorker(CovController):
             # it on the master node.
 
             # Send all the data to the master over the channel.
-            buff = StringIO()
-            self.cov.data.write_fileobj(buff)
+            if coverage.version_info < (5, 0):
+                buff = StringIO()
+                self.cov.data.write_fileobj(buff)
+                data = buff.getvalue()
+            else:
+                data = self.cov.get_data().dumps()
+
             workeroutput(self.config).update({
                 'cov_worker_path': self.topdir,
                 'cov_worker_node_id': self.nodeid,
-                'cov_worker_data': buff.getvalue(),
+                'cov_worker_data': data,
             })
 
     def summary(self, stream):
