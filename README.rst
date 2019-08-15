@@ -139,9 +139,9 @@ examine it.
 Limitations
 ===========
 
-For distributed testing the slaves must have the pytest-cov package installed.  This is needed since
+For distributed testing the workers must have the pytest-cov package installed.  This is needed since
 the plugin must be registered through setuptools for pytest to start the plugin on the
-slave.
+worker.
 
 For subprocess measurement environment variables must make it from the main process to the
 subprocess.  The python used by the subprocess must have pytest-cov installed.  The subprocess must
