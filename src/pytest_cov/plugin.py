@@ -170,7 +170,7 @@ class CovPlugin(object):
             self.options.cov_fail_under = cov_config.fail_under
 
     def _is_worker(self, session):
-        return hasattr(session.config, 'workerinput')
+        return compat.workerinput(session.config, None) is not None
 
     def pytest_sessionstart(self, session):
         """At session start determine our implementation and delegate to it."""
@@ -182,8 +182,10 @@ class CovPlugin(object):
 
         self.pid = os.getpid()
         if self._is_worker(session):
-            nodeid = session.config.workerinput.get('workerid',
-                                                   getattr(session, 'nodeid'))
+            nodeid = (
+                compat.workerinput(session.config)
+                .get(compat.workerid, getattr(session, 'nodeid'))
+            )
             self.start(engine.DistWorker, session.config, nodeid)
         elif not self._started:
             self.start(engine.Central)

@@ -9,7 +9,7 @@ import coverage
 from coverage.data import CoverageData
 
 from .embed import cleanup
-from .compat import StringIO
+from .compat import StringIO, workeroutput, workerinput
 
 
 class CovController(object):
@@ -207,26 +207,29 @@ class DistMaster(CovController):
     def configure_node(self, node):
         """Workers need to know if they are collocated and what files have moved."""
 
-        node.workerinput['cov_master_host'] = socket.gethostname()
-        node.workerinput['cov_master_topdir'] = self.topdir
-        node.workerinput['cov_master_rsync_roots'] = [str(root) for root in node.nodemanager.roots]
+        workerinput(node).update({
+            'cov_master_host': socket.gethostname(),
+            'cov_master_topdir': self.topdir,
+            'cov_master_rsync_roots': [str(root) for root in node.nodemanager.roots],
+        })
 
     def testnodedown(self, node, error):
         """Collect data file name from worker."""
 
         # If worker doesn't return any data then it is likely that this
         # plugin didn't get activated on the worker side.
-        if not (hasattr(node, 'workeroutput') and 'cov_worker_node_id' in node.workeroutput):
+        output = workeroutput(node, {})
+        if 'cov_worker_node_id' not in output:
             self.failed_workers.append(node)
             return
 
         # If worker is not collocated then we must save the data file
         # that it returns to us.
-        if 'cov_worker_data' in node.workeroutput:
+        if 'cov_worker_data' in output:
             data_suffix = '%s.%s.%06d.%s' % (
                 socket.gethostname(), os.getpid(),
                 random.randint(0, 999999),
-                node.workeroutput['cov_worker_node_id']
+                output['cov_worker_node_id']
                 )
 
             cov = coverage.Coverage(source=self.cov_source,
@@ -235,11 +238,11 @@ class DistMaster(CovController):
                                     config_file=self.cov_config)
             cov.start()
             data = CoverageData()
-            data.read_fileobj(StringIO(node.workeroutput['cov_worker_data']))
+            data.read_fileobj(StringIO(output['cov_worker_data']))
             cov.data.update(data)
             cov.stop()
             cov.save()
-            path = node.workeroutput['cov_worker_path']
+            path = output['cov_worker_path']
             self.cov.config.paths['source'].append(path)
 
         # Record the worker types that contribute to the data file.
@@ -266,12 +269,12 @@ class DistWorker(CovController):
         cleanup()
 
         # Determine whether we are collocated with master.
-        self.is_collocated = (socket.gethostname() == self.config.workerinput['cov_master_host'] and
-                              self.topdir == self.config.workerinput['cov_master_topdir'])
+        self.is_collocated = (socket.gethostname() == workerinput(self.config)['cov_master_host'] and
+                              self.topdir == workerinput(self.config)['cov_master_topdir'])
 
         # If we are not collocated then rewrite master paths to worker paths.
         if not self.is_collocated:
-            master_topdir = self.config.workerinput['cov_master_topdir']
+            master_topdir = workerinput(self.config)['cov_master_topdir']
             worker_topdir = self.topdir
             if self.cov_source is not None:
                 self.cov_source = [source.replace(master_topdir, worker_topdir)
@@ -303,7 +306,7 @@ class DistWorker(CovController):
 
             # If we are collocated then just inform the master of our
             # data file to indicate that we have finished.
-            self.config.workeroutput['cov_worker_node_id'] = self.nodeid
+            workeroutput(self.config)['cov_worker_node_id'] = self.nodeid
         else:
             self.cov.combine()
             self.cov.save()
@@ -312,11 +315,13 @@ class DistWorker(CovController):
             # it on the master node.
 
             # Send all the data to the master over the channel.
-            self.config.workeroutput['cov_worker_path'] = self.topdir
-            self.config.workeroutput['cov_worker_node_id'] = self.nodeid
             buff = StringIO()
             self.cov.data.write_fileobj(buff)
-            self.config.workeroutput['cov_worker_data'] = buff.getvalue()
+            workeroutput(self.config).update({
+                'cov_worker_path': self.topdir,
+                'cov_worker_node_id': self.nodeid,
+                'cov_worker_data': buff.getvalue(),
+            })
 
     def summary(self, stream):
         """Only the master reports so do nothing."""
