@@ -29,7 +29,7 @@ class CovController(object):
         self.combining_cov = None
         self.data_file = None
         self.node_descs = set()
-        self.failed_slaves = []
+        self.failed_workers = []
         self.topdir = os.getcwd()
 
     def pause(self):
@@ -131,12 +131,12 @@ class CovController(object):
             total = self.cov.xml_report(ignore_errors=True, outfile=self.cov_report['xml'])
             stream.write('Coverage XML written to file %s\n' % self.cov.config.xml_output)
 
-        # Report on any failed slaves.
-        if self.failed_slaves:
-            self.sep(stream, '-', 'coverage: failed slaves')
-            stream.write('The following slaves failed to return coverage data, '
-                         'ensure that pytest-cov is installed on these slaves.\n')
-            for node in self.failed_slaves:
+        # Report on any failed workers.
+        if self.failed_workers:
+            self.sep(stream, '-', 'coverage: failed workers')
+            stream.write('The following workers failed to return coverage data, '
+                         'ensure that pytest-cov is installed on these workers.\n')
+            for node in self.failed_workers:
                 stream.write('%s\n' % node.gateway.id)
 
         return total
@@ -205,28 +205,28 @@ class DistMaster(CovController):
         self.cov.config.paths['source'] = [self.topdir]
 
     def configure_node(self, node):
-        """Slaves need to know if they are collocated and what files have moved."""
+        """Workers need to know if they are collocated and what files have moved."""
 
-        node.slaveinput['cov_master_host'] = socket.gethostname()
-        node.slaveinput['cov_master_topdir'] = self.topdir
-        node.slaveinput['cov_master_rsync_roots'] = [str(root) for root in node.nodemanager.roots]
+        node.workerinput['cov_master_host'] = socket.gethostname()
+        node.workerinput['cov_master_topdir'] = self.topdir
+        node.workerinput['cov_master_rsync_roots'] = [str(root) for root in node.nodemanager.roots]
 
     def testnodedown(self, node, error):
-        """Collect data file name from slave."""
+        """Collect data file name from worker."""
 
-        # If slave doesn't return any data then it is likely that this
-        # plugin didn't get activated on the slave side.
-        if not (hasattr(node, 'slaveoutput') and 'cov_slave_node_id' in node.slaveoutput):
-            self.failed_slaves.append(node)
+        # If worker doesn't return any data then it is likely that this
+        # plugin didn't get activated on the worker side.
+        if not (hasattr(node, 'workeroutput') and 'cov_worker_node_id' in node.workeroutput):
+            self.failed_workers.append(node)
             return
 
-        # If slave is not collocated then we must save the data file
+        # If worker is not collocated then we must save the data file
         # that it returns to us.
-        if 'cov_slave_data' in node.slaveoutput:
+        if 'cov_worker_data' in node.workeroutput:
             data_suffix = '%s.%s.%06d.%s' % (
                 socket.gethostname(), os.getpid(),
                 random.randint(0, 999999),
-                node.slaveoutput['cov_slave_node_id']
+                node.workeroutput['cov_worker_node_id']
                 )
 
             cov = coverage.Coverage(source=self.cov_source,
@@ -235,14 +235,14 @@ class DistMaster(CovController):
                                     config_file=self.cov_config)
             cov.start()
             data = CoverageData()
-            data.read_fileobj(StringIO(node.slaveoutput['cov_slave_data']))
+            data.read_fileobj(StringIO(node.workeroutput['cov_worker_data']))
             cov.data.update(data)
             cov.stop()
             cov.save()
-            path = node.slaveoutput['cov_slave_path']
+            path = node.workeroutput['cov_worker_path']
             self.cov.config.paths['source'].append(path)
 
-        # Record the slave types that contribute to the data file.
+        # Record the worker types that contribute to the data file.
         rinfo = node.gateway._rinfo()
         node_desc = self.get_node_desc(rinfo.platform, rinfo.version_info)
         self.node_descs.add(node_desc)
@@ -259,24 +259,24 @@ class DistMaster(CovController):
         self.cov.save()
 
 
-class DistSlave(CovController):
-    """Implementation for distributed slaves."""
+class DistWorker(CovController):
+    """Implementation for distributed workers."""
 
     def start(self):
         cleanup()
 
         # Determine whether we are collocated with master.
-        self.is_collocated = (socket.gethostname() == self.config.slaveinput['cov_master_host'] and
-                              self.topdir == self.config.slaveinput['cov_master_topdir'])
+        self.is_collocated = (socket.gethostname() == self.config.workerinput['cov_master_host'] and
+                              self.topdir == self.config.workerinput['cov_master_topdir'])
 
-        # If we are not collocated then rewrite master paths to slave paths.
+        # If we are not collocated then rewrite master paths to worker paths.
         if not self.is_collocated:
-            master_topdir = self.config.slaveinput['cov_master_topdir']
-            slave_topdir = self.topdir
+            master_topdir = self.config.workerinput['cov_master_topdir']
+            worker_topdir = self.topdir
             if self.cov_source is not None:
-                self.cov_source = [source.replace(master_topdir, slave_topdir)
+                self.cov_source = [source.replace(master_topdir, worker_topdir)
                                    for source in self.cov_source]
-            self.cov_config = self.cov_config.replace(master_topdir, slave_topdir)
+            self.cov_config = self.cov_config.replace(master_topdir, worker_topdir)
 
         # Erase any previous data and start coverage.
         self.cov = coverage.Coverage(source=self.cov_source,
@@ -303,7 +303,7 @@ class DistSlave(CovController):
 
             # If we are collocated then just inform the master of our
             # data file to indicate that we have finished.
-            self.config.slaveoutput['cov_slave_node_id'] = self.nodeid
+            self.config.workeroutput['cov_worker_node_id'] = self.nodeid
         else:
             self.cov.combine()
             self.cov.save()
@@ -312,11 +312,11 @@ class DistSlave(CovController):
             # it on the master node.
 
             # Send all the data to the master over the channel.
-            self.config.slaveoutput['cov_slave_path'] = self.topdir
-            self.config.slaveoutput['cov_slave_node_id'] = self.nodeid
+            self.config.workeroutput['cov_worker_path'] = self.topdir
+            self.config.workeroutput['cov_worker_node_id'] = self.nodeid
             buff = StringIO()
             self.cov.data.write_fileobj(buff)
-            self.config.slaveoutput['cov_slave_data'] = buff.getvalue()
+            self.config.workeroutput['cov_worker_data'] = buff.getvalue()
 
     def summary(self, stream):
         """Only the master reports so do nothing."""
