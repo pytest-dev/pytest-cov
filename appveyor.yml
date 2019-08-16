@@ -15,10 +15,7 @@ init:
   - ps: echo $env:TOXENV
   - ps: ls C:\Python*
 install:
-  # install pypy using choco (redirect to a file and write to console in case
-  # choco install returns non-zero, because choco install python.pypy is too
-  # noisy)
-  - choco install python.pypy > pypy-inst.log 2>&1 || (type pypy-inst.log & exit /b 1)
+  - choco install --no-progress python.pypy
   - set PATH=C:\tools\pypy\pypy;%PATH% # so tox can find pypy
   - echo PyPy installed
   - pypy --version
