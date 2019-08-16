@@ -104,7 +104,7 @@ class CovPlugin(object):
 
     Delegates all work to a particular implementation based on whether
     this test process is centralised, a distributed master or a
-    distributed slave.
+    distributed worker.
     """
 
     def __init__(self, options, pluginmanager, start=True):
@@ -143,7 +143,7 @@ class CovPlugin(object):
         elif start:
             self.start(engine.Central)
 
-        # slave is started in pytest hook
+        # worker is started in pytest hook
 
     def start(self, controller_cls, config=None, nodeid=None):
 
@@ -169,8 +169,8 @@ class CovPlugin(object):
         if self.options.cov_fail_under is None and hasattr(cov_config, 'fail_under'):
             self.options.cov_fail_under = cov_config.fail_under
 
-    def _is_slave(self, session):
-        return hasattr(session.config, 'slaveinput')
+    def _is_worker(self, session):
+        return hasattr(session.config, 'workerinput')
 
     def pytest_sessionstart(self, session):
         """At session start determine our implementation and delegate to it."""
@@ -181,10 +181,10 @@ class CovPlugin(object):
             return
 
         self.pid = os.getpid()
-        if self._is_slave(session):
-            nodeid = session.config.slaveinput.get('slaveid',
+        if self._is_worker(session):
+            nodeid = session.config.workerinput.get('workerid',
                                                    getattr(session, 'nodeid'))
-            self.start(engine.DistSlave, session.config, nodeid)
+            self.start(engine.DistWorker, session.config, nodeid)
         elif not self._started:
             self.start(engine.Central)
 
@@ -228,7 +228,7 @@ class CovPlugin(object):
         if self.cov_controller is not None:
             self.cov_controller.finish()
 
-        if not self._is_slave(session) and self._should_report():
+        if not self._is_worker(session) and self._should_report():
             try:
                 self.cov_total = self.cov_controller.summary(self.cov_report)
             except CoverageException as exc:
