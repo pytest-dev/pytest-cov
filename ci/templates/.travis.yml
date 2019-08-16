@@ -18,7 +18,7 @@ jobs:
     - stage: tests
 {% for env in tox_environments %}
     {%+ if not loop.first %}- {% else %}  {% endif -%}
-      env: TOXENV={{ env }}{% if 'cover' in env %},report,coveralls,codecov{% endif -%}{{ '' }}
+      env: TOXENV={{ env }}
     {% if env.startswith("pypy-") %}
       python: 'pypy2.7-6.0'
     {% elif env.startswith("pypy3-") %}
