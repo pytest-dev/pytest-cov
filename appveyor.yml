@@ -6,10 +6,10 @@ cache:
 environment:
   matrix:
     - TOXENV: check
-    - TOXENV: 'py27-t310-x27-c45,py27-t43-x27-c45,py27-t44-x28-c45,py27-t45-x28-c45'
-    - TOXENV: 'py34-t310-x27-c45,py34-t43-x27-c45,py34-t44-x28-c45,py34-t45-x28-c45'
-    - TOXENV: 'py35-t310-x27-c45,py35-t43-x27-c45,py35-t44-x28-c45,py35-t45-x28-c45'
-    - TOXENV: 'pypy-t310-x27-c45,pypy-t43-x27-c45,pypy-t44-x28-c45,pypy-t45-x28-c45'
+    - TOXENV: 'py27-pytest310-xdist27-coverage45,py27-pytest43-xdist27-coverage45,py27-pytest44-xdist28-coverage45,py27-pytest45-xdist28-coverage45'
+    - TOXENV: 'py34-pytest310-xdist27-coverage45,py34-pytest43-xdist27-coverage45,py34-pytest44-xdist28-coverage45,py34-pytest45-xdist28-coverage45'
+    - TOXENV: 'py35-pytest310-xdist27-coverage45,py35-pytest43-xdist27-coverage45,py35-pytest44-xdist28-coverage45,py35-pytest45-xdist28-coverage45'
+    - TOXENV: 'pypy-pytest310-xdist27-coverage45,pypy-pytest43-xdist27-coverage45,pypy-pytest44-xdist28-coverage45,pypy-pytest45-xdist28-coverage45'
 
 init:
   - ps: echo $env:TOXENV
