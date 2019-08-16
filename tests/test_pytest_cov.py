@@ -23,8 +23,11 @@ except ImportError:
     from io import StringIO
 
 import pytest_cov.plugin
+from pytest_cov import compat
 
 coverage, platform, StrictVersion  # required for skipif mark on test_cov_min_from_coveragerc
+
+max_worker_restart_0 = "--max-" + compat.worker + "-restart=0"
 
 SCRIPT = '''
 import sys, helper
@@ -605,7 +608,7 @@ def test_dist_collocated(testdir, prop):
                                '--cov-report=term-missing',
                                '--dist=load',
                                '--tx=2*popen',
-                               '--max-worker-restart=0',
+                               max_worker_restart_0,
                                script, *prop.args)
 
     result.stdout.fnmatch_lines([
@@ -638,7 +641,7 @@ source =
                                '--tx=popen//chdir=%s' % dir2,
                                '--rsyncdir=%s' % script.basename,
                                '--rsyncdir=.coveragerc',
-                               '--max-worker-restart=0', '-s',
+                               max_worker_restart_0, '-s',
                                script, *prop.args)
 
     result.stdout.fnmatch_lines([
@@ -672,7 +675,7 @@ source =
                                '--tx=popen//chdir=%s' % dir2,
                                '--rsyncdir=%s' % script.basename,
                                '--rsyncdir=.coveragerc',
-                               '--max-worker-restart=0', '-s',
+                               max_worker_restart_0, '-s',
                                script, *prop.args)
 
     result.stdout.fnmatch_lines([
@@ -784,7 +787,7 @@ def test_dist_subprocess_collocated(testdir):
                                '--cov-report=term-missing',
                                '--dist=load',
                                '--tx=2*popen',
-                               '--max-worker-restart=0',
+                               max_worker_restart_0,
                                parent_script)
 
     result.stdout.fnmatch_lines([
@@ -819,7 +822,7 @@ source =
                                '--rsyncdir=%s' % child_script,
                                '--rsyncdir=%s' % parent_script,
                                '--rsyncdir=.coveragerc',
-                               '--max-worker-restart=0',
+                               max_worker_restart_0,
                                parent_script)
 
     result.stdout.fnmatch_lines([
@@ -884,7 +887,7 @@ def test_dist_missing_data(testdir):
                                '--cov-report=term-missing',
                                '--dist=load',
                                '--tx=popen//python=%s' % exe,
-                               '--max-worker-restart=0',
+                               max_worker_restart_0,
                                script)
 
     result.stdout.fnmatch_lines([
@@ -1421,7 +1424,7 @@ def test_cover_conftest_dist(testdir):
                                '--cov-report=term-missing',
                                '--dist=load',
                                '--tx=2*popen',
-                               '--max-worker-restart=0',
+                               max_worker_restart_0,
                                script)
     assert result.ret == 0
     result.stdout.fnmatch_lines([CONF_RESULT])
@@ -1510,7 +1513,7 @@ def test_coveragerc_dist(testdir):
                                '--cov=%s' % script.dirpath(),
                                '--cov-report=term-missing',
                                '-n', '2',
-                               '--max-worker-restart=0',
+                               max_worker_restart_0,
                                script)
     assert result.ret == 0
     result.stdout.fnmatch_lines(
@@ -1706,7 +1709,7 @@ data_file = %s
     result = testdir.runpytest('-v',
                                '--cov=%s' % script.dirpath(),
                                '-n', '1',
-                               '--max-worker-restart=0',
+                               max_worker_restart_0,
                                script)
     assert result.ret == 0
     assert glob.glob(str(testdir.tmpdir.join('some/special/place/coverage-data*')))
