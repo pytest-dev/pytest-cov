@@ -859,6 +859,7 @@ def test_invalid_coverage_source(testdir):
 @pytest.mark.skipif("'dev' in pytest.__version__")
 @pytest.mark.skipif('sys.platform == "win32" and platform.python_implementation() == "PyPy"')
 def test_dist_missing_data(testdir):
+    """Test failure when using a worker without pytest-cov installed."""
     venv_path = os.path.join(str(testdir.tmpdir), 'venv')
     virtualenv.create_environment(venv_path)
     if sys.platform == 'win32':
@@ -887,10 +888,10 @@ def test_dist_missing_data(testdir):
                                '--max-slave-restart=0',
                                script)
 
+    assert result.ret == 0
     result.stdout.fnmatch_lines([
         '*- coverage: failed slaves -*'
     ])
-    assert result.ret == 0
 
 
 def test_funcarg(testdir):
