@@ -1,6 +1,12 @@
 Changelog
 =========
 
+2.7.2.dev0 (unreleased)
+-----------------------
+
+* Match pytest-xdist master/worker terminology.
+  Contributed in `#321 <https://github.com/pytest-dev/pytest-cov/pull/321>`_
+
 2.7.1 (2019-05-03)
 ------------------
 
