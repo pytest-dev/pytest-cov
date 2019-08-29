@@ -41,6 +41,13 @@ def validate_report(arg):
     return values
 
 
+def validate_fail_under(num_str):
+    try:
+        return int(num_str)
+    except ValueError:
+        return float(num_str)
+
+
 class StoreReport(argparse.Action):
     def __call__(self, parser, namespace, values, option_string=None):
         report_type, file = values
@@ -73,7 +80,8 @@ def pytest_addoption(parser):
     group.addoption('--no-cov', action='store_true', default=False,
                     help='Disable coverage report completely (useful for debuggers). '
                          'Default: False')
-    group.addoption('--cov-fail-under', action='store', metavar='MIN', type=float,
+    group.addoption('--cov-fail-under', action='store', metavar='MIN',
+                    type=validate_fail_under,
                     help='Fail if the total coverage is less than MIN.')
     group.addoption('--cov-append', action='store_true', default=False,
                     help='Do not delete coverage but append to current. '
@@ -265,25 +273,19 @@ class CovPlugin(object):
 
         terminalreporter.write('\n' + self.cov_report.getvalue() + '\n')
 
-        fail_under = self.options.cov_fail_under
-        if fail_under is not None and fail_under > 0:
-            str_fail_under = str(
-                round(fail_under, 2) if fail_under % 1 else int(fail_under)
+        if self.options.cov_fail_under is not None and self.options.cov_fail_under > 0:
+            failed = self.cov_total < self.options.cov_fail_under
+            markup = {'red': True, 'bold': True} if failed else {'green': True}
+            message = (
+                '{fail}Required test coverage of {required}% {reached}. '
+                'Total coverage: {actual:.2f}%\n'
+                .format(
+                    required=self.options.cov_fail_under,
+                    actual=self.cov_total,
+                    fail="FAIL " if failed else "",
+                    reached="not reached" if failed else "reached"
+                )
             )
-            if self.cov_total < fail_under:
-                markup = {'red': True, 'bold': True}
-                message = (
-                    'FAIL Required test coverage of %s%% not '
-                    'reached. Total coverage: %.2f%%\n'
-                    % (str_fail_under, self.cov_total)
-                )
-            else:
-                markup = {'green': True}
-                message = (
-                    'Required test coverage of %s%% '
-                    'reached. Total coverage: %.2f%%\n'
-                    % (str_fail_under, self.cov_total)
-                )
             terminalreporter.write(message, **markup)
 
     def pytest_runtest_setup(self, item):
