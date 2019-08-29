@@ -17,62 +17,64 @@ jobs:
     - env: TOXENV=docs
 
     - stage: tests
-      env: TOXENV=py27-t310-c45
+      env: TOXENV=py27-pytest310-xdist27-coverage45
       python: '2.7'
-    - env: TOXENV=py27-t43-c45
+    - env: TOXENV=py27-pytest43-xdist27-coverage45
       python: '2.7'
-    - env: TOXENV=py27-t44-c45
+    - env: TOXENV=py27-pytest44-xdist28-coverage45
       python: '2.7'
-    - env: TOXENV=py27-t45-c45
+    - env: TOXENV=py27-pytest45-xdist28-coverage45
       python: '2.7'
-    - env: TOXENV=py34-t310-c45
+    - env: TOXENV=py34-pytest310-xdist27-coverage45
       python: '3.4'
-    - env: TOXENV=py34-t43-c45
+    - env: TOXENV=py34-pytest43-xdist27-coverage45
       python: '3.4'
-    - env: TOXENV=py34-t44-c45
+    - env: TOXENV=py34-pytest44-xdist28-coverage45
       python: '3.4'
-    - env: TOXENV=py34-t45-c45
+    - env: TOXENV=py34-pytest45-xdist28-coverage45
       python: '3.4'
-    - env: TOXENV=py35-t310-c45
+    - env: TOXENV=py35-pytest310-xdist27-coverage45
       python: '3.5'
-    - env: TOXENV=py35-t43-c45
+    - env: TOXENV=py35-pytest43-xdist27-coverage45
       python: '3.5'
-    - env: TOXENV=py35-t44-c45
+    - env: TOXENV=py35-pytest44-xdist28-coverage45
       python: '3.5'
-    - env: TOXENV=py35-t45-c45
+    - env: TOXENV=py35-pytest45-xdist28-coverage45
       python: '3.5'
-    - env: TOXENV=py36-t310-c45
+    - env: TOXENV=py36-pytest310-xdist27-coverage45
       python: '3.6'
-    - env: TOXENV=py36-t43-c45
+    - env: TOXENV=py36-pytest43-xdist27-coverage45
       python: '3.6'
-    - env: TOXENV=py36-t44-c45
+    - env: TOXENV=py36-pytest44-xdist28-coverage45
       python: '3.6'
-    - env: TOXENV=py36-t45-c45
+    - env: TOXENV=py36-pytest45-xdist28-coverage45
       python: '3.6'
-    - env: TOXENV=py37-t310-c45
+    - env: TOXENV=py37-pytest310-xdist27-coverage45
       python: '3.7'
-    - env: TOXENV=py37-t43-c45
+    - env: TOXENV=py37-pytest43-xdist27-coverage45
       python: '3.7'
-    - env: TOXENV=py37-t44-c45
+    - env: TOXENV=py37-pytest44-xdist28-coverage45
       python: '3.7'
-    - env: TOXENV=py37-t45-c45
+    - env: TOXENV=py37-pytest45-xdist28-coverage45
       python: '3.7'
-    - env: TOXENV=pypy-t310-c45
+    - env: TOXENV=pypy-pytest310-xdist27-coverage45
       python: 'pypy2.7-6.0'
-    - env: TOXENV=pypy-t43-c45
+    - env: TOXENV=pypy-pytest43-xdist27-coverage45
       python: 'pypy2.7-6.0'
-    - env: TOXENV=pypy-t44-c45
+    - env: TOXENV=pypy-pytest44-xdist28-coverage45
       python: 'pypy2.7-6.0'
-    - env: TOXENV=pypy-t45-c45
+    - env: TOXENV=pypy-pytest45-xdist28-coverage45
       python: 'pypy2.7-6.0'
-    - env: TOXENV=pypy3-t310-c45
+    - env: TOXENV=pypy3-pytest310-xdist27-coverage45
       python: 'pypy3.5-6.0'
-    - env: TOXENV=pypy3-t43-c45
+    - env: TOXENV=pypy3-pytest43-xdist27-coverage45
       python: 'pypy3.5-6.0'
-    - env: TOXENV=pypy3-t44-c45
+    - env: TOXENV=pypy3-pytest44-xdist28-coverage45
       python: 'pypy3.5-6.0'
-    - env: TOXENV=pypy3-t45-c45
+    - env: TOXENV=pypy3-pytest45-xdist28-coverage45
       python: 'pypy3.5-6.0'
+    - env: TOXENV=py37-pytest310-xdist22-coverage45
+      python: '3.7'
 
     - stage: examples
       python: '3.6'

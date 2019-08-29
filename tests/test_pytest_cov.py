@@ -23,8 +23,11 @@ except ImportError:
     from io import StringIO
 
 import pytest_cov.plugin
+from pytest_cov import compat
 
 coverage, platform, StrictVersion  # required for skipif mark on test_cov_min_from_coveragerc
+
+max_worker_restart_0 = "--max-" + compat.worker + "-restart=0"
 
 SCRIPT = '''
 import sys, helper
@@ -605,7 +608,7 @@ def test_foo(foo):
     ])
 
     for line in chain(result.stdout.lines, result.stderr.lines):
-        assert 'The following slaves failed to return coverage data' not in line
+        assert 'The following workers failed to return coverage data' not in line
         assert 'INTERNALERROR' not in line
     assert result.ret == 0
 
@@ -619,7 +622,7 @@ def test_dist_collocated(testdir, prop):
                                '--cov-report=term-missing',
                                '--dist=load',
                                '--tx=2*popen',
-                               '--max-slave-restart=0',
+                               max_worker_restart_0,
                                script, *prop.args)
 
     result.stdout.fnmatch_lines([
@@ -652,7 +655,7 @@ source =
                                '--tx=popen//chdir=%s' % dir2,
                                '--rsyncdir=%s' % script.basename,
                                '--rsyncdir=.coveragerc',
-                               '--max-slave-restart=0', '-s',
+                               max_worker_restart_0, '-s',
                                script, *prop.args)
 
     result.stdout.fnmatch_lines([
@@ -686,7 +689,7 @@ source =
                                '--tx=popen//chdir=%s' % dir2,
                                '--rsyncdir=%s' % script.basename,
                                '--rsyncdir=.coveragerc',
-                               '--max-slave-restart=0', '-s',
+                               max_worker_restart_0, '-s',
                                script, *prop.args)
 
     result.stdout.fnmatch_lines([
@@ -798,7 +801,7 @@ def test_dist_subprocess_collocated(testdir):
                                '--cov-report=term-missing',
                                '--dist=load',
                                '--tx=2*popen',
-                               '--max-slave-restart=0',
+                               max_worker_restart_0,
                                parent_script)
 
     result.stdout.fnmatch_lines([
@@ -833,7 +836,7 @@ source =
                                '--rsyncdir=%s' % child_script,
                                '--rsyncdir=%s' % parent_script,
                                '--rsyncdir=.coveragerc',
-                               '--max-slave-restart=0',
+                               max_worker_restart_0,
                                parent_script)
 
     result.stdout.fnmatch_lines([
@@ -873,6 +876,7 @@ def test_invalid_coverage_source(testdir):
 @pytest.mark.skipif("'dev' in pytest.__version__")
 @pytest.mark.skipif('sys.platform == "win32" and platform.python_implementation() == "PyPy"')
 def test_dist_missing_data(testdir):
+    """Test failure when using a worker without pytest-cov installed."""
     venv_path = os.path.join(str(testdir.tmpdir), 'venv')
     virtualenv.create_environment(venv_path)
     if sys.platform == 'win32':
@@ -898,13 +902,13 @@ def test_dist_missing_data(testdir):
                                '--cov-report=term-missing',
                                '--dist=load',
                                '--tx=popen//python=%s' % exe,
-                               '--max-slave-restart=0',
+                               max_worker_restart_0,
                                script)
 
-    result.stdout.fnmatch_lines([
-        '*- coverage: failed slaves -*'
-    ])
     assert result.ret == 0
+    result.stdout.fnmatch_lines([
+        '*- coverage: failed workers -*'
+    ])
 
 
 def test_funcarg(testdir):
@@ -1435,7 +1439,7 @@ def test_cover_conftest_dist(testdir):
                                '--cov-report=term-missing',
                                '--dist=load',
                                '--tx=2*popen',
-                               '--max-slave-restart=0',
+                               max_worker_restart_0,
                                script)
     assert result.ret == 0
     result.stdout.fnmatch_lines([CONF_RESULT])
@@ -1524,7 +1528,7 @@ def test_coveragerc_dist(testdir):
                                '--cov=%s' % script.dirpath(),
                                '--cov-report=term-missing',
                                '-n', '2',
-                               '--max-slave-restart=0',
+                               max_worker_restart_0,
                                script)
     assert result.ret == 0
     result.stdout.fnmatch_lines(
@@ -1672,7 +1676,11 @@ def test_disabled_output(testdir):
                                '--cov-report=',
                                script)
 
-    assert 'coverage' not in result.stdout.str()
+    stdout = result.stdout.str()
+    # We don't want the path to the executable to fail the test if we happen
+    # to put the project in a directory with "coverage" in it.
+    stdout = stdout.replace(sys.executable, "<SYS.EXECUTABLE>")
+    assert 'coverage' not in stdout
     assert result.ret == 0
 
 
@@ -1716,7 +1724,7 @@ data_file = %s
     result = testdir.runpytest('-v',
                                '--cov=%s' % script.dirpath(),
                                '-n', '1',
-                               '--max-slave-restart=0',
+                               max_worker_restart_0,
                                script)
     assert result.ret == 0
     assert glob.glob(str(testdir.tmpdir.join('some/special/place/coverage-data*')))

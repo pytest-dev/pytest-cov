@@ -5,9 +5,9 @@ Distributed testing (xdist)
 "load" mode
 ===========
 
-Distributed testing with dist mode set to load will report on the combined coverage of all slaves.
-The slaves may be spread out over any number of hosts and each slave may be located anywhere on the
-file system.  Each slave will have its subprocesses measured.
+Distributed testing with dist mode set to "load" will report on the combined coverage of all workers.
+The workers may be spread out over any number of hosts and each worker may be located anywhere on the
+file system.  Each worker will have its subprocesses measured.
 
 Running distributed testing with dist mode set to load::
 
@@ -48,8 +48,8 @@ Shows a terminal report::
 "each" mode
 ===========
 
-Distributed testing with dist mode set to each will report on the combined coverage of all slaves.
-Since each slave is running all tests this allows generating a combined coverage report for multiple
+Distributed testing with dist mode set to each will report on the combined coverage of all workers.
+Since each worker is running all tests this allows generating a combined coverage report for multiple
 environments.
 
 Running distributed testing with dist mode set to each::

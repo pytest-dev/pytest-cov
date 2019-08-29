@@ -29,3 +29,4 @@ Authors
 * Samuel Giffard - https://github.com/Mulugruntz
 * Семён Марьясин - https://github.com/MarSoft
 * Alexander Shadchin - https://github.com/shadchin
+* Thomas Grainger - https://graingert.co.uk
