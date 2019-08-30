@@ -99,14 +99,18 @@ class CovController(object):
             out = '%s %s %s\n' % (s * sep_len, txt, s * (sep_len + sep_extra))
             stream.write(out)
 
-    def summary(self, stream):
+    def summary(self, cov_fail_under, stream):
         """Produce coverage reports."""
-        total = None
+        if self.cov_report:
+            self.__summary(self, stream)
 
-        if not self.cov_report:
+        def total(cfu):
             with _backup(self.cov, "config"):
-                return self.cov.report(show_missing=True, ignore_errors=True, file=_NullFile)
+                return self.cov.report(show_missing=True, ignore_errors=True, include=cfu.include, omit=cfu.omit, file=_NullFile)
 
+        return {cfu: total(cfu) for cfu in cov_fail_under}
+
+    def __summary(self, stream):
         # Output coverage section header.
         if len(self.node_descs) == 1:
             self.sep(stream, '-', 'coverage: %s' % ''.join(self.node_descs))
@@ -133,7 +137,7 @@ class CovController(object):
             skip_covered = isinstance(self.cov_report, dict) and 'skip-covered' in self.cov_report.values()
             options.update({'skip_covered': skip_covered or None})
             with _backup(self.cov, "config"):
-                total = self.cov.report(**options)
+                self.cov.report(**options)
 
         # Produce annotated source code report if wanted.
         if 'annotate' in self.cov_report:
@@ -145,7 +149,7 @@ class CovController(object):
             # Coverage.annotate don't return any total and we need it for --cov-fail-under.
 
             with _backup(self.cov, "config"):
-                total = self.cov.report(ignore_errors=True, file=_NullFile)
+                self.cov.report(ignore_errors=True, file=_NullFile)
             if annotate_dir:
                 stream.write('Coverage annotated source written to dir %s\n' % annotate_dir)
             else:
@@ -155,17 +159,15 @@ class CovController(object):
         if 'html' in self.cov_report:
             output = self.cov_report['html']
             with _backup(self.cov, "config"):
-                total = self.cov.html_report(ignore_errors=True, directory=output)
+                self.cov.html_report(ignore_errors=True, directory=output)
             stream.write('Coverage HTML written to dir %s\n' % (self.cov.config.html_dir if output is None else output))
 
         # Produce xml report if wanted.
         if 'xml' in self.cov_report:
             output = self.cov_report['xml']
             with _backup(self.cov, "config"):
-                total = self.cov.xml_report(ignore_errors=True, outfile=output)
+                self.cov.xml_report(ignore_errors=True, outfile=output)
             stream.write('Coverage XML written to file %s\n' % (self.cov.config.xml_output if output is None else output))
-
-        return total
 
 
 class Central(CovController):

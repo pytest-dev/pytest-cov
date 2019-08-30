@@ -44,11 +44,56 @@ def validate_report(arg):
     return values
 
 
-def validate_fail_under(num_str):
-    try:
-        return int(num_str)
-    except ValueError:
-        return float(num_str)
+class FailUnder(object):
+    @staticmethod
+    def __number(num_str):
+        if num_str.endswith('%'):
+            num_str = num_str[:-1]
+        try:
+            return int(num_str)
+        except ValueError:
+            return float(num_str)
+
+    @classmethod
+    def parse(cls, unparsed):
+        items = iter(unparsed.split(":"))
+        limit = cls.__number(next(items, None))
+
+        include = []
+        omit = []
+        for item in items:
+            if item.startswith("-"):
+                omit.append(item[1:])
+                continue
+            if item.startswith("+"):
+                include.append(item[1:])
+                continue
+            include.append(item)
+
+        return cls(
+            limit=limit,
+            include=include or None,
+            omit=omit or None,
+        )
+
+    @classmethod
+    def normalize(cls, unparsed):
+        return str(cls.parse(unparsed))
+
+    def __str__(self):
+        return ":".join(
+            ['{}%'.format(self.limit)]
+            + ['+{}'.format(v) for v in (self.include or [])]
+            + ['-{}'.format(v) for v in (self.omit or [])]
+        )
+
+    def __repr__(self):
+        return "FailUnder.parse({})".format(self)
+
+    def __init__(self, limit, include=None, omit=None):
+        self.limit = limit
+        self.include = include
+        self.omit = omit
 
 
 def validate_context(arg):
@@ -91,8 +136,7 @@ def pytest_addoption(parser):
     group.addoption('--no-cov', action='store_true', default=False,
                     help='Disable coverage report completely (useful for debuggers). '
                          'Default: False')
-    group.addoption('--cov-fail-under', action='store', metavar='MIN',
-                    type=validate_fail_under,
+    group.addoption('--cov-fail-under', nargs="?", action='append', default=[], metavar='MIN', type=FailUnder.normalize,
                     help='Fail if the total coverage is less than MIN.')
     group.addoption('--cov-append', action='store_true', default=False,
                     help='Do not delete coverage but append to current. '
@@ -141,11 +185,13 @@ class CovPlugin(object):
         self.pid = None
         self.cov_controller = None
         self.cov_report = compat.StringIO()
-        self.cov_total = None
+        self.cov_totals = None
         self.failed = False
         self._started = False
         self._disabled = False
         self.options = options
+
+        self._fail_under = [FailUnder.parse(v) for v in getattr(self.options, 'cov_fail_under', [])]
 
         is_dist = (getattr(options, 'numprocesses', False) or
                    getattr(options, 'distload', False) or
@@ -188,8 +234,8 @@ class CovPlugin(object):
         self.cov_controller.start()
         self._started = True
         cov_config = self.cov_controller.cov.config
-        if self.options.cov_fail_under is None and hasattr(cov_config, 'fail_under'):
-            self.options.cov_fail_under = cov_config.fail_under
+        if not self._fail_under and hasattr(cov_config, 'fail_under'):
+            self._fail_under = [FailUnder(limit=cov_config.fail_under)]
 
     def _is_worker(self, session):
         return compat.workerinput(session.config, None) is not None
@@ -237,8 +283,8 @@ class CovPlugin(object):
         return not (self.failed and self.options.no_cov_on_fail)
 
     def _failed_cov_total(self):
-        cov_fail_under = self.options.cov_fail_under
-        return cov_fail_under is not None and self.cov_total < cov_fail_under
+        totals = self.cov_totals
+        return any(totals.get(cfu, 0) < cfu.limit for cfu in self._fail_under)
 
     # we need to wrap pytest_runtestloop. by the time pytest_sessionfinish
     # runs, it's too late to set testsfailed
@@ -257,7 +303,10 @@ class CovPlugin(object):
 
         if not self._is_worker(session) and self._should_report():
             try:
-                self.cov_total = self.cov_controller.summary(self.cov_report)
+                self.cov_totals = self.cov_controller.summary(
+                    self._fail_under,
+                    self.cov_report,
+                )
             except CoverageException as exc:
                 message = 'Failed to generate report: %s\n' % exc
                 session.config.pluginmanager.getplugin("terminalreporter").write(
@@ -266,8 +315,8 @@ class CovPlugin(object):
                     warnings.warn(pytest.PytestWarning(message))
                 else:
                     session.config.warn(code='COV-2', message=message)
-                self.cov_total = 0
-            assert self.cov_total is not None, 'Test coverage should never be `None`'
+                self.cov_totals = {}
+            assert self.cov_totals is not None, 'Test coverage should never be `None`'
             if self._failed_cov_total():
                 # make sure we get the EXIT_TESTSFAILED exit code
                 compat_session.testsfailed += 1
@@ -284,21 +333,24 @@ class CovPlugin(object):
         if self.cov_controller is None:
             return
 
-        if self.cov_total is None:
+        if self.cov_totals is None:
             # we shouldn't report, or report generation failed (error raised above)
             return
 
         terminalreporter.write('\n' + self.cov_report.getvalue() + '\n')
+        for cfu in self._fail_under:
+            if cfu.limit <= 0:
+                continue
 
-        if self.options.cov_fail_under is not None and self.options.cov_fail_under > 0:
-            failed = self.cov_total < self.options.cov_fail_under
+            total = self.cov_totals.get(cfu, 0)
+            failed = total < cfu.limit
             markup = {'red': True, 'bold': True} if failed else {'green': True}
             message = (
-                '{fail}Required test coverage of {required}% {reached}. '
+                '{fail}Required test coverage of {required} {reached}. '
                 'Total coverage: {actual:.2f}%\n'
                 .format(
-                    required=self.options.cov_fail_under,
-                    actual=self.cov_total,
+                    required=cfu,
+                    actual=total,
                     fail="FAIL " if failed else "",
                     reached="not reached" if failed else "reached"
                 )
