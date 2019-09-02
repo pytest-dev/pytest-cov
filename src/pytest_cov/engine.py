@@ -317,10 +317,6 @@ class DistWorker(CovController):
                                      branch=self.cov_branch,
                                      data_suffix=True,
                                      config_file=self.cov_config)
-        if self.cov_append:
-            self.cov.load()
-        else:
-            self.cov.erase()
         self.cov.start()
         self.set_env()
 
