@@ -12,6 +12,12 @@ from .embed import cleanup
 from .compat import StringIO, workeroutput, workerinput
 
 
+class _NullFile(object):
+    @staticmethod
+    def write(v):
+        pass
+
+
 class CovController(object):
     """Base class for different plugin implementations."""
 
@@ -85,9 +91,7 @@ class CovController(object):
         total = 0
 
         if not self.cov_report:
-            with open(os.devnull, 'w') as null:
-                total = self.cov.report(show_missing=True, ignore_errors=True, file=null)
-                return total
+            return self.cov.report(show_missing=True, ignore_errors=True, file=_NullFile)
 
         # Output coverage section header.
         if len(self.node_descs) == 1:
@@ -115,7 +119,7 @@ class CovController(object):
             self.cov.annotate(ignore_errors=True, directory=annotate_dir)
             # We need to call Coverage.report here, just to get the total
             # Coverage.annotate don't return any total and we need it for --cov-fail-under.
-            total = self.cov.report(ignore_errors=True, file=StringIO())
+            total = self.cov.report(ignore_errors=True, file=_NullFile)
             if annotate_dir:
                 stream.write('Coverage annotated source written to dir %s\n' % annotate_dir)
             else:
