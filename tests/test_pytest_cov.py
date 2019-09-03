@@ -542,7 +542,7 @@ def test_no_cov(testdir):
                                '-rw',
                                script)
     result.stdout.fnmatch_lines_random([
-        'WARNING: Coverage disabled via --no-cov switch!',
+        'NOTICE: Coverage disabled via --no-cov switch!',
         '*Coverage disabled via --no-cov switch!',
     ])
 
