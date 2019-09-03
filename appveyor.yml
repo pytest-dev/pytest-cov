@@ -15,20 +15,13 @@ init:
   - ps: echo $env:TOXENV
   - ps: ls C:\Python*
 install:
-  - ps: |
-      if ($env:TOXENV -notmatch 'pypy') {
-        choco install --no-progress python.pypy
-        $env:PATH = "C:\tools\pypy\pypy;$env:PATH"
-        pypy --version
-      }
-
-  # Upgrade virtualenv for e.g. more-itertools to be handled properly.
-  # Pin it to work around https://github.com/tox-dev/tox/issues/1389.
-  - C:\Python35\python -m pip install -U virtualenv==16.5.0
-  - C:\Python35\python -m pip install tox
+  - IF "%TOXENV:~0,4%" == "pypy" choco install --no-progress python.pypy
+  - SET PATH=C:\tools\pypy\pypy;%PATH%
+  - C:\Python37\python -m pip install -U "virtualenv>=16.5.0"
+  - C:\Python37\python -m pip install tox
 
 test_script:
-  - C:\Python35\python -m tox
+  - C:\Python37\python -m tox
 
 on_failure:
   - ps: dir "env:"
