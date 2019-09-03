@@ -1,7 +1,5 @@
 version: '{branch}-{build}'
 build: off
-cache:
-  - '%LOCALAPPDATA%\pip\Cache'
 environment:
   matrix:
     - TOXENV: check
