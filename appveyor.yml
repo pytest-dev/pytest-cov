@@ -4,16 +4,20 @@ build: off
 environment:
   matrix:
     - TOXENV: check
-    - TOXENV: 'py27-pytest310-xdist27-coverage45,py27-pytest43-xdist27-coverage45,py27-pytest44-xdist28-coverage45,py27-pytest45-xdist28-coverage45'
-    - TOXENV: 'py34-pytest310-xdist27-coverage45,py34-pytest43-xdist27-coverage45,py34-pytest44-xdist28-coverage45,py34-pytest45-xdist28-coverage45'
-    - TOXENV: 'py35-pytest310-xdist27-coverage45,py35-pytest43-xdist27-coverage45,py35-pytest44-xdist28-coverage45,py35-pytest45-xdist28-coverage45'
-    - TOXENV: 'pypy-pytest310-xdist27-coverage45,pypy-pytest43-xdist27-coverage45,pypy-pytest44-xdist28-coverage45,pypy-pytest45-xdist28-coverage45'
+    - TOXENV: 'py27-pytest310-xdist27-coverage45,py27-pytest46-xdist27-coverage45'
+    - TOXENV: 'py34-pytest310-xdist27-coverage45,py34-pytest46-xdist27-coverage45'
+    - TOXENV: 'py35-pytest310-xdist27-coverage45,py35-pytest46-xdist27-coverage45,py35-pytest46-xdist29-coverage45,py35-pytest51-xdist29-coverage45'
+    - TOXENV: 'py36-pytest310-xdist27-coverage45,py36-pytest46-xdist27-coverage45,py36-pytest46-xdist29-coverage45,py36-pytest51-xdist29-coverage45'
+    - TOXENV: 'py37-pytest310-xdist27-coverage45,py37-pytest46-xdist27-coverage45,py37-pytest46-xdist29-coverage45,py37-pytest51-xdist29-coverage45'
+    - TOXENV: 'pypy-pytest310-xdist27-coverage45,pypy-pytest46-xdist27-coverage45'
+    - TOXENV: 'pypy3-pytest310-xdist27-coverage45,pypy3-pytest46-xdist27-coverage45,pypy3-pytest46-xdist29-coverage45,pypy3-pytest51-xdist29-coverage45'
 
 init:
   - ps: echo $env:TOXENV
   - ps: ls C:\Python*
 install:
-  - IF "%TOXENV:~0,4%" == "pypy" choco install --no-progress python.pypy
+  - IF "%TOXENV:~0,5%" == "pypy-" choco install --no-progress python.pypy
+  - IF "%TOXENV:~0,5%" == "pypy3-" choco install --no-progress pypy3
   - SET PATH=C:\tools\pypy\pypy;%PATH%
   - C:\Python37\python -m pip install -U "virtualenv>=16.5.0"
   - C:\Python37\python -m pip install tox
