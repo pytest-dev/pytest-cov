@@ -4,6 +4,7 @@ from __future__ import absolute_import, print_function, unicode_literals
 
 import os
 import sys
+from collections import defaultdict
 from os.path import abspath
 from os.path import dirname
 from os.path import exists
@@ -50,9 +51,11 @@ if __name__ == "__main__":
     ]
     tox_environments = [line for line in tox_environments if line not in ['clean', 'report', 'docs', 'check']]
 
-    template_vars = {'tox_environments': tox_environments}
-    for py_ver in '27 34 35 py'.split():
-        template_vars['py%s_environments' % py_ver] = [x for x in tox_environments if x.startswith('py' + py_ver + '-')]
+    template_vars = defaultdict(list)
+    template_vars['tox_environments'] = tox_environments
+    for env in tox_environments:
+        first, _ = env.split('-', 1)
+        template_vars['%s_environments' % first].append(env)
 
     for name in os.listdir(join("ci", "templates")):
         with open(join(base_path, name), "w") as fh:
