@@ -95,7 +95,7 @@ def _prepare_cov_source(cov_source):
 
 @pytest.mark.tryfirst
 def pytest_load_initial_conftests(early_config, parser, args):
-    if early_config.known_args_namespace.cov_source:
+    if early_config.known_args_namespace.cov_source and not early_config.known_args_namespace.collectonly:
         plugin = CovPlugin(early_config.known_args_namespace, early_config.pluginmanager)
         early_config.pluginmanager.register(plugin, '_cov')
 
