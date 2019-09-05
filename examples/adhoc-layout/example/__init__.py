@@ -1,13 +1,13 @@
 
 import sys
 
-PY3 = sys.version_info[0] == 3
+PY2 = sys.version_info[0] == 2
 
 
-if PY3:
+if PY2:
     def add(a, b):
-        return a + b
+        return b + a
 
 else:
     def add(a, b):
-        return b + a
+        return a + b
