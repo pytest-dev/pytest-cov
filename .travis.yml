@@ -45,10 +45,6 @@ jobs:
       python: 'pypy3'
     - env: TOXENV=pypy3-pytest46-xdist27-coverage45
       python: 'pypy3'
-    - env: TOXENV=py35-pytest46-xdist29-coverage45
-      python: '3.5'
-    - env: TOXENV=py35-pytest51-xdist29-coverage45
-      python: '3.5'
     - env: TOXENV=py36-pytest46-xdist29-coverage45
       python: '3.6'
     - env: TOXENV=py36-pytest51-xdist29-coverage45
