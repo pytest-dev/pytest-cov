@@ -588,6 +588,7 @@ def test_fail(p):
     result = testdir.runpytest('-v',
                                '--cov=%s' % script.dirpath(),
                                '--cov-fail-under=100',
+                               '--cov-report=html',
                                script)
 
     result.stdout.fnmatch_lines_random([
@@ -912,6 +913,7 @@ def test_dist_missing_data(testdir):
     script = testdir.makepyfile(SCRIPT)
 
     result = testdir.runpytest('-v',
+                               '--assert=plain',
                                '--cov=%s' % script.dirpath(),
                                '--cov-report=term-missing',
                                '--dist=load',
@@ -1038,6 +1040,7 @@ def test_run_target():
 
 
 @pytest.mark.skipif('sys.platform == "win32"', reason="multiprocessing support is broken on Windows")
+@pytest.mark.skipif('sys.version_info[0] > 2 and platform.python_implementation() == "PyPy"', reason="broken on PyPy3")
 def test_multiprocessing_pool_close(testdir):
     pytest.importorskip('multiprocessing.util')
 
@@ -1295,6 +1298,7 @@ if __name__ == "__main__":
 ''')
 
     result = testdir.runpytest('-vv',
+                               '--assert=plain',
                                '--cov=%s' % script.dirpath(),
                                '--cov-report=term-missing',
                                script)
@@ -1333,6 +1337,7 @@ if __name__ == "__main__":
 ''')
 
     result = testdir.runpytest('-vv',
+                               '--assert=plain',
                                '--cov=%s' % script.dirpath(),
                                '--cov-report=term-missing',
                                script)
@@ -1375,6 +1380,7 @@ if __name__ == "__main__":
     ''')
 
     result = testdir.runpytest('-vv',
+                               '--assert=plain',
                                '--cov=%s' % script.dirpath(),
                                '--cov-report=term-missing',
                                script)
@@ -1631,6 +1637,7 @@ def test_dist_boxed(testdir):
     script = testdir.makepyfile(SCRIPT_SIMPLE)
 
     result = testdir.runpytest('-v',
+                               '--assert=plain',
                                '--cov=%s' % script.dirpath(),
                                '--boxed',
                                script)
@@ -1644,6 +1651,8 @@ def test_dist_boxed(testdir):
 
 
 @pytest.mark.skipif('sys.platform == "win32"')
+@pytest.mark.skipif('sys.version_info[0] > 2 and platform.python_implementation() == "PyPy"',
+                    reason="strange optimization on PyPy3")
 def test_dist_bare_cov(testdir):
     script = testdir.makepyfile(SCRIPT_SIMPLE)
 
@@ -1825,6 +1834,7 @@ def test_pth_failure(monkeypatch):
 def test_double_cov(testdir):
     script = testdir.makepyfile(SCRIPT_SIMPLE)
     result = testdir.runpytest('-v',
+                               '--assert=plain',
                                '--cov', '--cov=%s' % script.dirpath(),
                                script)
 
@@ -1839,6 +1849,7 @@ def test_double_cov(testdir):
 def test_double_cov2(testdir):
     script = testdir.makepyfile(SCRIPT_SIMPLE)
     result = testdir.runpytest('-v',
+                               '--assert=plain',
                                '--cov', '--cov',
                                script)
 
