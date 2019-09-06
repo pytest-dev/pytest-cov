@@ -17,7 +17,7 @@ init:
   - ps: ls C:\Python*
 install:
   - IF "%TOXENV:~0,5%" == "pypy-" choco install --no-progress python.pypy
-  - IF "%TOXENV:~0,5%" == "pypy3-" choco install --no-progress pypy3
+  - IF "%TOXENV:~0,6%" == "pypy3-" choco install --no-progress pypy3
   - SET PATH=C:\tools\pypy\pypy;%PATH%
   - C:\Python37\python -m pip install -U "virtualenv>=16.5.0"
   - C:\Python37\python -m pip install tox
