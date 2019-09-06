@@ -23,6 +23,8 @@ jobs:
       python: 'pypy'
     {% elif env.startswith("pypy3-") %}
       python: 'pypy3'
+    {% elif env.startswith("py38-") %}
+      python: '3.8-dev'
     {% else %}
       python: '{{ "{0[2]}.{0[3]}".format(env) }}'
     {% endif -%}
