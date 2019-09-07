@@ -114,6 +114,14 @@ class CovController(object):
             for node_desc in sorted(self.node_descs):
                 self.sep(stream, ' ', '%s' % node_desc)
 
+        # Report on any failed workers.
+        if self.failed_workers:
+            self.sep(stream, '-', 'coverage: failed workers')
+            stream.write('The following workers failed to return coverage data, '
+                         'ensure that pytest-cov is installed on these workers.\n')
+            for node in self.failed_workers:
+                stream.write('%s\n' % node.gateway.id)
+
         # Produce terminal report if wanted.
         if any(x in self.cov_report for x in ['term', 'term-missing']):
             options = {
@@ -156,14 +164,6 @@ class CovController(object):
             with _backup(self.cov, "config"):
                 self.cov.xml_report(ignore_errors=True, outfile=output)
             stream.write('Coverage XML written to file %s\n' % (self.cov.config.xml_output if output is None else output))
-
-        # Report on any failed workers.
-        if self.failed_workers:
-            self.sep(stream, '-', 'coverage: failed workers')
-            stream.write('The following workers failed to return coverage data, '
-                         'ensure that pytest-cov is installed on these workers.\n')
-            for node in self.failed_workers:
-                stream.write('%s\n' % node.gateway.id)
 
         return total
 
