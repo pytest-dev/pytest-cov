@@ -248,6 +248,25 @@ def test_annotate_output_dir(testdir):
     assert result.ret == 0
 
 
+def test_html(testdir):
+    script = testdir.makepyfile(SCRIPT)
+
+    result = testdir.runpytest('-v',
+                               '--cov=%s' % script.dirpath(),
+                               '--cov-report=html',
+                               script)
+
+    result.stdout.fnmatch_lines([
+        '*- coverage: platform *, python * -*',
+        'Coverage HTML written to dir htmlcov',
+        '*10 passed*',
+    ])
+    dest_dir = testdir.tmpdir.join('htmlcov')
+    assert dest_dir.check(dir=True)
+    assert dest_dir.join("index.html").check()
+    assert result.ret == 0
+
+
 def test_html_output_dir(testdir):
     script = testdir.makepyfile(SCRIPT)
 
@@ -284,6 +303,28 @@ def test_term_report_does_not_interact_with_html_output(testdir):
     dest_dir = testdir.tmpdir.join(DEST_DIR)
     assert dest_dir.check(dir=True)
     assert sorted(dest_dir.visit("**/*.html")) == [dest_dir.join("index.html"), dest_dir.join("test_funcarg_py.html")]
+    assert dest_dir.join("index.html").check()
+    assert result.ret == 0
+
+
+def test_html_configured_output_dir(testdir):
+    script = testdir.makepyfile(SCRIPT)
+    testdir.tmpdir.join('.coveragerc').write("""
+[html]
+directory = somewhere
+""")
+    result = testdir.runpytest('-v',
+                               '--cov=%s' % script.dirpath(),
+                               '--cov-report=html',
+                               script)
+
+    result.stdout.fnmatch_lines([
+        '*- coverage: platform *, python * -*',
+        'Coverage HTML written to dir somewhere',
+        '*10 passed*',
+    ])
+    dest_dir = testdir.tmpdir.join('somewhere')
+    assert dest_dir.check(dir=True)
     assert dest_dir.join("index.html").check()
     assert result.ret == 0
 
