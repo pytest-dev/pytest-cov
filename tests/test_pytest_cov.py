@@ -248,7 +248,7 @@ def test_annotate_output_dir(testdir):
     assert result.ret == 0
 
 
-def test_html_output_dir(testdir, prop):
+def test_html_output_dir(testdir):
     script = testdir.makepyfile(SCRIPT)
 
     result = testdir.runpytest('-v',
@@ -263,6 +263,27 @@ def test_html_output_dir(testdir, prop):
     ])
     dest_dir = testdir.tmpdir.join(DEST_DIR)
     assert dest_dir.check(dir=True)
+    assert dest_dir.join("index.html").check()
+    assert result.ret == 0
+
+
+def test_term_report_does_not_interact_with_html_output(testdir):
+    script = testdir.makepyfile(test_funcarg=SCRIPT_FUNCARG)
+
+    result = testdir.runpytest('-v',
+                               '--cov=%s' % script.dirpath(),
+                               '--cov-report=term-missing:skip-covered',
+                               '--cov-report=html:' + DEST_DIR,
+                               script)
+
+    result.stdout.fnmatch_lines([
+        '*- coverage: platform *, python * -*',
+        'Coverage HTML written to dir ' + DEST_DIR,
+        '*1 passed*',
+    ])
+    dest_dir = testdir.tmpdir.join(DEST_DIR)
+    assert dest_dir.check(dir=True)
+    assert sorted(dest_dir.visit("**/*.html")) == [dest_dir.join("index.html"), dest_dir.join("test_funcarg_py.html")]
     assert dest_dir.join("index.html").check()
     assert result.ret == 0
 
