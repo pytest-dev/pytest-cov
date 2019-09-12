@@ -1,5 +1,7 @@
 """Coverage controllers for use by pytest-cov and nose-cov."""
 
+import contextlib
+import copy
 import os
 import random
 import socket
@@ -16,6 +18,16 @@ class _NullFile(object):
     @staticmethod
     def write(v):
         pass
+
+
+@contextlib.contextmanager
+def _backup(obj, attr):
+    backup = getattr(obj, attr)
+    try:
+        setattr(obj, attr, copy.copy(backup))
+        yield
+    finally:
+        setattr(obj, attr, backup)
 
 
 class CovController(object):
@@ -91,7 +103,8 @@ class CovController(object):
         total = 0
 
         if not self.cov_report:
-            return self.cov.report(show_missing=True, ignore_errors=True, file=_NullFile)
+            with _backup(self.cov, "config"):
+                return self.cov.report(show_missing=True, ignore_errors=True, file=_NullFile)
 
         # Output coverage section header.
         if len(self.node_descs) == 1:
@@ -111,15 +124,20 @@ class CovController(object):
             skip_covered = isinstance(self.cov_report, dict) and 'skip-covered' in self.cov_report.values()
             if hasattr(coverage, 'version_info') and coverage.version_info[0] >= 4:
                 options.update({'skip_covered': skip_covered or None})
-            total = self.cov.report(**options)
+            with _backup(self.cov, "config"):
+                total = self.cov.report(**options)
 
         # Produce annotated source code report if wanted.
         if 'annotate' in self.cov_report:
             annotate_dir = self.cov_report['annotate']
-            self.cov.annotate(ignore_errors=True, directory=annotate_dir)
+
+            with _backup(self.cov, "config"):
+                self.cov.annotate(ignore_errors=True, directory=annotate_dir)
             # We need to call Coverage.report here, just to get the total
             # Coverage.annotate don't return any total and we need it for --cov-fail-under.
-            total = self.cov.report(ignore_errors=True, file=_NullFile)
+
+            with _backup(self.cov, "config"):
+                total = self.cov.report(ignore_errors=True, file=_NullFile)
             if annotate_dir:
                 stream.write('Coverage annotated source written to dir %s\n' % annotate_dir)
             else:
@@ -127,13 +145,17 @@ class CovController(object):
 
         # Produce html report if wanted.
         if 'html' in self.cov_report:
-            total = self.cov.html_report(ignore_errors=True, directory=self.cov_report['html'])
-            stream.write('Coverage HTML written to dir %s\n' % self.cov.config.html_dir)
+            output = self.cov_report['html']
+            with _backup(self.cov, "config"):
+                self.cov.html_report(ignore_errors=True, directory=output)
+            stream.write('Coverage HTML written to dir %s\n' % (self.cov.config.html_dir if output is None else output))
 
         # Produce xml report if wanted.
         if 'xml' in self.cov_report:
-            total = self.cov.xml_report(ignore_errors=True, outfile=self.cov_report['xml'])
-            stream.write('Coverage XML written to file %s\n' % self.cov.config.xml_output)
+            output = self.cov_report['xml']
+            with _backup(self.cov, "config"):
+                self.cov.xml_report(ignore_errors=True, outfile=output)
+            stream.write('Coverage XML written to file %s\n' % (self.cov.config.xml_output if output is None else output))
 
         # Report on any failed workers.
         if self.failed_workers:
