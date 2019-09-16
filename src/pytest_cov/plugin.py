@@ -5,11 +5,9 @@ import warnings
 
 import coverage
 import pytest
-from coverage.misc import CoverageException
 
 from . import compat
 from . import embed
-from . import engine
 
 PYTEST_VERSION = tuple(map(int, pytest.__version__.split('.')[:3]))
 
@@ -160,6 +158,10 @@ class CovPlugin(object):
             self.options.cov_report = {}
         self.options.cov_source = _prepare_cov_source(self.options.cov_source)
 
+        # import engine lazily here to avoid importing
+        # it for unit tests that don't need it
+        from . import engine
+
         if is_dist and start:
             self.start(engine.DistMaster)
         elif start:
@@ -201,6 +203,10 @@ class CovPlugin(object):
             # Coverage can be disabled because it does not cooperate with debuggers well.
             self._disabled = True
             return
+
+        # import engine lazily here to avoid importing
+        # it for unit tests that don't need it
+        from . import engine
 
         self.pid = os.getpid()
         if self._is_worker(session):
@@ -256,6 +262,11 @@ class CovPlugin(object):
             self.cov_controller.finish()
 
         if not self._is_worker(session) and self._should_report():
+
+            # import coverage lazily here to avoid importing
+            # it for unit tests that don't need it
+            from coverage.misc import CoverageException
+
             try:
                 self.cov_total = self.cov_controller.summary(self.cov_report)
             except CoverageException as exc:
