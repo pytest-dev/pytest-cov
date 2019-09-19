@@ -9,6 +9,10 @@ stages:
   - lint
   - examples
   - tests
+matrix:
+  fast_finish: true
+  allow_failures:
+  - python: '3.8-dev'
 jobs:
   include:
     - stage: lint
