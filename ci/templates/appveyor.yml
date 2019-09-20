@@ -9,7 +9,6 @@ environment:
     - TOXENV: '{{ py36_environments|join(",") }}'
     - TOXENV: '{{ py37_environments|join(",") }}'
     - TOXENV: '{{ pypy_environments|join(",") }}'
-    - TOXENV: '{{ pypy3_environments|join(",") }}'
 
 init:
   - ps: echo $env:TOXENV
