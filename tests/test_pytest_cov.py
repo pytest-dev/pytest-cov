@@ -1,6 +1,7 @@
 import glob
 import os
 import platform
+import sqlite3
 import subprocess
 import sys
 from itertools import chain
@@ -1928,3 +1929,59 @@ def test_cov_and_no_cov(testdir):
                                script)
 
     assert result.ret == 0
+
+
+CONTEXTFUL_TESTS = '''\
+import unittest
+
+def test_one():
+    assert 1 == 1
+
+def test_two():
+    assert 2 == 2
+
+class OldStyleTests(unittest.TestCase):
+    def setUp(self):
+        self.three = 3
+    def tearDown(self):
+        self.three = None
+    def test_three(self):
+        assert self.three == 3
+'''
+
+@pytest.mark.skipif("coverage.version_info < (5, 0)")
+@xdist_params
+def test_contexts(testdir, opts):
+    script = testdir.makepyfile(CONTEXTFUL_TESTS)
+    result = testdir.runpytest('-v',
+                               '--cov=%s' % script.dirpath(),
+                               '--cov-contexts=test',
+                               script,
+                               *opts.split()
+                               )
+    result.stdout.fnmatch_lines([
+        'test_contexts* 100%*',
+    ])
+    con = sqlite3.connect(".coverage")
+    cur = con.cursor()
+    contexts = set(r[0] for r in cur.execute("select context from context"))
+    assert contexts == {
+        '',
+        'test_contexts.py::test_two|run',
+        'test_contexts.py::test_one|run',
+        'test_contexts.py::OldStyleTests::test_three|run',
+        }
+
+
+@pytest.mark.skipif("coverage.version_info >= (5, 0)")
+def test_contexts_not_supported(testdir):
+    script = testdir.makepyfile(CONTEXTFUL_TESTS)
+    result = testdir.runpytest('-v',
+                               '--cov=%s' % script.dirpath(),
+                               '--cov-contexts=test',
+                               script,
+                               )
+    result.stderr.fnmatch_lines([
+        '*argument --cov-contexts: Contexts are only supported with coverage.py >= 5.x',
+    ])
+    assert result.ret != 0
