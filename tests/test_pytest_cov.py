@@ -3,7 +3,6 @@ import os
 import platform
 import subprocess
 import sys
-from distutils.version import StrictVersion
 from itertools import chain
 
 import coverage
@@ -25,7 +24,7 @@ except ImportError:
 import pytest_cov.plugin
 from pytest_cov import compat
 
-coverage, platform, StrictVersion  # required for skipif mark on test_cov_min_from_coveragerc
+coverage, platform      # required for skipif mark on test_cov_min_from_coveragerc
 
 max_worker_restart_0 = "--max-" + compat.worker + "-restart=0"
 
@@ -468,7 +467,6 @@ def test_central_nonspecific(testdir, prop):
     assert result.ret == 0
 
 
-@pytest.mark.skipif('StrictVersion(coverage.__version__) <= StrictVersion("3.8")')
 def test_cov_min_from_coveragerc(testdir):
     script = testdir.makepyfile(SCRIPT)
     testdir.tmpdir.join('.coveragerc').write("""
@@ -1636,7 +1634,6 @@ def test_basic():
 SKIP_COVERED_RESULT = '1 file skipped due to complete coverage.'
 
 
-@pytest.mark.skipif('StrictVersion(coverage.__version__) < StrictVersion("4.0")')
 @pytest.mark.parametrize('report_option', [
     'term-missing:skip-covered',
     'term:skip-covered'])
@@ -1651,7 +1648,6 @@ def test_skip_covered_cli(testdir, report_option):
     result.stdout.fnmatch_lines([SKIP_COVERED_RESULT])
 
 
-@pytest.mark.skipif('StrictVersion(coverage.__version__) < StrictVersion("4.0")')
 def test_skip_covered_coveragerc_config(testdir):
     testdir.makefile('', coveragerc=SKIP_COVERED_COVERAGERC)
     script = testdir.makepyfile(SKIP_COVERED_TEST)
