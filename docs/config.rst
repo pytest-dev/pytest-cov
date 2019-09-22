@@ -63,3 +63,4 @@ The complete list of command line options is:
   --cov-append          Do not delete coverage but append to current. Default:
                         False
   --cov-branch          Enable branch coverage.
+  --cov-context         Choose the method for setting the dynamic context.

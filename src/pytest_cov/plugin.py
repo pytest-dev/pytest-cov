@@ -1,9 +1,9 @@
 """Coverage plugin for pytest."""
 import argparse
+import coverage
 import os
-import warnings
-
 import pytest
+import warnings
 from coverage.misc import CoverageException
 
 from . import compat
@@ -48,6 +48,14 @@ def validate_fail_under(num_str):
         return float(num_str)
 
 
+def validate_context(arg):
+    if coverage.version_info <= (5, 0):
+        raise argparse.ArgumentTypeError('Contexts are only supported with coverage.py >= 5.x')
+    if arg != "test":
+        raise argparse.ArgumentTypeError('--cov-context=test is the only supported value')
+    return arg
+
+
 class StoreReport(argparse.Action):
     def __call__(self, parser, namespace, values, option_string=None):
         report_type, file = values
@@ -88,6 +96,9 @@ def pytest_addoption(parser):
                          'Default: False')
     group.addoption('--cov-branch', action='store_true', default=None,
                     help='Enable branch coverage.')
+    group.addoption('--cov-context', action='store', metavar='CONTEXT',
+                    type=validate_context,
+                    help='Dynamic contexts to use. "test" for now.')
 
 
 def _prepare_cov_source(cov_source):
@@ -198,6 +209,9 @@ class CovPlugin(object):
         elif not self._started:
             self.start(engine.Central)
 
+        if self.options.cov_context == 'test':
+            session.config.pluginmanager.register(TestContextPlugin(self.cov_controller.cov), '_cov_contexts')
+
     def pytest_configure_node(self, node):
         """Delegate to our implementation.
 
@@ -306,6 +320,24 @@ class CovPlugin(object):
             self.cov_controller.resume()
         else:
             yield
+
+
+class TestContextPlugin(object):
+    def __init__(self, cov):
+        self.cov = cov
+
+    def pytest_runtest_setup(self, item):
+        self.switch_context(item, 'setup')
+
+    def pytest_runtest_teardown(self, item):
+        self.switch_context(item, 'teardown')
+
+    def pytest_runtest_call(self, item):
+        self.switch_context(item, 'run')
+
+    def switch_context(self, item, when):
+        context = "{item.nodeid}|{when}".format(item=item, when=when)
+        self.cov.switch_context(context)
 
 
 @pytest.fixture

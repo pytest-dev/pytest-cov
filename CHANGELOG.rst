@@ -4,6 +4,8 @@ Changelog
 2.7.2.dev0 (unreleased)
 -----------------------
 
+* Added --cov-context option for setting the coverage.py dynamic context for
+  each test.
 * Match pytest-xdist master/worker terminology.
   Contributed in `#321 <https://github.com/pytest-dev/pytest-cov/pull/321>`_
 
