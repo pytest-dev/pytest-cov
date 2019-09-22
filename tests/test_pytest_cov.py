@@ -1,6 +1,8 @@
+import collections
 import glob
 import os
 import platform
+import re
 import subprocess
 import sys
 from itertools import chain
@@ -1928,3 +1930,95 @@ def test_cov_and_no_cov(testdir):
                                script)
 
     assert result.ret == 0
+
+
+def find_labels(text, pattern):
+    all_labels = collections.defaultdict(list)
+    lines = text.splitlines()
+    for lineno, line in enumerate(lines, start=1):
+        labels = re.findall(pattern, line)
+        for label in labels:
+            all_labels[label].append(lineno)
+    return all_labels
+
+
+# The contexts and their labels in contextful.py
+EXPECTED_CONTEXTS = {
+    '': 'c0',
+    'test_contexts.py::test_01|run': 'r1',
+    'test_contexts.py::test_02|run': 'r2',
+    'test_contexts.py::OldStyleTests::test_03|setup': 's3',
+    'test_contexts.py::OldStyleTests::test_03|run': 'r3',
+    'test_contexts.py::OldStyleTests::test_04|run': 'r4',
+    'test_contexts.py::OldStyleTests::test_04|teardown': 't4',
+    'test_contexts.py::test_05|setup': 's5',
+    'test_contexts.py::test_05|run': 'r5',
+    'test_contexts.py::test_06|setup': 's6',
+    'test_contexts.py::test_06|run': 'r6',
+    'test_contexts.py::test_07|setup': 's7',
+    'test_contexts.py::test_07|run': 'r7',
+    'test_contexts.py::test_08|run': 'r8',
+    'test_contexts.py::test_09[1]|setup': 's9-1',
+    'test_contexts.py::test_09[1]|run': 'r9-1',
+    'test_contexts.py::test_09[2]|setup': 's9-2',
+    'test_contexts.py::test_09[2]|run': 'r9-2',
+    'test_contexts.py::test_09[3]|setup': 's9-3',
+    'test_contexts.py::test_09[3]|run': 'r9-3',
+    'test_contexts.py::test_10|run': 'r10',
+    'test_contexts.py::test_11[1-101]|run': 'r11-1',
+    'test_contexts.py::test_11[2-202]|run': 'r11-2',
+    'test_contexts.py::test_12[one]|run': 'r12-1',
+    'test_contexts.py::test_12[two]|run': 'r12-2',
+    'test_contexts.py::test_13[3-1]|run': 'r13-1',
+    'test_contexts.py::test_13[3-2]|run': 'r13-2',
+    'test_contexts.py::test_13[4-1]|run': 'r13-3',
+    'test_contexts.py::test_13[4-2]|run': 'r13-4',
+}
+
+
+@pytest.mark.skipif("coverage.version_info < (5, 0)")
+@xdist_params
+def test_contexts(testdir, opts):
+    with open(os.path.join(os.path.dirname(__file__), "contextful.py")) as f:
+        contextful_tests = f.read()
+    script = testdir.makepyfile(contextful_tests)
+    result = testdir.runpytest('-v',
+                               '--cov=%s' % script.dirpath(),
+                               '--cov-context=test',
+                               script,
+                               *opts.split()
+                               )
+    assert result.ret == 0
+    result.stdout.fnmatch_lines([
+        'test_contexts* 100%*',
+    ])
+
+    data = coverage.CoverageData(".coverage")
+    data.read()
+    assert data.measured_contexts() == set(EXPECTED_CONTEXTS)
+    measured = data.measured_files()
+    assert len(measured) == 1
+    test_context_path = list(measured)[0]
+    assert test_context_path.lower() == os.path.abspath("test_contexts.py").lower()
+
+    line_data = find_labels(contextful_tests, r"[crst]\d+(?:-\d+)?")
+    for context, label in EXPECTED_CONTEXTS.items():
+        if context == '':
+            continue
+        context_pattern = re.sub(r"[\[\|]", r"[\g<0>]", context)
+        actual = data.lines(test_context_path, contexts=[context_pattern])
+        assert line_data[label] == actual, "Wrong lines for context {!r}".format(context)
+
+
+@pytest.mark.skipif("coverage.version_info >= (5, 0)")
+def test_contexts_not_supported(testdir):
+    script = testdir.makepyfile("a = 1")
+    result = testdir.runpytest('-v',
+                               '--cov=%s' % script.dirpath(),
+                               '--cov-context=test',
+                               script,
+                               )
+    result.stderr.fnmatch_lines([
+        '*argument --cov-context: Contexts are only supported with coverage.py >= 5.x',
+    ])
+    assert result.ret != 0
