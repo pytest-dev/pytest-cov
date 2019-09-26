@@ -4,6 +4,11 @@ Changelog
 2.8.0 (2019-09-30)
 ------------------
 
+* Fixed ``RecursionError`` that can occur when using
+  `cleanup_on_signal <https://pytest-cov.readthedocs.io/en/latest/subprocess-support.html#if-you-got-custom-signal-handling>`__ or
+  `cleanup_on_sigterm <https://pytest-cov.readthedocs.io/en/latest/subprocess-support.html#if-you-got-custom-signal-handling>`__.
+  See: `#294 <https://github.com/pytest-dev/pytest-cov/issues/294>`_.
+  The 2.7.x releases of pytest-cov should be considered broken regarding aforementioned cleanup API.
 * Added compatibility with future xdist release that deprecates some internals
   (match pytest-xdist master/worker terminology).
   Contributed by Thomas Grainger in `#321 <https://github.com/pytest-dev/pytest-cov/pull/321>`_
