@@ -18,13 +18,13 @@ from process_tests import dump_on_error
 from process_tests import wait_for_strings
 from six import exec_
 
+import pytest_cov.plugin
+from pytest_cov import compat
+
 try:
     from StringIO import StringIO
 except ImportError:
     from io import StringIO
-
-import pytest_cov.plugin
-from pytest_cov import compat
 
 coverage, platform      # required for skipif mark on test_cov_min_from_coveragerc
 

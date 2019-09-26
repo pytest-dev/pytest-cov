@@ -1,23 +1,24 @@
 #!/usr/bin/env python
 # -*- encoding: utf-8 -*-
-from __future__ import absolute_import, print_function
+from __future__ import absolute_import
+from __future__ import print_function
 
 import io
-from itertools import chain
 import re
+from distutils.command.build import build
 from glob import glob
+from itertools import chain
 from os.path import basename
 from os.path import dirname
 from os.path import join
 from os.path import splitext
-from distutils.command.build import build
 
 from setuptools import Command
 from setuptools import find_packages
 from setuptools import setup
 from setuptools.command.develop import develop
-from setuptools.command.install_lib import install_lib
 from setuptools.command.easy_install import easy_install
+from setuptools.command.install_lib import install_lib
 
 
 def read(*names, **kwargs):

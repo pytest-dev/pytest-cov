@@ -1,5 +1,4 @@
 """Coverage controllers for use by pytest-cov and nose-cov."""
-
 import contextlib
 import copy
 import os
@@ -10,8 +9,10 @@ import sys
 import coverage
 from coverage.data import CoverageData
 
+from .compat import StringIO
+from .compat import workerinput
+from .compat import workeroutput
 from .embed import cleanup
-from .compat import StringIO, workeroutput, workerinput
 
 
 class _NullFile(object):

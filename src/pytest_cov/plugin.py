@@ -1,9 +1,10 @@
 """Coverage plugin for pytest."""
 import argparse
-import coverage
 import os
-import pytest
 import warnings
+
+import coverage
+import pytest
 from coverage.misc import CoverageException
 
 from . import compat
