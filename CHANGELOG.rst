@@ -1,13 +1,40 @@
 Changelog
 =========
 
-2.7.2.dev0 (unreleased)
------------------------
+2.8.0 (2019-09-30)
+------------------
 
-* Added --cov-context option for setting the coverage.py dynamic context for
-  each test.
-* Match pytest-xdist master/worker terminology.
-  Contributed in `#321 <https://github.com/pytest-dev/pytest-cov/pull/321>`_
+* Added compatibility with future xdist release that deprecates some internals
+  (match pytest-xdist master/worker terminology).
+  Contributed by Thomas Grainger in `#321 <https://github.com/pytest-dev/pytest-cov/pull/321>`_
+* Fixed breakage that occurs when multiple reporting options are used.
+  Contributed by Thomas Grainger in `#338 <https://github.com/pytest-dev/pytest-cov/pull/338>`_.
+* Changed internals to use a stub instead of ``os.devnull``.
+  Contributed by Thomas Grainger in `#332 <https://github.com/pytest-dev/pytest-cov/pull/332>`_.
+* Added support for Coverage 5.0.
+  Contributed by Ned Batchelder in `#319 <https://github.com/pytest-dev/pytest-cov/pull/319>`_.
+* Added support for float values in ``--cov-fail-under``.
+  Contributed by Martín Gaitán in `#311 <https://github.com/pytest-dev/pytest-cov/pull/311>`_.
+* Various documentation fixes. Contributed by
+  Juanjo Bazán,
+  Andrew Murray and
+  Albert Tugushev in
+  `#298 <https://github.com/pytest-dev/pytest-cov/pull/298>`_,
+  `#299 <https://github.com/pytest-dev/pytest-cov/pull/299>`_ and
+  `#307 <https://github.com/pytest-dev/pytest-cov/pull/307>`_.
+* Various testing improvements. Contributed by
+  Ned Batchelder,
+  Daniel Hahler,
+  Ionel Cristian Mărieș and
+  Hugo van Kemenade in
+  `#313 <https://github.com/pytest-dev/pytest-cov/pull/313>`_,
+  `#314 <https://github.com/pytest-dev/pytest-cov/pull/314>`_,
+  `#315 <https://github.com/pytest-dev/pytest-cov/pull/315>`_,
+  `#316 <https://github.com/pytest-dev/pytest-cov/pull/316>`_,
+  `#325 <https://github.com/pytest-dev/pytest-cov/pull/325>`_,
+  `#326 <https://github.com/pytest-dev/pytest-cov/pull/326>`_,
+  `#334 <https://github.com/pytest-dev/pytest-cov/pull/334>`_ and
+  `#335 <https://github.com/pytest-dev/pytest-cov/pull/335>`_.
 
 2.7.1 (2019-05-03)
 ------------------

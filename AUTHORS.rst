@@ -30,4 +30,9 @@ Authors
 * Семён Марьясин - https://github.com/MarSoft
 * Alexander Shadchin - https://github.com/shadchin
 * Thomas Grainger - https://graingert.co.uk
-* Ned Batchelder - https://nedbatchelder.com
+* Juanjo Bazán - https://github.com/xuanxu
+* Andrew Murray - https://github.com/radarhere
+* Ned Batchelder - https://nedbatchelder.com/
+* Albert Tugushev - https://github.com/atugushev
+* Martín Gaitán - https://github.com/mgaitan
+* Hugo van Kemenade - https://github.com/hugovk
