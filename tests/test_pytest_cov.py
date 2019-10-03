@@ -2005,8 +2005,8 @@ def test_contexts(testdir, opts):
     for context, label in EXPECTED_CONTEXTS.items():
         if context == '':
             continue
-        context_pattern = re.sub(r"[\[\|]", r"[\g<0>]", context)
-        actual = data.lines(test_context_path, contexts=[context_pattern])
+        data.set_query_context(context)
+        actual = data.lines(test_context_path)
         assert line_data[label] == actual, "Wrong lines for context {!r}".format(context)
 
 
