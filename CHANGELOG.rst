@@ -1,7 +1,7 @@
 Changelog
 =========
 
-2.8.0 (2019-09-30)
+2.8.0 (2019-10-03)
 ------------------
 
 * Fixed ``RecursionError`` that can occur when using
@@ -40,6 +40,8 @@ Changelog
   `#326 <https://github.com/pytest-dev/pytest-cov/pull/326>`_,
   `#334 <https://github.com/pytest-dev/pytest-cov/pull/334>`_ and
   `#335 <https://github.com/pytest-dev/pytest-cov/pull/335>`_.
+* Added the ``--cov-context`` CLI options that enables coverage contexts. Only works with coverage 5.0+.
+  Contributed by Ned Batchelder in `#345 <https://github.com/pytest-dev/pytest-cov/pull/345>`_.
 
 2.7.1 (2019-05-03)
 ------------------

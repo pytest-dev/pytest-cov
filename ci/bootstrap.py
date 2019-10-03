@@ -1,8 +1,11 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-from __future__ import absolute_import, print_function, unicode_literals
+from __future__ import absolute_import
+from __future__ import print_function
+from __future__ import unicode_literals
 
 import os
+import subprocess
 import sys
 from collections import defaultdict
 from os.path import abspath
@@ -10,9 +13,14 @@ from os.path import dirname
 from os.path import exists
 from os.path import join
 
-if __name__ == "__main__":
-    base_path = dirname(dirname(abspath(__file__)))
-    print("Project path: {0}".format(base_path))
+base_path = dirname(dirname(abspath(__file__)))
+
+
+def check_call(args):
+    print("+", *args)
+    subprocess.check_call(args)
+
+def exec_in_env():
     env_path = join(base_path, ".tox", "bootstrap")
     if sys.platform == "win32":
         bin_path = join(env_path, "Scripts")
@@ -23,19 +31,26 @@ if __name__ == "__main__":
 
         print("Making bootstrap env in: {0} ...".format(env_path))
         try:
-            subprocess.check_call(["virtualenv", env_path])
+            check_call([sys.executable, "-m", "venv", env_path])
         except subprocess.CalledProcessError:
-            subprocess.check_call([sys.executable, "-m", "virtualenv", env_path])
+            try:
+                check_call([sys.executable, "-m", "virtualenv", env_path])
+            except subprocess.CalledProcessError:
+                check_call(["virtualenv", env_path])
         print("Installing `jinja2` into bootstrap environment...")
-        subprocess.check_call([join(bin_path, "pip"), "install", "jinja2"])
+        check_call([join(bin_path, "pip"), "install", "jinja2", "tox"])
     python_executable = join(bin_path, "python")
-    if not os.path.samefile(python_executable, sys.executable):
-        print("Re-executing with: {0}".format(python_executable))
-        os.execv(python_executable, [python_executable, __file__])
+    if not os.path.exists(python_executable):
+        python_executable += '.exe'
 
+    print("Re-executing with: {0}".format(python_executable))
+    print("+ exec", python_executable, __file__, "--no-env")
+    os.execv(python_executable, [python_executable, __file__, "--no-env"])
+
+def main():
     import jinja2
 
-    import subprocess
+    print("Project path: {0}".format(base_path))
 
     jinja = jinja2.Environment(
         loader=jinja2.FileSystemLoader(join(base_path, "ci", "templates")),
@@ -63,3 +78,14 @@ if __name__ == "__main__":
             fh.write(jinja.get_template(name).render(**template_vars))
         print("Wrote {}".format(name))
     print("DONE.")
+
+if __name__ == "__main__":
+    args = sys.argv[1:]
+    if args == ["--no-env"]:
+        main()
+    elif not args:
+        exec_in_env()
+    else:
+        print("Unexpected arguments {0}".format(args), file=sys.stderr)
+        sys.exit(1)
+
