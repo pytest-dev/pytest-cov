@@ -72,3 +72,26 @@ The final report option can also suppress printing to the terminal::
 This mode can be especially useful on continuous integration servers, where a coverage file
 is needed for subsequent processing, but no local report needs to be viewed. For example,
 tests run on Travis-CI could produce a .coverage file for use with Coveralls.
+
+The `--cov-branch` flag enables
+`branch coverage <https://coverage.readthedocs.io/en/latest/branch.html>`_, where every
+possible branch path through the code is included. The generated report will then show which
+branch paths were not executed along with the lines that were not covered.
+
+The terminal report with 100% branch-level coverage::
+
+    pytest --cov-report term --cov-branch --cov=example tests/
+
+    ---------- coverage: platform darwin, python 3.7.2-final-0 -----------
+    Name                  Stmts   Miss Branch BrPart  Cover
+    -------------------------------------------------------
+    example/__init__.py      10      0      4      0   100%
+
+The terminal report with < 100% branch-level coverage::
+
+    pytest --cov-report term --cov-branch --cov=example tests/
+
+    ---------- coverage: platform darwin, python 3.7.2-final-0 -----------
+    Name                  Stmts   Miss Branch BrPart  Cover
+    -------------------------------------------------------
+    example/__init__.py      10      2      4      2    71%
