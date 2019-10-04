@@ -1,7 +1,7 @@
 Changelog
 =========
 
-2.8.0 (2019-10-03)
+2.8.0 (2019-10-04)
 ------------------
 
 * Fixed ``RecursionError`` that can occur when using
