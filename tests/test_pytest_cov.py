@@ -396,7 +396,8 @@ def test_cov_min_50(testdir):
 
     result = testdir.runpytest('-v',
                                '--cov=%s' % script.dirpath(),
-                               '--cov-report=term-missing',
+                               '--cov-report=html',
+                               '--cov-report=xml',
                                '--cov-fail-under=50',
                                script)
 
