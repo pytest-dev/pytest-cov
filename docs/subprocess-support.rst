@@ -32,8 +32,8 @@ Thus you need to make sure your ``multiprocessing.Pool`` gets a nice and clean e
         try:
             print(p.map(f, [1, 2, 3]))
         except:
-            raise
             p.terminate()
+            raise
         else:
             p.close()  # Marks the pool as closed.
         finally:
