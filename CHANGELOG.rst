@@ -1,6 +1,12 @@
 Changelog
 =========
 
+2.8.1 (2019-10-05)
+------------------
+
+* Fixed `#348 <https://github.com/pytest-dev/pytest-cov/issues/348>`_ -
+  regression when only certain reports (html or xml) are used then ``--cov-fail-under`` always fails.
+
 2.8.0 (2019-10-04)
 ------------------
 
