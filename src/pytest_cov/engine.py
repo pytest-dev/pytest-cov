@@ -101,7 +101,7 @@ class CovController(object):
 
     def summary(self, stream):
         """Produce coverage reports."""
-        total = 0
+        total = None
 
         if not self.cov_report:
             with _backup(self.cov, "config"):
