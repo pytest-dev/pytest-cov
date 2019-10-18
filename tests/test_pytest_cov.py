@@ -1079,8 +1079,12 @@ def test_run_target():
         p = multiprocessing.Pool(3)
         try:
             p.map(target_fn, [i * 3 + j for j in range(3)])
-        finally:
+        except:
             p.terminate()
+            raise
+        else:
+            p.close()
+        finally:
             p.join()
 ''' % ''.join('''if a == %r:
         return a
@@ -1220,11 +1224,17 @@ def target_fn():
 
 def test_run_target():
     p = multiprocessing.Process(target=target_fn)
-    p.start()
-    time.sleep(0.5)
-    event.wait(1)
-    p.terminate()
-    p.join()
+    try:
+        p.start()
+        time.sleep(0.5)
+        event.wait(1)
+    except:
+        p.terminate()
+        raise
+    else:
+        p.close()
+    finally:
+        p.join()
 ''')
 
     result = testdir.runpytest('-v',
