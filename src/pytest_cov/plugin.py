@@ -12,6 +12,9 @@ from . import embed
 from . import engine
 
 
+PYTEST_VERSION = tuple(map(int, pytest.__version__.split('.')[:3]))
+
+
 class CoverageError(Exception):
     """Indicates that our coverage is too low"""
 
@@ -260,7 +263,7 @@ class CovPlugin(object):
                 message = 'Failed to generate report: %s\n' % exc
                 session.config.pluginmanager.getplugin("terminalreporter").write(
                     'WARNING: %s\n' % message, red=True, bold=True)
-                if pytest.__version__ >= '3.8':
+                if PYTEST_VERSION >= (3, 8):
                     warnings.warn(pytest.PytestWarning(message))
                 else:
                     session.config.warn(code='COV-2', message=message)
@@ -274,7 +277,7 @@ class CovPlugin(object):
         if self._disabled:
             message = 'Coverage disabled via --no-cov switch!'
             terminalreporter.write('WARNING: %s\n' % message, red=True, bold=True)
-            if pytest.__version__ >= '3.8':
+            if PYTEST_VERSION >= (3, 8):
                 warnings.warn(pytest.PytestWarning(message))
             else:
                 terminalreporter.config.warn(code='COV-1', message=message)
