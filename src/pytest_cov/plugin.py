@@ -11,7 +11,6 @@ from . import compat
 from . import embed
 from . import engine
 
-
 PYTEST_VERSION = tuple(map(int, pytest.__version__.split('.')[:3]))
 
 
