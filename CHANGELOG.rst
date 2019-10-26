@@ -1,6 +1,12 @@
 Changelog
 =========
 
+2.8.2 (unreleased)
+------------------
+
+* Fixed ``RemovedInPytest4Warning`` when using Pytest 3.10.
+  Contributed by Michael Manganiello in `#354 <https://github.com/pytest-dev/pytest-cov/pull/354>`_.
+
 2.8.1 (2019-10-05)
 ------------------
 
