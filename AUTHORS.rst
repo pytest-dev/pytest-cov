@@ -36,3 +36,4 @@ Authors
 * Albert Tugushev - https://github.com/atugushev
 * Martín Gaitán - https://github.com/mgaitan
 * Hugo van Kemenade - https://github.com/hugovk
+* Michael Manganiello - https://github.com/adamantike
