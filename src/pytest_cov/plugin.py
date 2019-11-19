@@ -1,7 +1,6 @@
 """Coverage plugin for pytest."""
 import argparse
 import os
-import warnings
 
 import coverage
 import pytest
@@ -9,11 +8,26 @@ import pytest
 from . import compat
 from . import embed
 
-PYTEST_VERSION = tuple(map(int, pytest.__version__.split('.')[:3]))
-
 
 class CoverageError(Exception):
     """Indicates that our coverage is too low"""
+
+
+class PytestCovWarning(pytest.PytestWarning):
+    """
+    The base for all pytest-cov warnings, never raised directly
+    """
+    code = "COV-0"
+
+
+class CovDisabledWarning(PytestCovWarning):
+    """Indicates that Coverage was manually disabled"""
+    code = "COV-1"
+
+
+class CovReportWarning(PytestCovWarning):
+    """Indicates that we failed to generate a report"""
+    code = "COV-2"
 
 
 def validate_report(arg):
@@ -273,10 +287,11 @@ class CovPlugin(object):
                 message = 'Failed to generate report: %s\n' % exc
                 session.config.pluginmanager.getplugin("terminalreporter").write(
                     'WARNING: %s\n' % message, red=True, bold=True)
-                if PYTEST_VERSION >= (3, 8):
-                    warnings.warn(pytest.PytestWarning(message))
-                else:
-                    session.config.warn(code='COV-2', message=message)
+                compat.warn(
+                    config=session.config,
+                    message=message,
+                    category=CovReportWarning,
+                )
                 self.cov_total = 0
             assert self.cov_total is not None, 'Test coverage should never be `None`'
             if self._failed_cov_total():
@@ -287,10 +302,11 @@ class CovPlugin(object):
         if self._disabled:
             message = 'Coverage disabled via --no-cov switch!'
             terminalreporter.write('WARNING: %s\n' % message, red=True, bold=True)
-            if PYTEST_VERSION >= (3, 8):
-                warnings.warn(pytest.PytestWarning(message))
-            else:
-                terminalreporter.config.warn(code='COV-1', message=message)
+            compat.warn(
+                config=terminalreporter.config,
+                message=message,
+                category=CovDisabledWarning,
+            )
             return
         if self.cov_controller is None:
             return
