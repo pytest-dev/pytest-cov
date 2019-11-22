@@ -4,7 +4,6 @@ environment:
   matrix:
     - TOXENV: check
     - TOXENV: '{{ py27_environments|join(",") }}'
-    - TOXENV: '{{ py34_environments|join(",") }}'
     - TOXENV: '{{ py35_environments|join(",") }}'
     - TOXENV: '{{ py36_environments|join(",") }}'
     - TOXENV: '{{ py37_environments|join(",") }}'

@@ -26,7 +26,7 @@ The process for releasing should follow these steps:
    These files need to be removed to force distutils/setuptools to rebuild everything and recreate the egg-info metadata.
 #. Build the dists::
 
-        python3.4 setup.py clean --all sdist bdist_wheel
+        python3 setup.py clean --all sdist bdist_wheel
 
 #. Verify that the resulting archives (found in ``dist/``) are good.
 #. Upload the sdist and wheel with twine::
