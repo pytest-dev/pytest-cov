@@ -132,6 +132,7 @@ setup(
             'hunter',
             'process-tests==2.0.2',
             'six',
+            'pytest-xdist',
             'virtualenv',
         ]
     },
