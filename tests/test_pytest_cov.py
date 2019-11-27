@@ -1233,6 +1233,7 @@ def test_run_target():
         raise
     else:
         # new in python 3.7
+        import sys
         if sys.version_info >= (3, 7):
             p.close()
     finally:
