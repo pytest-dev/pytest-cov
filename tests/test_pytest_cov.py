@@ -1231,8 +1231,9 @@ def test_run_target():
     except:
         p.terminate()
         raise
-    else:
-        p.close()
+    # new in python 3.7
+    #else:
+    #    p.close()
     finally:
         p.join()
 ''')
