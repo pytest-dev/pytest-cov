@@ -1231,9 +1231,10 @@ def test_run_target():
     except:
         p.terminate()
         raise
-    # new in python 3.7
-    #else:
-    #    p.close()
+    else:
+        # new in python 3.7
+        if sys.version_info >= (3, 7):
+            p.close()
     finally:
         p.join()
 ''')
