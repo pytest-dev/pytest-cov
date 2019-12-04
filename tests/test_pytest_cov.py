@@ -1236,7 +1236,7 @@ def test_run_target():
         # new in python 3.7
         import sys
         if sys.version_info >= (3, 7):
-            p.close()        
+            p.close()
 ''')
 
     result = testdir.runpytest('-v',
