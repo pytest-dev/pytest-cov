@@ -1100,7 +1100,7 @@ def test_run_target():
     assert not testdir.tmpdir.listdir(".coverage.*")
     result.stdout.fnmatch_lines([
         '*- coverage: platform *, python * -*',
-        'test_multiprocessing_pool* 100%*',
+        'test_multiprocessing_pool* 99%*',
         '*1 passed*'
     ])
     assert result.ret == 0
@@ -1232,12 +1232,11 @@ def test_run_target():
         p.terminate()
         raise
     else:
+        p.join()
         # new in python 3.7
         import sys
         if sys.version_info >= (3, 7):
-            p.close()
-    finally:
-        p.join()
+            p.close()        
 ''')
 
     result = testdir.runpytest('-v',
