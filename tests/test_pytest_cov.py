@@ -1246,7 +1246,7 @@ def test_run_target():
 
     result.stdout.fnmatch_lines([
         '*- coverage: platform *, python * -*',
-        'test_multiprocessing_process* 16 * 100%*',
+        'test_multiprocessing_process* 22 * 8*%*',
         '*1 passed*'
     ])
     assert result.ret == 0
