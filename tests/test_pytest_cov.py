@@ -1934,12 +1934,12 @@ def test_cov_and_no_cov(testdir):
 
 
 def find_labels(text, pattern):
-    all_labels = collections.defaultdict(list)
+    all_labels = collections.defaultdict(set)
     lines = text.splitlines()
     for lineno, line in enumerate(lines, start=1):
         labels = re.findall(pattern, line)
         for label in labels:
-            all_labels[label].append(lineno)
+            all_labels[label].add(lineno)
     return all_labels
 
 
@@ -2007,7 +2007,7 @@ def test_contexts(testdir, opts):
         if context == '':
             continue
         data.set_query_context(context)
-        actual = data.lines(test_context_path)
+        actual = set(data.lines(test_context_path))
         assert line_data[label] == actual, "Wrong lines for context {!r}".format(context)
 
 
