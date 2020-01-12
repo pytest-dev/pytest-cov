@@ -1,6 +1,6 @@
 ---
 name: ✈ Feature request
-about: Need help with configuring pytest-cov
+about: Proposal for a new feature in pytest-cov
 ---
 
 Before proposing please consider:
@@ -15,4 +15,4 @@ These questions should be answered:
 
 * why is the feature needed?
 * what problem does it solve?
-* how it is better compared to past solution to the problem?
+* how it is better compared to past solutions to the problem?

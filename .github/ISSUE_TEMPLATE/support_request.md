@@ -1,6 +1,6 @@
 ---
 name: 🤔 Support request
-about: Need help with configuring pytest-cov
+about: Request help with setting up pytest-cov in your project
 ---
 
 Please go over all the sections and search

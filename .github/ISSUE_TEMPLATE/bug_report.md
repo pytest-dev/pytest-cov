@@ -1,6 +1,6 @@
 ---
 name: 🐞 Bug report
-about: A problem with how pytest-cov or coverage works.
+about: There a problem with how pytest-cov or coverage works
 ---
 
 # Summary
