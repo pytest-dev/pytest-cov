@@ -39,6 +39,11 @@ Thus you need to make sure your ``multiprocessing.Pool`` gets a nice and clean e
 If you must use the context manager API (e.g.: the pool is managed in third party code you can't change) then you can
 register a cleaning SIGTERM handler like so:
 
+.. warning::
+
+    **This technique cannot be used on Python 3.8** (registering signal handlers will cause deadlocks in the pool,
+    see: https://bugs.python.org/issue38227).
+
 .. code-block:: python
 
     from multiprocessing import Pool
