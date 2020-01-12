@@ -6,6 +6,8 @@ Changelog
 
 * Fixed ``RemovedInPytest4Warning`` when using Pytest 3.10.
   Contributed by Michael Manganiello in `#354 <https://github.com/pytest-dev/pytest-cov/pull/354>`_.
+* Made pytest startup faster when plugin not active by lazy-importing. 
+  Contributed by Anders Hovmöller in `#339 <https://github.com/pytest-dev/pytest-cov/pull/339>`_.
 
 2.8.1 (2019-10-05)
 ------------------
