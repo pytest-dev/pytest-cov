@@ -680,8 +680,7 @@ def test_foo(foo):
                                '-n', '5', '-s',
                                script)
     result.stdout.fnmatch_lines([
-        '*- coverage: platform *, python * -*',
-        'test_dist_combine_racecondition* 2002 * 0 * 100%*',
+        'test_dist_combine_racecondition* 0 * 100%*',
         '*1000 passed*'
     ])
 
