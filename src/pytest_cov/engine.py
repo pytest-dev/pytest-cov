@@ -219,6 +219,9 @@ class DistMaster(CovController):
         self.cov = coverage.Coverage(source=self.cov_source,
                                      branch=self.cov_branch,
                                      config_file=self.cov_config)
+        self.cov._warn_no_data = False
+        self.cov._warn_unimported_source = False
+        self.cov._warn_preimported_source = False
         self.combining_cov = coverage.Coverage(source=self.cov_source,
                                                branch=self.cov_branch,
                                                data_file=os.path.abspath(self.cov.config.data_file),
