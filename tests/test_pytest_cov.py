@@ -983,10 +983,8 @@ def test_dist_missing_data(testdir):
                                '--tx=popen//python=%s' % exe,
                                max_worker_restart_0,
                                script)
-
-    assert result.ret == 0
     result.stdout.fnmatch_lines([
-        '*- coverage: failed workers -*'
+        'The following workers failed to return coverage data, ensure that pytest-cov is installed on these workers.'
     ])
 
 
