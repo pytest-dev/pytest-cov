@@ -218,6 +218,7 @@ class DistMaster(CovController):
 
         self.cov = coverage.Coverage(source=self.cov_source,
                                      branch=self.cov_branch,
+                                     data_suffix=True,
                                      config_file=self.cov_config)
         self.combining_cov = coverage.Coverage(source=self.cov_source,
                                                branch=self.cov_branch,
