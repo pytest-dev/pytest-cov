@@ -1869,6 +1869,29 @@ def test_do_not_append_coverage(testdir, opts, prop):
     ])
 
 
+@pytest.mark.skipif('sys.platform == "win32" and platform.python_implementation() == "PyPy"')
+def test_append_coverage_subprocess(testdir):
+    scripts = testdir.makepyfile(parent_script=SCRIPT_PARENT,
+                                 child_script=SCRIPT_CHILD)
+    parent_script = scripts.dirpath().join('parent_script.py')
+
+    result = testdir.runpytest('-v',
+                               '--cov=%s' % scripts.dirpath(),
+                               '--cov-append',
+                               '--cov-report=term-missing',
+                               '--dist=load',
+                               '--tx=2*popen',
+                               max_worker_restart_0,
+                               parent_script)
+
+    result.stdout.fnmatch_lines([
+        '*- coverage: platform *, python * -*',
+        'child_script* %s*' % CHILD_SCRIPT_RESULT,
+        'parent_script* %s*' % PARENT_SCRIPT_RESULT,
+    ])
+    assert result.ret == 0
+
+
 def test_pth_failure(monkeypatch):
     with open('src/pytest-cov.pth') as fh:
         payload = fh.read()
