@@ -185,9 +185,7 @@ class Central(CovController):
                                                config_file=self.cov_config)
 
         # Erase or load any previous coverage data and start coverage.
-        if self.cov_append:
-            self.cov.load()
-        else:
+        if not self.cov_append:
             self.cov.erase()
         self.cov.start()
         self.set_env()
@@ -230,9 +228,7 @@ class DistMaster(CovController):
                                                data_suffix=True,
                                                data_file=os.path.abspath(self.cov.config.data_file),
                                                config_file=self.cov_config)
-        if self.cov_append:
-            self.cov.load()
-        else:
+        if not self.cov_append:
             self.cov.erase()
         self.cov.start()
         self.cov.config.paths['source'] = [self.topdir]
