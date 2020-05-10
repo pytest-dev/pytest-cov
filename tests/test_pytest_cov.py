@@ -955,7 +955,7 @@ def test_invalid_coverage_source(testdir):
 def test_dist_missing_data(testdir):
     """Test failure when using a worker without pytest-cov installed."""
     venv_path = os.path.join(str(testdir.tmpdir), 'venv')
-    virtualenv.create_environment(venv_path)
+    virtualenv.cli_run([venv_path])
     if sys.platform == 'win32':
         if platform.python_implementation() == "PyPy":
             exe = os.path.join(venv_path, 'bin', 'python.exe')
