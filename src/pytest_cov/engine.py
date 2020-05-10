@@ -176,9 +176,11 @@ class Central(CovController):
 
         self.cov = coverage.Coverage(source=self.cov_source,
                                      branch=self.cov_branch,
+                                     data_suffix=True,
                                      config_file=self.cov_config)
         self.combining_cov = coverage.Coverage(source=self.cov_source,
                                                branch=self.cov_branch,
+                                               data_suffix=True,
                                                data_file=os.path.abspath(self.cov.config.data_file),
                                                config_file=self.cov_config)
 
@@ -225,6 +227,7 @@ class DistMaster(CovController):
         self.cov._warn_preimported_source = False
         self.combining_cov = coverage.Coverage(source=self.cov_source,
                                                branch=self.cov_branch,
+                                               data_suffix=True,
                                                data_file=os.path.abspath(self.cov.config.data_file),
                                                config_file=self.cov_config)
         if self.cov_append:
