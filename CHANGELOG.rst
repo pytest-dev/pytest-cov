@@ -1,13 +1,26 @@
 Changelog
 =========
 
-2.8.2 (unreleased)
+2.9.0 (2020-05-??)
 ------------------
 
 * Fixed ``RemovedInPytest4Warning`` when using Pytest 3.10.
   Contributed by Michael Manganiello in `#354 <https://github.com/pytest-dev/pytest-cov/pull/354>`_.
-* Made pytest startup faster when plugin not active by lazy-importing. 
+* Made pytest startup faster when plugin not active by lazy-importing.
   Contributed by Anders Hovmöller in `#339 <https://github.com/pytest-dev/pytest-cov/pull/339>`_.
+* Various CI improvements.
+  Contributed by Daniel Hahler in `#363 <https://github.com/pytest-dev/pytest-cov/pull/>`_ and
+  `#364 <https://github.com/pytest-dev/pytest-cov/pull/364>`_.
+* Various Python support updates (drop EOL 3.4, test against 3.8 final).
+  Contributed by Hugo van Kemenade in
+  `#336 <https://github.com/pytest-dev/pytest-cov/pull/336>`_ and
+  `#367 <https://github.com/pytest-dev/pytest-cov/pull/367>`_.
+* Changed ``--cov-append`` to always enable ``data_suffix`` (a coverage setting).
+  Contributed by Harm Geerts in
+  `#387 <https://github.com/pytest-dev/pytest-cov/pull/387>`_.
+* Changed ``--cov-append`` to handle loading previous data better
+  (fixes various path aliasing issues).
+* Various other testing improvements, github issue templates, example updates.
 
 2.8.1 (2019-10-05)
 ------------------
