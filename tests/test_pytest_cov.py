@@ -544,6 +544,43 @@ parallel = true
     assert result.ret == 0
 
 
+@xdist_params
+def test_borken_cwd(testdir, monkeypatch, opts):
+    mod = testdir.makepyfile(mod='''
+def foobar(a, b):
+    return a + b
+''')
+
+    script = testdir.makepyfile('''
+import os
+import pytest
+import mod
+
+@pytest.fixture
+def bad():
+    if not os.path.exists('/tmp/crappo'):
+        os.mkdir('/tmp/crappo')
+    os.chdir('/tmp/crappo')
+    yield
+    os.rmdir('/tmp/crappo')
+
+def test_foobar(bad):
+    assert mod.foobar(1, 2) == 3
+''')
+    result = testdir.runpytest('-v', '-s',
+                               '--cov=mod',
+                               '--cov-branch',
+                               script, *opts.split())
+
+    result.stdout.fnmatch_lines([
+        '*- coverage: platform *, python * -*',
+        '*mod* 100%',
+        '*1 passed*',
+    ])
+
+    assert result.ret == 0
+
+
 def test_subprocess_with_path_aliasing(testdir, monkeypatch):
     src = testdir.mkdir('src')
     src.join('parent_script.py').write(SCRIPT_PARENT)
