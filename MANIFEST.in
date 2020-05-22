@@ -16,6 +16,7 @@ include .cookiecutterrc
 include .editorconfig
 include .isort.cfg
 include .pylintrc
+include .readthedocs.yml
 
 include AUTHORS.rst
 include CHANGELOG.rst
