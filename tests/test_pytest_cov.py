@@ -553,16 +553,16 @@ def foobar(a, b):
 
     script = testdir.makepyfile('''
 import os
+import tempfile
 import pytest
 import mod
 
 @pytest.fixture
 def bad():
-    if not os.path.exists('/tmp/crappo'):
-        os.mkdir('/tmp/crappo')
-    os.chdir('/tmp/crappo')
+    path = tempfile.mkdtemp('test_borken_cwd')
+    os.chdir(path)
     yield
-    os.rmdir('/tmp/crappo')
+    os.rmdir(path)
 
 def test_foobar(bad):
     assert mod.foobar(1, 2) == 3
