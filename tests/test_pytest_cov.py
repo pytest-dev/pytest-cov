@@ -1853,6 +1853,7 @@ data_file = %s
     assert glob.glob(str(testdir.tmpdir.join('some/special/place/coverage-data*')))
 
 
+@pytest.mark.skipif('sys.platform == "win32" and platform.python_implementation() == "PyPy"')
 def test_xdist_no_data_collected(testdir):
     testdir.makepyfile(target="x = 123")
     script = testdir.makepyfile("""
@@ -1864,11 +1865,11 @@ def test_foobar():
                                '--cov=target',
                                '-n', '1',
                                script)
-    assert result.ret == 0
     assert 'no-data-collected' not in result.stderr.str()
     assert 'no-data-collected' not in result.stdout.str()
     assert 'module-not-imported' not in result.stderr.str()
     assert 'module-not-imported' not in result.stdout.str()
+    assert result.ret == 0
 
 
 def test_external_data_file_negative(testdir):
