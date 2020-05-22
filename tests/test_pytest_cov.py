@@ -562,7 +562,10 @@ def bad():
     path = tempfile.mkdtemp('test_borken_cwd')
     os.chdir(path)
     yield
-    os.rmdir(path)
+    try:
+        os.rmdir(path)
+    except OSError:
+        pass
 
 def test_foobar(bad):
     assert mod.foobar(1, 2) == 3
