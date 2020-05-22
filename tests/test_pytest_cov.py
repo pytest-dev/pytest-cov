@@ -546,7 +546,7 @@ parallel = true
 
 @xdist_params
 def test_borken_cwd(testdir, monkeypatch, opts):
-    mod = testdir.makepyfile(mod='''
+    testdir.makepyfile(mod='''
 def foobar(a, b):
     return a + b
 ''')
