@@ -1,7 +1,7 @@
 Changelog
 =========
 
-2.9.0 (2020-05-??)
+2.9.0 (2020-05-22)
 ------------------
 
 * Fixed ``RemovedInPytest4Warning`` when using Pytest 3.10.
@@ -21,6 +21,10 @@ Changelog
 * Changed ``--cov-append`` to handle loading previous data better
   (fixes various path aliasing issues).
 * Various other testing improvements, github issue templates, example updates.
+* Fixed internal failures that are caused by tests that change the current working directory by
+  ensuring a consistent working directory when coverage is called.
+  See `#306 <https://github.com/pytest-dev/pytest-cov/issues/306>`_ and
+  `coveragepy#881 <https://github.com/nedbat/coveragepy/issues/881>`_
 
 2.8.1 (2019-10-05)
 ------------------
