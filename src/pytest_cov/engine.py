@@ -1,6 +1,7 @@
 """Coverage controllers for use by pytest-cov and nose-cov."""
 import contextlib
 import copy
+import functools
 import os
 import random
 import socket
@@ -31,6 +32,25 @@ def _backup(obj, attr):
         setattr(obj, attr, backup)
 
 
+def _ensure_topdir(meth):
+    @functools.wraps(meth)
+    def ensure_topdir_wrapper(self, *args, **kwargs):
+        try:
+            original_cwd = os.getcwd()
+        except OSError:
+            # Looks like it's gone, this is non-ideal because a side-effect will
+            # be introduced in the tests here but we can't do anything about it.
+            original_cwd = None
+        os.chdir(self.topdir)
+        try:
+            return meth(self, *args, **kwargs)
+        finally:
+            if original_cwd is not None:
+                os.chdir(original_cwd)
+
+    return ensure_topdir_wrapper
+
+
 class CovController(object):
     """Base class for different plugin implementations."""
 
@@ -50,15 +70,26 @@ class CovController(object):
         self.node_descs = set()
         self.failed_workers = []
         self.topdir = os.getcwd()
+        self.is_collocated = None
 
+    @contextlib.contextmanager
+    def ensure_topdir(self):
+        original_cwd = os.getcwd()
+        os.chdir(self.topdir)
+        yield
+        os.chdir(original_cwd)
+
+    @_ensure_topdir
     def pause(self):
         self.cov.stop()
         self.unset_env()
 
+    @_ensure_topdir
     def resume(self):
         self.cov.start()
         self.set_env()
 
+    @_ensure_topdir
     def set_env(self):
         """Put info about coverage into the env so that subprocesses can activate coverage."""
         if self.cov_source is None:
@@ -99,6 +130,7 @@ class CovController(object):
             out = '%s %s %s\n' % (s * sep_len, txt, s * (sep_len + sep_extra))
             stream.write(out)
 
+    @_ensure_topdir
     def summary(self, stream):
         """Produce coverage reports."""
         total = None
@@ -171,6 +203,7 @@ class CovController(object):
 class Central(CovController):
     """Implementation for centralised operation."""
 
+    @_ensure_topdir
     def start(self):
         cleanup()
 
@@ -190,6 +223,7 @@ class Central(CovController):
         self.cov.start()
         self.set_env()
 
+    @_ensure_topdir
     def finish(self):
         """Stop coverage, save data to file and set the list of coverage objects to report on."""
 
@@ -209,6 +243,7 @@ class Central(CovController):
 class DistMaster(CovController):
     """Implementation for distributed master."""
 
+    @_ensure_topdir
     def start(self):
         cleanup()
 
@@ -259,7 +294,7 @@ class DistMaster(CovController):
                 socket.gethostname(), os.getpid(),
                 random.randint(0, 999999),
                 output['cov_worker_node_id']
-                )
+            )
 
             cov = coverage.Coverage(source=self.cov_source,
                                     branch=self.cov_branch,
@@ -284,6 +319,7 @@ class DistMaster(CovController):
         node_desc = self.get_node_desc(rinfo.platform, rinfo.version_info)
         self.node_descs.add(node_desc)
 
+    @_ensure_topdir
     def finish(self):
         """Combines coverage data and sets the list of coverage objects to report on."""
 
@@ -299,7 +335,9 @@ class DistMaster(CovController):
 class DistWorker(CovController):
     """Implementation for distributed workers."""
 
+    @_ensure_topdir
     def start(self):
+
         cleanup()
 
         # Determine whether we are collocated with master.
@@ -323,6 +361,7 @@ class DistWorker(CovController):
         self.cov.start()
         self.set_env()
 
+    @_ensure_topdir
     def finish(self):
         """Stop coverage and send relevant info back to the master."""
         self.unset_env()

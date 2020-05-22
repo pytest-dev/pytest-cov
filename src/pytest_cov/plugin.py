@@ -142,6 +142,7 @@ class CovPlugin(object):
         self.cov_total = None
         self.failed = False
         self._started = False
+        self._start_path = None
         self._disabled = False
         self.options = options
 
@@ -189,6 +190,7 @@ class CovPlugin(object):
         )
         self.cov_controller.start()
         self._started = True
+        self._start_path = os.getcwd()
         cov_config = self.cov_controller.cov.config
         if self.options.cov_fail_under is None and hasattr(cov_config, 'fail_under'):
             self.options.cov_fail_under = cov_config.fail_under
