@@ -666,13 +666,15 @@ def test_fail():
     result.stdout.fnmatch_lines(['*1 failed*'])
 
 
-def test_no_cov(testdir):
+def test_no_cov(testdir, monkeypatch):
     script = testdir.makepyfile(SCRIPT)
-
+    testdir.makeini("""
+        [pytest]
+        addopts=--no-cov
+    """)
     result = testdir.runpytest('-vvv',
                                '--cov=%s' % script.dirpath(),
                                '--cov-report=term-missing',
-                               '--no-cov',
                                '-rw',
                                script)
     result.stdout.fnmatch_lines_random([
@@ -2009,8 +2011,9 @@ def test_cov_and_no_cov(testdir):
     result = testdir.runpytest('-v',
                                '--cov', '--no-cov',
                                '-n', '1',
+                               '-s',
                                script)
-
+    result.stdout.no_fnmatch_line('*Coverage disabled via --no-cov switch!*')
     assert result.ret == 0
 
 

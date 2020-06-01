@@ -122,7 +122,7 @@ setup(
         'cover', 'coverage', 'pytest', 'py.test', 'distributed', 'parallel',
     ],
     install_requires=[
-        'pytest>=3.6',
+        'pytest>=4.6',
         'coverage>=4.4'
     ],
     python_requires='>=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*, !=3.4.*',
