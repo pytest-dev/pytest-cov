@@ -1,6 +1,12 @@
 Changelog
 =========
 
+Future release
+--------------
+
+* ``--no-cov`` can now be use with ``-Werror``.  Contributed by Zac Hatfield-Dodds.
+
+
 2.9.0 (2020-05-22)
 ------------------
 
