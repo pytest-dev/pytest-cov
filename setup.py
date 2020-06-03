@@ -134,7 +134,8 @@ setup(
             'six',
             'pytest-xdist',
             'virtualenv',
-        ]
+        ],
+        'toml': ['toml'],
     },
     entry_points={
         'pytest11': [
