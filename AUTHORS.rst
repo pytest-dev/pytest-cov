@@ -38,3 +38,4 @@ Authors
 * Hugo van Kemenade - https://github.com/hugovk
 * Michael Manganiello - https://github.com/adamantike
 * Anders Hovmöller - https://github.com/boxed
+* Christian Riedel - https://github.com/Cielquan
