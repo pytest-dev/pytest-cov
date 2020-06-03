@@ -1,6 +1,11 @@
 Changelog
 =========
 
+2.10.0 (2020-06-??)
+-------------------
+* Addded `toml` extra to setup.py.
+  Contributed by Christian Riedel in `#410 <https://github.com/pytest-dev/pytest-cov/pull/410>`_.
+
 2.9.0 (2020-05-22)
 ------------------
 
