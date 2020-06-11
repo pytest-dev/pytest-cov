@@ -2013,7 +2013,8 @@ def test_cov_and_no_cov(testdir):
                                '-n', '1',
                                '-s',
                                script)
-    result.stdout.no_fnmatch_line('*Coverage disabled via --no-cov switch!*')
+    assert 'Coverage disabled via --no-cov switch!' not in result.stdout.str()
+    assert 'Coverage disabled via --no-cov switch!' not in result.stderr.str()
     assert result.ret == 0
 
 
