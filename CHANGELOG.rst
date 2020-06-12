@@ -1,6 +1,12 @@
 Changelog
 =========
 
+2.10.0 (2020-06-12)
+-------------------
+
+* Improved the ``--no-cov`` warning. Now it's only shown if ``--no-cov`` is present before ``--cov``.
+* Removed legacy pytest support. Changed ``setup.py`` so that ``pytest>=4.6`` is required.
+
 2.9.0 (2020-05-22)
 ------------------
 
