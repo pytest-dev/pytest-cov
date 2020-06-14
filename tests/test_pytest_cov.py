@@ -19,7 +19,6 @@ from process_tests import wait_for_strings
 from six import exec_
 
 import pytest_cov.plugin
-from pytest_cov import compat
 
 try:
     from StringIO import StringIO
@@ -28,7 +27,7 @@ except ImportError:
 
 coverage, platform      # required for skipif mark on test_cov_min_from_coveragerc
 
-max_worker_restart_0 = "--max-" + compat.worker + "-restart=0"
+max_worker_restart_0 = "--max-worker-restart=0"
 
 SCRIPT = '''
 import sys, helper
