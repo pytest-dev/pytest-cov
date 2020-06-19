@@ -130,7 +130,7 @@ Changelog
 2.6.0 (2018-09-03)
 ------------------
 
-* Dropped support for Python < 3.4, Pytest < 3.5 and Coverage < 4.4.
+* Dropped support for Python 3 < 3.4, Pytest < 3.5 and Coverage < 4.4.
 * Fixed some documentation formatting. Contributed by Jean Jordaan and Julian.
 * Added an example with ``addopts`` in documentation. Contributed by Samuel Giffard in
   `#195 <https://github.com/pytest-dev/pytest-cov/pull/195>`_.
