@@ -115,6 +115,7 @@ def pytest_load_initial_conftests(early_config, parser, args):
     options = early_config.known_args_namespace
     no_cov = options.no_cov_should_warn = False
     for arg in args:
+        arg = str(arg)
         if arg == '--no-cov':
             no_cov = True
         elif arg.startswith('--cov') and no_cov:
