@@ -2107,3 +2107,9 @@ def test_contexts_not_supported(testdir):
         '*argument --cov-context: Contexts are only supported with coverage.py >= 5.x',
     ])
     assert result.ret != 0
+
+
+def test_issue_417(testdir):
+    # https://github.com/pytest-dev/pytest-cov/issues/417
+    whatever = testdir.maketxtfile(whatever="")
+    testdir.inline_genitems(whatever)
