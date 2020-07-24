@@ -14,9 +14,6 @@ include .bumpversion.cfg
 include .coveragerc
 include .cookiecutterrc
 include .editorconfig
-include .isort.cfg
-include .pylintrc
-include .readthedocs.yml
 
 include AUTHORS.rst
 include CHANGELOG.rst
@@ -24,6 +21,6 @@ include CONTRIBUTING.rst
 include LICENSE
 include README.rst
 
-include tox.ini .travis.yml appveyor.yml
+include tox.ini .travis.yml .appveyor.yml .readthedocs.yml .pre-commit-config.yaml
 
-global-exclude *.py[cod] __pycache__ *.so .coverage
+global-exclude *.py[cod] __pycache__/* *.so *.dylib
