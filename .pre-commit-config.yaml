@@ -2,7 +2,7 @@
 #   pre-commit install
 # To update the pre-commit hooks run:
 #   pre-commit install-hooks
-exclude: '^(.tox|ci/templates|.bumpversion.cfg)(/|$)'
+exclude: '^(src/.*\.pth|\.tox|ci/templates|\.bumpversion\.cfg)(/|$)'
 repos:
   - repo: https://github.com/pre-commit/pre-commit-hooks
     rev: master
