@@ -22,10 +22,11 @@ from setuptools.command.install_lib import install_lib
 
 
 def read(*names, **kwargs):
-    return io.open(
+    with io.open(
         join(dirname(__file__), *names),
         encoding=kwargs.get('encoding', 'utf8')
-    ).read()
+    ) as fh:
+        return fh.read()
 
 
 class BuildWithPTH(build):

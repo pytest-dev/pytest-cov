@@ -41,7 +41,7 @@ To set up `pytest-cov` for local development:
    (look for the "Fork" button).
 2. Clone your fork locally::
 
-    git clone git@github.com:your_name_here/pytest-cov.git
+    git clone git@github.com:YOURGITHUBNAME/pytest-cov.git
 
 3. Create a branch for local development::
 
@@ -49,7 +49,7 @@ To set up `pytest-cov` for local development:
 
    Now you can make your changes locally.
 
-4. When you're done making changes, run all the checks, doc builder and spell checker with `tox <http://tox.readthedocs.io/en/latest/install.html>`_ one command::
+4. When you're done making changes run all the checks and docs builder with `tox <https://tox.readthedocs.io/en/latest/install.html>`_ one command::
 
     tox
 
