@@ -1,4 +1,4 @@
-# NOTE: this file is auto-generated via ci/bootstrap.py (ci/templates/appveyor.yml).
+# NOTE: this file is auto-generated via ci/bootstrap.py (ci/templates/.appveyor.yml).
 version: '{branch}-{build}'
 build: off
 environment:
@@ -6,8 +6,8 @@ environment:
     - TOXENV: check
     - TOXENV: 'py27-pytest46-xdist27-coverage45,py27-pytest46-xdist27-coverage52'
     - TOXENV: 'py35-pytest46-xdist27-coverage45,py35-pytest46-xdist27-coverage52'
-    - TOXENV: 'py36-pytest46-xdist27-coverage45,py36-pytest46-xdist27-coverage52,py36-pytest46-xdist33-coverage45,py36-pytest46-xdist33-coverage52,py36-pytest54-xdist33-coverage45,py36-pytest54-xdist33-coverage52,py36-pytest60-xdist33-coverage52'
-    - TOXENV: 'py37-pytest46-xdist27-coverage45,py37-pytest46-xdist27-coverage52,py37-pytest46-xdist33-coverage45,py37-pytest46-xdist33-coverage52,py37-pytest54-xdist33-coverage45,py37-pytest54-xdist33-coverage52,py37-pytest60-xdist33-coverage52'
+    - TOXENV: 'py36-pytest46-xdist27-coverage45,py36-pytest46-xdist27-coverage52,py36-pytest46-xdist33-coverage45,py36-pytest46-xdist33-coverage52,py36-pytest54-xdist33-coverage45,py36-pytest54-xdist33-coverage52,py36-pytest60-xdistd34-coverage52'
+    - TOXENV: 'py37-pytest46-xdist27-coverage45,py37-pytest46-xdist27-coverage52,py37-pytest46-xdist33-coverage45,py37-pytest46-xdist33-coverage52,py37-pytest54-xdist33-coverage45,py37-pytest54-xdist33-coverage52,py37-pytest60-xdistd34-coverage52'
     - TOXENV: 'pypy-pytest46-xdist27-coverage45,pypy-pytest46-xdist27-coverage52'
 
 init:
@@ -17,11 +17,10 @@ install:
   - IF "%TOXENV:~0,5%" == "pypy-" choco install --no-progress python.pypy
   - IF "%TOXENV:~0,6%" == "pypy3-" choco install --no-progress pypy3
   - SET PATH=C:\tools\pypy\pypy;%PATH%
-  - C:\Python37\python -m pip install -U "virtualenv>=16.5.0"
-  - C:\Python37\python -m pip install tox
+  - C:\Python37\python -m pip install --progress-bar=off tox -rci/requirements.txt
 
 test_script:
-  - C:\Python37\python -m tox
+  - cmd /E:ON /V:ON /C .\ci\appveyor-with-compiler.cmd C:\Python37\python -m tox
 
 on_failure:
   - ps: dir "env:"
