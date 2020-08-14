@@ -1,11 +1,13 @@
 Changelog
 =========
 
-2.10.1 (2020-06-??)
+2.10.1 (2020-08-14)
 -------------------
 
 * Support for ``pytest-xdist`` 2.0, which breaks compatibility with ``pytest-xdist`` before 1.22.3 (from 2017).
   Contributed by Zac Hatfield-Dodds in `#412 <https://github.com/pytest-dev/pytest-cov/pull/412>`_.
+* Fixed the ``LocalPath has no attribute startswith`` failure that occurred when using the ``pytester`` plugin
+  in inline mode.
 
 2.10.0 (2020-06-12)
 -------------------
