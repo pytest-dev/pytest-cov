@@ -21,9 +21,9 @@ For full details refer to the `coverage config file`_ documentation.
 
 .. _`coverage config file`: https://coverage.readthedocs.io/en/latest/config.html
 
-Note that this plugin controls some options and setting the option in the config file will have no
-effect.  These include specifying source to be measured (source option) and all data file handling
-(data_file and parallel options).
+**Important Note :** This plugin controls some options and setting the option in the config file will have no
+effect.  These include specifying source to be measured ("source" option) and all data file handling
+("data_file" and "parallel" options).
 
 If you wish to always add pytest-cov with pytest, you can use ``addopts`` under ``pytest`` or ``tool:pytest`` section.
 For example: ::
