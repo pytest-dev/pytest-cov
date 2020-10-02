@@ -24,7 +24,8 @@ For full details refer to the `coverage config file`_ documentation.
 .. note:: Important Note
 
     This plugin overrides the ``data_file`` and ``parallel`` options of coverage. Unless you also run coverage without
-    pytest-cov it's pointless to set those options in your ``.coveragerc``.
+    pytest-cov it's pointless to set those options in your ``.coveragerc``.  Instead, to override the ``data_file`` setting,
+    you may instead use the environment variable ``COVERAGE_FILE``.
 
     If you use the ``--cov=something`` option (with a value) then coverage's ``source`` option will also get overriden.
     If you have multiple sources it might be easier to set those in ``.coveragerc`` and always use ``--cov`` (wihout a value)
