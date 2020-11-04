@@ -356,6 +356,7 @@ class TestContextPlugin(object):
     def switch_context(self, item, when):
         context = "{item.nodeid}|{when}".format(item=item, when=when)
         self.cov.switch_context(context)
+        os.environ['COV_CORE_CONTEXT'] = context
 
 
 @pytest.fixture

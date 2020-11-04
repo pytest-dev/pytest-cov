@@ -110,6 +110,7 @@ class CovController(object):
         os.environ.pop('COV_CORE_CONFIG', None)
         os.environ.pop('COV_CORE_DATAFILE', None)
         os.environ.pop('COV_CORE_BRANCH', None)
+        os.environ.pop('COV_CORE_CONTEXT', None)
 
     @staticmethod
     def get_node_desc(platform, version_info):
