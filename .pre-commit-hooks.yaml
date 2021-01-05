@@ -1,0 +1,6 @@
+-   id: pytest-cov
+    name: pytest-cov
+    description: This plugin produces coverage reports. 
+    entry: pytest
+    language: python
+    types: [python]
