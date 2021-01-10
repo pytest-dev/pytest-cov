@@ -74,7 +74,8 @@ For merging, you should:
 4. Add yourself to ``AUTHORS.rst``.
 
 .. [1] If you don't have all the necessary python versions available locally you can rely on Travis - it will
-       `run the tests <https://travis-ci.org/pytest-dev/pytest-cov/pull_requests>`_ for each change you add in the pull request.
+       `run the tests <https://travis-ci.com//github/pytest-dev/pytest-cov/pull_requests>`_
+       for each change you add in the pull request.
 
        It will be slower though ...
 
@@ -85,6 +86,6 @@ To run a subset of tests::
 
     tox -e envname -- pytest -k test_myfeature
 
-To run the test environments in *parallel*::
+To run all the test environments in *parallel*::
 
     tox -p auto

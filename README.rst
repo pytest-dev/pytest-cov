@@ -19,9 +19,9 @@ Overview
     :target: https://readthedocs.org/projects/pytest-cov
     :alt: Documentation Status
 
-.. |travis| image:: https://api.travis-ci.org/pytest-dev/pytest-cov.svg?branch=master
+.. |travis| image:: https://api.travis-ci.com/pytest-dev/pytest-cov.svg?branch=master
     :alt: Travis-CI Build Status
-    :target: https://travis-ci.org/pytest-dev/pytest-cov
+    :target: https://travis-ci.com/github/pytest-dev/pytest-cov
 
 .. |appveyor| image:: https://ci.appveyor.com/api/projects/status/github/pytest-dev/pytest-cov?branch=master&svg=true
     :alt: AppVeyor Build Status
