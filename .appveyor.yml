@@ -4,11 +4,11 @@ build: off
 environment:
   matrix:
     - TOXENV: check
-    - TOXENV: 'py27-pytest46-xdist27-coverage45,py27-pytest46-xdist27-coverage52'
-    - TOXENV: 'py35-pytest46-xdist27-coverage45,py35-pytest46-xdist27-coverage52'
-    - TOXENV: 'py36-pytest46-xdist27-coverage45,py36-pytest46-xdist27-coverage52,py36-pytest46-xdist33-coverage45,py36-pytest46-xdist33-coverage52,py36-pytest54-xdist33-coverage45,py36-pytest54-xdist33-coverage52,py36-pytest60-xdist200-coverage52'
-    - TOXENV: 'py37-pytest46-xdist27-coverage45,py37-pytest46-xdist27-coverage52,py37-pytest46-xdist33-coverage45,py37-pytest46-xdist33-coverage52,py37-pytest54-xdist33-coverage45,py37-pytest54-xdist33-coverage52,py37-pytest60-xdist200-coverage52'
-    - TOXENV: 'pypy-pytest46-xdist27-coverage45,pypy-pytest46-xdist27-coverage52'
+    - TOXENV: 'py27-pytest46-xdist127-coverage52,py27-pytest46-xdist127-coverage53'
+    - TOXENV: 'py35-pytest46-xdist127-coverage52,py35-pytest46-xdist127-coverage53'
+    - TOXENV: 'py36-pytest46-xdist127-coverage52,py36-pytest46-xdist127-coverage53,py36-pytest46-xdist133-coverage53,py36-pytest54-xdist133-coverage53,py36-pytest62-xdist202-coverage53'
+    - TOXENV: 'py37-pytest46-xdist127-coverage52,py37-pytest46-xdist127-coverage53,py37-pytest46-xdist133-coverage53,py37-pytest54-xdist133-coverage53,py37-pytest62-xdist202-coverage53'
+    - TOXENV: 'pypy-pytest46-xdist127-coverage52,pypy-pytest46-xdist127-coverage53'
 
 init:
   - ps: echo $env:TOXENV
