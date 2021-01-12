@@ -1100,7 +1100,7 @@ def test_run_target():
 
 @pytest.mark.skipif('sys.platform == "win32"', reason="multiprocessing support is broken on Windows")
 @pytest.mark.skipif('platform.python_implementation() == "PyPy"', reason="often deadlocks on PyPy")
-@pytest.mark.skipif('sys.version_info[:2] == (3, 8)', reason="deadlocks on Python 3.8, see: https://bugs.python.org/issue38227")
+@pytest.mark.skipif('sys.version_info[:2] >= (3, 8)', reason="deadlocks on Python 3.8, see: https://bugs.python.org/issue38227")
 def test_multiprocessing_pool_terminate(testdir):
     pytest.importorskip('multiprocessing.util')
 
