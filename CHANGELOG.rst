@@ -1,6 +1,25 @@
 Changelog
 =========
 
+2.11.0 (2021-01-18)
+-------------------
+
+* Bumped minimum coverage requirement to 5.2.1. This prevents reporting issues.
+  Contributed by Mateus Berardo de Souza Terra in `#443 <https://github.com/pytest-dev/pytest-cov/pull/433>`_.
+* Improved sample projects (from the `examples <https://github.com/pytest-dev/pytest-cov/tree/master/examples>`_
+  directory) to support running `tox -e pyXY`. Now the example configures a suffixed coverage data file,
+  and that makes the cleanup environment unnecessary.
+  Contributed by Ganden Schaffner in `#435 <https://github.com/pytest-dev/pytest-cov/pull/435>`_.
+* Removed the empty `console_scripts` entrypoint that confused some Gentoo build script.
+  I didn't ask why it was so broken cause I didn't want to ruin my day.
+  Contributed by Michał Górny in `#434 <https://github.com/pytest-dev/pytest-cov/pull/434>`_.
+* Fixed the missing `coverage context <https://coverage.readthedocs.io/en/stable/contexts.html>`_
+  when using subprocesses.
+  Contributed by Bernát Gábor in `#443 <https://github.com/pytest-dev/pytest-cov/pull/443>`_.
+* Updated the config section in the docs.
+  Contributed by Pamela McA'Nulty in `#429 <https://github.com/pytest-dev/pytest-cov/pull/429>`_.
+* Migrated CI to travis-ci.com (from .org).
+
 2.10.1 (2020-08-14)
 -------------------
 
