@@ -5,7 +5,7 @@ Changelog
 -------------------
 
 * Bumped minimum coverage requirement to 5.2.1. This prevents reporting issues.
-  Contributed by Mateus Berardo de Souza Terra in `#443 <https://github.com/pytest-dev/pytest-cov/pull/433>`_.
+  Contributed by Mateus Berardo de Souza Terra in `#433 <https://github.com/pytest-dev/pytest-cov/pull/433>`_.
 * Improved sample projects (from the `examples <https://github.com/pytest-dev/pytest-cov/tree/master/examples>`_
   directory) to support running `tox -e pyXY`. Now the example configures a suffixed coverage data file,
   and that makes the cleanup environment unnecessary.
