@@ -1,2 +1,2 @@
 """pytest-cov: avoid already-imported warning: PYTEST_DONT_REWRITE."""
-__version__ = "__version__ = '2.11.0'"
+__version__ = "__version__ = '2.11.1'"
