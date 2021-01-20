@@ -1,6 +1,12 @@
 Changelog
 =========
 
+2.11.1 (2021-01-20)
+-------------------
+
+* Fixed support for newer setuptools (v42+).
+  Contributed by Michał Górny in `#451 <https://github.com/pytest-dev/pytest-cov/pull/451>`_.
+
 2.11.0 (2021-01-18)
 -------------------
 
