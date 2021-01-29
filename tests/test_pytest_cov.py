@@ -500,7 +500,7 @@ def test_central_coveragerc(testdir, prop):
     ])
 
     # single-module coverage report
-    assert all(not line.startswith('TOTAL ') for line in result.stdout.lines[-4:])
+    assert all(not line.startswith('TOTAL ') for line in result.stdout.lines[-3:])
 
     assert result.ret == 0
 
@@ -538,7 +538,7 @@ parallel = true
     ])
 
     # single-module coverage report
-    assert all(not line.startswith('TOTAL ') for line in result.stdout.lines[-4:])
+    assert all(not line.startswith('TOTAL ') for line in result.stdout.lines[-3:])
 
     assert result.ret == 0
 
@@ -643,7 +643,7 @@ show_missing = true
     ])
 
     # single-module coverage report
-    assert all(not line.startswith('TOTAL ') for line in result.stdout.lines[-4:])
+    assert all(not line.startswith('TOTAL ') for line in result.stdout.lines[-3:])
 
     assert result.ret == 0
 
