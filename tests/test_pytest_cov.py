@@ -498,10 +498,6 @@ def test_central_coveragerc(testdir, prop):
         'test_central_coveragerc* %s *' % prop.result,
         '*10 passed*',
     ])
-
-    # single-module coverage report
-    assert all(not line.startswith('TOTAL ') for line in result.stdout.lines[-4:])
-
     assert result.ret == 0
 
 
@@ -536,10 +532,6 @@ parallel = true
         'src[\\/]mod* %s *' % prop.result,
         '*10 passed*',
     ])
-
-    # single-module coverage report
-    assert all(not line.startswith('TOTAL ') for line in result.stdout.lines[-4:])
-
     assert result.ret == 0
 
 
@@ -641,9 +633,6 @@ show_missing = true
         'test_show_missing_coveragerc* %s * 11*' % prop.result,
         '*10 passed*',
     ])
-
-    # single-module coverage report
-    assert all(not line.startswith('TOTAL ') for line in result.stdout.lines[-4:])
 
     assert result.ret == 0
 

@@ -20,55 +20,43 @@ jobs:
     - env: TOXENV=docs
 
     - stage: tests
-      env: TOXENV=py27-pytest46-xdist127-coverage52
+      env: TOXENV=py27-pytest46-xdist127-coverage55
       python: '2.7'
-    - env: TOXENV=py27-pytest46-xdist127-coverage53
-      python: '2.7'
-    - env: TOXENV=py35-pytest46-xdist127-coverage52
+    - env: TOXENV=py35-pytest46-xdist127-coverage55
       python: '3.5'
-    - env: TOXENV=py35-pytest46-xdist127-coverage53
-      python: '3.5'
-    - env: TOXENV=py36-pytest46-xdist127-coverage52
+    - env: TOXENV=py36-pytest46-xdist127-coverage55
       python: '3.6'
-    - env: TOXENV=py36-pytest46-xdist127-coverage53
-      python: '3.6'
-    - env: TOXENV=py37-pytest46-xdist127-coverage52
+    - env: TOXENV=py37-pytest46-xdist127-coverage55
       python: '3.7'
-    - env: TOXENV=py37-pytest46-xdist127-coverage53
-      python: '3.7'
-    - env: TOXENV=pypy-pytest46-xdist127-coverage52
+    - env: TOXENV=pypy-pytest46-xdist127-coverage55
       python: 'pypy'
-    - env: TOXENV=pypy-pytest46-xdist127-coverage53
-      python: 'pypy'
-    - env: TOXENV=pypy3-pytest46-xdist127-coverage52
+    - env: TOXENV=pypy3-pytest46-xdist127-coverage55
       python: 'pypy3'
-    - env: TOXENV=pypy3-pytest46-xdist127-coverage53
-      python: 'pypy3'
-    - env: TOXENV=py36-pytest46-xdist133-coverage53
+    - env: TOXENV=py36-pytest46-xdist133-coverage55
       python: '3.6'
-    - env: TOXENV=py36-pytest54-xdist133-coverage53
+    - env: TOXENV=py36-pytest54-xdist133-coverage55
       python: '3.6'
-    - env: TOXENV=py37-pytest46-xdist133-coverage53
+    - env: TOXENV=py37-pytest46-xdist133-coverage55
       python: '3.7'
-    - env: TOXENV=py37-pytest54-xdist133-coverage53
+    - env: TOXENV=py37-pytest54-xdist133-coverage55
       python: '3.7'
-    - env: TOXENV=py38-pytest46-xdist133-coverage53
+    - env: TOXENV=py38-pytest46-xdist133-coverage55
       python: '3.8'
-    - env: TOXENV=py38-pytest54-xdist133-coverage53
+    - env: TOXENV=py38-pytest54-xdist133-coverage55
       python: '3.8'
-    - env: TOXENV=pypy3-pytest46-xdist133-coverage53
+    - env: TOXENV=pypy3-pytest46-xdist133-coverage55
       python: 'pypy3'
-    - env: TOXENV=pypy3-pytest54-xdist133-coverage53
+    - env: TOXENV=pypy3-pytest54-xdist133-coverage55
       python: 'pypy3'
-    - env: TOXENV=py36-pytest62-xdist202-coverage53
+    - env: TOXENV=py36-pytest62-xdist202-coverage55
       python: '3.6'
-    - env: TOXENV=py37-pytest62-xdist202-coverage53
+    - env: TOXENV=py37-pytest62-xdist202-coverage55
       python: '3.7'
-    - env: TOXENV=py38-pytest62-xdist202-coverage53
+    - env: TOXENV=py38-pytest62-xdist202-coverage55
       python: '3.8'
-    - env: TOXENV=py39-pytest62-xdist202-coverage53
+    - env: TOXENV=py39-pytest62-xdist202-coverage55
       python: '3.9'
-    - env: TOXENV=pypy3-pytest62-xdist202-coverage53
+    - env: TOXENV=pypy3-pytest62-xdist202-coverage55
       python: 'pypy3'
 
     - stage: examples
