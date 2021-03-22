@@ -38,4 +38,10 @@ Authors
 * Hugo van Kemenade - https://github.com/hugovk
 * Michael Manganiello - https://github.com/adamantike
 * Anders Hovmöller - https://github.com/boxed
+* Zac Hatfield-Dodds - https://zhd.dev
+* Mateus Berardo de Souza Terra - https://github.com/MatTerra
+* Ganden Schaffner - https://github.com/gschaffner
+* Michał Górny - https://github.com/mgorny
+* Bernát Gábor - https://github.com/gaborbernat
+* Pamela McA'Nulty - https://github.com/PamelaM
 * Christian Riedel - https://github.com/Cielquan

@@ -45,7 +45,7 @@ before_install:
   - uname -a
   - lsb_release -a
 install:
-  - pip install tox
+  - python -mpip install --progress-bar=off tox -rci/requirements.txt
   - virtualenv --version
   - easy_install --version
   - pip --version

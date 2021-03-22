@@ -22,31 +22,32 @@ from setuptools.command.install_lib import install_lib
 
 
 def read(*names, **kwargs):
-    return io.open(
+    with io.open(
         join(dirname(__file__), *names),
         encoding=kwargs.get('encoding', 'utf8')
-    ).read()
+    ) as fh:
+        return fh.read()
 
 
 class BuildWithPTH(build):
-    def run(self):
-        build.run(self)
+    def run(self, *args, **kwargs):
+        build.run(self, *args, **kwargs)
         path = join(dirname(__file__), 'src', 'pytest-cov.pth')
         dest = join(self.build_lib, basename(path))
         self.copy_file(path, dest)
 
 
 class EasyInstallWithPTH(easy_install):
-    def run(self):
-        easy_install.run(self)
+    def run(self, *args, **kwargs):
+        easy_install.run(self, *args, **kwargs)
         path = join(dirname(__file__), 'src', 'pytest-cov.pth')
         dest = join(self.install_dir, basename(path))
         self.copy_file(path, dest)
 
 
 class InstallLibWithPTH(install_lib):
-    def run(self):
-        install_lib.run(self)
+    def run(self, *args, **kwargs):
+        install_lib.run(self, *args, **kwargs)
         path = join(dirname(__file__), 'src', 'pytest-cov.pth')
         dest = join(self.install_dir, basename(path))
         self.copy_file(path, dest)
@@ -57,8 +58,8 @@ class InstallLibWithPTH(install_lib):
 
 
 class DevelopWithPTH(develop):
-    def run(self):
-        develop.run(self)
+    def run(self, *args, **kwargs):
+        develop.run(self, *args, **kwargs)
         path = join(dirname(__file__), 'src', 'pytest-cov.pth')
         dest = join(self.install_dir, basename(path))
         self.copy_file(path, dest)
@@ -84,7 +85,7 @@ class GeneratePTH(Command):
 
 setup(
     name='pytest-cov',
-    version='2.9.0',
+    version='2.11.1',
     license='MIT',
     description='Pytest plugin for measuring coverage.',
     long_description='%s\n%s' % (read('README.rst'), re.sub(':[a-z]+:`~?(.*?)`', r'``\1``', read('CHANGELOG.rst'))),
@@ -122,8 +123,8 @@ setup(
         'cover', 'coverage', 'pytest', 'py.test', 'distributed', 'parallel',
     ],
     install_requires=[
-        'pytest>=3.6',
-        'coverage>=4.4'
+        'pytest>=4.6',
+        'coverage>=5.2.1'
     ],
     python_requires='>=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*, !=3.4.*',
     extras_require={
@@ -141,8 +142,6 @@ setup(
         'pytest11': [
             'pytest_cov = pytest_cov.plugin',
         ],
-        'console_scripts': [
-        ]
     },
     cmdclass={
         'build': BuildWithPTH,

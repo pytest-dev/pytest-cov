@@ -19,7 +19,6 @@ from process_tests import wait_for_strings
 from six import exec_
 
 import pytest_cov.plugin
-from pytest_cov import compat
 
 try:
     from StringIO import StringIO
@@ -28,7 +27,7 @@ except ImportError:
 
 coverage, platform      # required for skipif mark on test_cov_min_from_coveragerc
 
-max_worker_restart_0 = "--max-" + compat.worker + "-restart=0"
+max_worker_restart_0 = "--max-worker-restart=0"
 
 SCRIPT = '''
 import sys, helper
@@ -499,10 +498,6 @@ def test_central_coveragerc(testdir, prop):
         'test_central_coveragerc* %s *' % prop.result,
         '*10 passed*',
     ])
-
-    # single-module coverage report
-    assert all(not line.startswith('TOTAL ') for line in result.stdout.lines[-4:])
-
     assert result.ret == 0
 
 
@@ -537,10 +532,6 @@ parallel = true
         'src[\\/]mod* %s *' % prop.result,
         '*10 passed*',
     ])
-
-    # single-module coverage report
-    assert all(not line.startswith('TOTAL ') for line in result.stdout.lines[-4:])
-
     assert result.ret == 0
 
 
@@ -643,9 +634,6 @@ show_missing = true
         '*10 passed*',
     ])
 
-    # single-module coverage report
-    assert all(not line.startswith('TOTAL ') for line in result.stdout.lines[-4:])
-
     assert result.ret == 0
 
 
@@ -666,13 +654,15 @@ def test_fail():
     result.stdout.fnmatch_lines(['*1 failed*'])
 
 
-def test_no_cov(testdir):
+def test_no_cov(testdir, monkeypatch):
     script = testdir.makepyfile(SCRIPT)
-
+    testdir.makeini("""
+        [pytest]
+        addopts=--no-cov
+    """)
     result = testdir.runpytest('-vvv',
                                '--cov=%s' % script.dirpath(),
                                '--cov-report=term-missing',
-                               '--no-cov',
                                '-rw',
                                script)
     result.stdout.fnmatch_lines_random([
@@ -1058,7 +1048,7 @@ def test_funcarg_not_active(testdir):
 @pytest.mark.skipif("sys.version_info[0] < 3", reason="no context manager api on Python 2")
 @pytest.mark.skipif('sys.platform == "win32"', reason="multiprocessing support is broken on Windows")
 @pytest.mark.skipif('platform.python_implementation() == "PyPy"', reason="often deadlocks on PyPy")
-@pytest.mark.skipif('sys.version_info[:2] == (3, 8)', reason="deadlocks on Python 3.8, see: https://bugs.python.org/issue38227")
+@pytest.mark.skipif('sys.version_info[:2] >= (3, 8)', reason="deadlocks on Python 3.8+, see: https://bugs.python.org/issue38227")
 def test_multiprocessing_pool(testdir):
     pytest.importorskip('multiprocessing.util')
 
@@ -1099,7 +1089,7 @@ def test_run_target():
 
 @pytest.mark.skipif('sys.platform == "win32"', reason="multiprocessing support is broken on Windows")
 @pytest.mark.skipif('platform.python_implementation() == "PyPy"', reason="often deadlocks on PyPy")
-@pytest.mark.skipif('sys.version_info[:2] == (3, 8)', reason="deadlocks on Python 3.8, see: https://bugs.python.org/issue38227")
+@pytest.mark.skipif('sys.version_info[:2] >= (3, 8)', reason="deadlocks on Python 3.8, see: https://bugs.python.org/issue38227")
 def test_multiprocessing_pool_terminate(testdir):
     pytest.importorskip('multiprocessing.util')
 
@@ -1537,8 +1527,14 @@ def test_cover_looponfail(testdir, monkeypatch):
     testdir.makeconftest(CONFTEST)
     script = testdir.makepyfile(BASIC_TEST)
 
-    monkeypatch.setattr(testdir, 'run',
-                        lambda *args, **kwargs: _TestProcess(*map(str, args)))
+    def mock_run(*args, **kwargs):
+        return _TestProcess(*map(str, args))
+
+    monkeypatch.setattr(testdir, 'run', mock_run)
+    assert testdir.run is mock_run
+    if hasattr(testdir, '_pytester'):
+        monkeypatch.setattr(testdir._pytester, 'run', mock_run)
+        assert testdir._pytester.run is mock_run
     with testdir.runpytest('-v',
                            '--cov=%s' % script.dirpath(),
                            '--looponfail',
@@ -2009,8 +2005,10 @@ def test_cov_and_no_cov(testdir):
     result = testdir.runpytest('-v',
                                '--cov', '--no-cov',
                                '-n', '1',
+                               '-s',
                                script)
-
+    assert 'Coverage disabled via --no-cov switch!' not in result.stdout.str()
+    assert 'Coverage disabled via --no-cov switch!' not in result.stderr.str()
     assert result.ret == 0
 
 
@@ -2104,3 +2102,9 @@ def test_contexts_not_supported(testdir):
         '*argument --cov-context: Contexts are only supported with coverage.py >= 5.x',
     ])
     assert result.ret != 0
+
+
+def test_issue_417(testdir):
+    # https://github.com/pytest-dev/pytest-cov/issues/417
+    whatever = testdir.maketxtfile(whatever="")
+    testdir.inline_genitems(whatever)

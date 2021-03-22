@@ -45,6 +45,7 @@ def init():
     cov_config = os.environ.get('COV_CORE_CONFIG')
     cov_datafile = os.environ.get('COV_CORE_DATAFILE')
     cov_branch = True if os.environ.get('COV_CORE_BRANCH') == 'enabled' else None
+    cov_context = os.environ.get('COV_CORE_CONTEXT')
 
     if cov_datafile:
         if _active_cov:
@@ -71,6 +72,8 @@ def init():
         )
         cov.load()
         cov.start()
+        if cov_context:
+            cov.switch_context(cov_context)
         cov._warn_no_data = False
         cov._warn_unimported_source = False
         return cov

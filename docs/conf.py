@@ -3,6 +3,7 @@ from __future__ import unicode_literals
 
 import os
 
+import sphinx_py3doc_enhanced_theme
 
 extensions = [
     'sphinx.ext.autodoc',
@@ -25,7 +26,7 @@ project = 'pytest-cov'
 year = '2016'
 author = 'pytest-cov contributors'
 copyright = '{}, {}'.format(year, author)
-version = release = '2.9.0'
+version = release = '2.11.1'
 
 pygments_style = 'trac'
 templates_path = ['.']
@@ -33,7 +34,7 @@ extlinks = {
     'issue': ('https://github.com/pytest-dev/pytest-cov/issues/%s', '#'),
     'pr': ('https://github.com/pytest-dev/pytest-cov/pull/%s', 'PR #'),
 }
-import sphinx_py3doc_enhanced_theme
+
 html_theme = "sphinx_py3doc_enhanced_theme"
 html_theme_path = [sphinx_py3doc_enhanced_theme.get_html_theme_path()]
 html_theme_options = {

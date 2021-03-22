@@ -11,8 +11,6 @@ import coverage
 from coverage.data import CoverageData
 
 from .compat import StringIO
-from .compat import workerinput
-from .compat import workeroutput
 from .embed import cleanup
 
 
@@ -112,6 +110,7 @@ class CovController(object):
         os.environ.pop('COV_CORE_CONFIG', None)
         os.environ.pop('COV_CORE_DATAFILE', None)
         os.environ.pop('COV_CORE_BRANCH', None)
+        os.environ.pop('COV_CORE_CONTEXT', None)
 
     @staticmethod
     def get_node_desc(platform, version_info):
@@ -271,7 +270,7 @@ class DistMaster(CovController):
     def configure_node(self, node):
         """Workers need to know if they are collocated and what files have moved."""
 
-        workerinput(node).update({
+        node.workerinput.update({
             'cov_master_host': socket.gethostname(),
             'cov_master_topdir': self.topdir,
             'cov_master_rsync_roots': [str(root) for root in node.nodemanager.roots],
@@ -282,7 +281,7 @@ class DistMaster(CovController):
 
         # If worker doesn't return any data then it is likely that this
         # plugin didn't get activated on the worker side.
-        output = workeroutput(node, {})
+        output = getattr(node, 'workeroutput', {})
         if 'cov_worker_node_id' not in output:
             self.failed_workers.append(node)
             return
@@ -341,12 +340,12 @@ class DistWorker(CovController):
         cleanup()
 
         # Determine whether we are collocated with master.
-        self.is_collocated = (socket.gethostname() == workerinput(self.config)['cov_master_host'] and
-                              self.topdir == workerinput(self.config)['cov_master_topdir'])
+        self.is_collocated = (socket.gethostname() == self.config.workerinput['cov_master_host'] and
+                              self.topdir == self.config.workerinput['cov_master_topdir'])
 
         # If we are not collocated then rewrite master paths to worker paths.
         if not self.is_collocated:
-            master_topdir = workerinput(self.config)['cov_master_topdir']
+            master_topdir = self.config.workerinput['cov_master_topdir']
             worker_topdir = self.topdir
             if self.cov_source is not None:
                 self.cov_source = [source.replace(master_topdir, worker_topdir)
@@ -375,7 +374,7 @@ class DistWorker(CovController):
 
             # If we are collocated then just inform the master of our
             # data file to indicate that we have finished.
-            workeroutput(self.config)['cov_worker_node_id'] = self.nodeid
+            self.config.workeroutput['cov_worker_node_id'] = self.nodeid
         else:
             self.cov.combine()
             self.cov.save()
@@ -391,7 +390,7 @@ class DistWorker(CovController):
             else:
                 data = self.cov.get_data().dumps()
 
-            workeroutput(self.config).update({
+            self.config.workeroutput.update({
                 'cov_worker_path': self.topdir,
                 'cov_worker_node_id': self.nodeid,
                 'cov_worker_data': data,

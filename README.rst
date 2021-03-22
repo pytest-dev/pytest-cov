@@ -19,9 +19,9 @@ Overview
     :target: https://readthedocs.org/projects/pytest-cov
     :alt: Documentation Status
 
-.. |travis| image:: https://travis-ci.org/pytest-dev/pytest-cov.svg?branch=master
+.. |travis| image:: https://api.travis-ci.com/pytest-dev/pytest-cov.svg?branch=master
     :alt: Travis-CI Build Status
-    :target: https://travis-ci.org/pytest-dev/pytest-cov
+    :target: https://travis-ci.com/github/pytest-dev/pytest-cov
 
 .. |appveyor| image:: https://ci.appveyor.com/api/projects/status/github/pytest-dev/pytest-cov?branch=master&svg=true
     :alt: AppVeyor Build Status
@@ -33,26 +33,26 @@ Overview
 
 .. |version| image:: https://img.shields.io/pypi/v/pytest-cov.svg
     :alt: PyPI Package latest release
-    :target: https://pypi.python.org/pypi/pytest-cov
+    :target: https://pypi.org/project/pytest-cov
 
 .. |conda-forge| image:: https://img.shields.io/conda/vn/conda-forge/pytest-cov.svg
     :target: https://anaconda.org/conda-forge/pytest-cov
 
-.. |commits-since| image:: https://img.shields.io/github/commits-since/pytest-dev/pytest-cov/v2.9.0.svg
+.. |commits-since| image:: https://img.shields.io/github/commits-since/pytest-dev/pytest-cov/v2.11.1.svg
     :alt: Commits since latest release
-    :target: https://github.com/pytest-dev/pytest-cov/compare/v2.9.0...master
+    :target: https://github.com/pytest-dev/pytest-cov/compare/v2.10.1...master
 
 .. |wheel| image:: https://img.shields.io/pypi/wheel/pytest-cov.svg
     :alt: PyPI Wheel
-    :target: https://pypi.python.org/pypi/pytest-cov
+    :target: https://pypi.org/project/pytest-cov
 
 .. |supported-versions| image:: https://img.shields.io/pypi/pyversions/pytest-cov.svg
     :alt: Supported versions
-    :target: https://pypi.python.org/pypi/pytest-cov
+    :target: https://pypi.org/project/pytest-cov
 
 .. |supported-implementations| image:: https://img.shields.io/pypi/implementation/pytest-cov.svg
     :alt: Supported implementations
-    :target: https://pypi.python.org/pypi/pytest-cov
+    :target: https://pypi.org/project/pytest-cov
 
 .. end-badges
 
