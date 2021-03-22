@@ -135,7 +135,7 @@ setup(
             'pytest-xdist',
             'virtualenv',
         ],
-        'toml': ['toml'],
+        'toml': ['coverage[toml] >= 5'],
     },
     entry_points={
         'pytest11': [
