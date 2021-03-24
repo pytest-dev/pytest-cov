@@ -44,3 +44,4 @@ Authors
 * Michał Górny - https://github.com/mgorny
 * Bernát Gábor - https://github.com/gaborbernat
 * Pamela McA'Nulty - https://github.com/PamelaM
+* Christian Riedel - https://github.com/Cielquan
