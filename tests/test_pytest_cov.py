@@ -1999,6 +1999,33 @@ def test_double_cov2(testdir):
     assert result.ret == 0
 
 
+def test_cov_reset(testdir):
+    script = testdir.makepyfile(SCRIPT_SIMPLE)
+    result = testdir.runpytest('-v',
+                               '--assert=plain',
+                               '--cov=%s' % script.dirpath(),
+                               '--cov-reset',
+                               script)
+
+    assert 'coverage: platform' not in result.stdout.str()
+
+
+def test_cov_reset_then_set(testdir):
+    script = testdir.makepyfile(SCRIPT_SIMPLE)
+    result = testdir.runpytest('-v',
+                               '--assert=plain',
+                               '--cov=%s' % script.dirpath(),
+                               '--cov-reset',
+                               '--cov=%s' % script.dirpath(),
+                               script)
+
+    result.stdout.fnmatch_lines([
+        '*- coverage: platform *, python * -*',
+        'test_cov_reset_then_set* %s*' % SCRIPT_SIMPLE_RESULT,
+        '*1 passed*'
+    ])
+
+
 @pytest.mark.skipif('sys.platform == "win32" and platform.python_implementation() == "PyPy"')
 def test_cov_and_no_cov(testdir):
     script = testdir.makepyfile(SCRIPT_SIMPLE)
