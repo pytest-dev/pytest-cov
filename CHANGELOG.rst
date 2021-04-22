@@ -8,6 +8,11 @@ Changelog
 * Added coverage's `toml` extra to install requirements in setup.py.
   Contributed by Christian Riedel in `#410 <https://github.com/pytest-dev/pytest-cov/pull/410>`_.
 
+2.11.1_3vg (2021-04-22)
+-------------------
+
+* Added support for multiprocess library.
+
 2.11.1 (2021-01-20)
 -------------------
 
