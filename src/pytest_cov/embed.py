@@ -36,6 +36,22 @@ else:
     multiprocessing.util.register_after_fork(multiprocessing_start, multiprocessing_start)
 
 
+def multiprocess_start(_):
+    global _active_cov
+    cov = init()
+    if cov:
+        _active_cov = cov
+        multiprocess.util.Finalize(None, cleanup, exitpriority=1000)
+
+
+try:
+    import multiprocess.util
+except ImportError:
+    pass
+else:
+    multiprocess.util.register_after_fork(multiprocess_start, multiprocess_start)
+
+
 def init():
     # Only continue if ancestor process has set everything needed in
     # the env.
