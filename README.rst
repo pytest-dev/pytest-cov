@@ -40,7 +40,7 @@ Overview
 
 .. |commits-since| image:: https://img.shields.io/github/commits-since/pytest-dev/pytest-cov/v2.11.1.svg
     :alt: Commits since latest release
-    :target: https://github.com/pytest-dev/pytest-cov/compare/v2.10.1...master
+    :target: https://github.com/pytest-dev/pytest-cov/compare/v2.11.1...master
 
 .. |wheel| image:: https://img.shields.io/pypi/wheel/pytest-cov.svg
     :alt: PyPI Wheel
