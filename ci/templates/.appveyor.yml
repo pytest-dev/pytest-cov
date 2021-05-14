@@ -1,5 +1,8 @@
 version: '{branch}-{build}'
 build: off
+image:
+  - Visual Studio 2015
+  - Visual Studio 2019
 environment:
   matrix:
     - TOXENV: check
@@ -7,8 +10,26 @@ environment:
     - TOXENV: '{{ py35_environments|join(",") }}'
     - TOXENV: '{{ py36_environments|join(",") }}'
     - TOXENV: '{{ py37_environments|join(",") }}'
+    - TOXENV: '{{ py38_environments|join(",") }}'
+    - TOXENV: '{{ py39_environments|join(",") }}'
     - TOXENV: '{{ pypy_environments|join(",") }}'
-
+    - TOXENV: '{{ pypy3_environments|join(",") }}'
+matrix:
+  exclude:
+    - image: Visual Studio 2015
+      TOXENV: '{{ py27_environments|join(",") }}'
+    - image: Visual Studio 2019
+      TOXENV: '{{ py36_environments|join(",") }}'
+    - image: Visual Studio 2019
+      TOXENV: '{{ py37_environments|join(",") }}'
+    - image: Visual Studio 2019
+      TOXENV: '{{ py38_environments|join(",") }}'
+    - image: Visual Studio 2019
+      TOXENV: '{{ py39_environments|join(",") }}'
+    - image: Visual Studio 2019
+      TOXENV: '{{ pypy_environments|join(",") }}'
+    - image: Visual Studio 2019
+      TOXENV: '{{ pypy3_environments|join(",") }}'
 init:
   - ps: echo $env:TOXENV
   - ps: ls C:\Python*
