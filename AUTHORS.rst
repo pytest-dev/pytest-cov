@@ -45,3 +45,4 @@ Authors
 * Bernát Gábor - https://github.com/gaborbernat
 * Pamela McA'Nulty - https://github.com/PamelaM
 * Christian Riedel - https://github.com/Cielquan
+* Chris Sreesangkom - https://github.com/csreesan

@@ -2,11 +2,17 @@ Changelog
 =========
 
 
-2.12.0 (2021-03-??)
+2.12.0 (2021-05-14)
 -------------------
 
 * Added coverage's `toml` extra to install requirements in setup.py.
   Contributed by Christian Riedel in `#410 <https://github.com/pytest-dev/pytest-cov/pull/410>`_.
+* Fixed ``pytest_cov.__version__`` to have the right value (string with version instead of a string
+  including ``__version__ =``).
+* Fixed license classifier in ``setup.py``.
+  Contributed by Chris Sreesangkom in `#467 <https://github.com/pytest-dev/pytest-cov/pull/467>`_.
+* Fixed *commits since* badge.
+  Contributed by Terence Honles in `#470 <https://github.com/pytest-dev/pytest-cov/pull/470>`_.
 
 2.11.1 (2021-01-20)
 -------------------
