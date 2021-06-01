@@ -16,19 +16,19 @@ environment:
     - TOXENV: '{{ pypy3_environments|join(",") }}'
 matrix:
   exclude:
-    - image: Visual Studio 2015
+    - image: Visual Studio 2019
       TOXENV: '{{ py27_environments|join(",") }}'
-    - image: Visual Studio 2019
+    - image: Visual Studio 2015
       TOXENV: '{{ py36_environments|join(",") }}'
-    - image: Visual Studio 2019
+    - image: Visual Studio 2015
       TOXENV: '{{ py37_environments|join(",") }}'
-    - image: Visual Studio 2019
+    - image: Visual Studio 2015
       TOXENV: '{{ py38_environments|join(",") }}'
-    - image: Visual Studio 2019
+    - image: Visual Studio 2015
       TOXENV: '{{ py39_environments|join(",") }}'
     - image: Visual Studio 2019
       TOXENV: '{{ pypy_environments|join(",") }}'
-    - image: Visual Studio 2019
+    - image: Visual Studio 2015
       TOXENV: '{{ pypy3_environments|join(",") }}'
 init:
   - ps: echo $env:TOXENV
