@@ -46,3 +46,5 @@ Authors
 * Pamela McA'Nulty - https://github.com/PamelaM
 * Christian Riedel - https://github.com/Cielquan
 * Chris Sreesangkom - https://github.com/csreesan
+* Sorin Sbarnea - https://github.com/ssbarnea
+* Brian Rutledge - https://github.com/bhrutledge
