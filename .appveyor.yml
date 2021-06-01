@@ -27,7 +27,7 @@ matrix:
       TOXENV: 'py38-pytest46-xdist133-coverage55,py38-pytest54-xdist133-coverage55,py38-pytest62-xdist202-coverage55'
     - image: Visual Studio 2015
       TOXENV: 'py39-pytest62-xdist202-coverage55'
-    - image: Visual Studio 2019
+    - image: Visual Studio 2015
       TOXENV: 'pypy-pytest46-xdist127-coverage55'
     - image: Visual Studio 2015
       TOXENV: 'pypy3-pytest46-xdist127-coverage55,pypy3-pytest46-xdist133-coverage55,pypy3-pytest54-xdist133-coverage55,pypy3-pytest62-xdist202-coverage55'

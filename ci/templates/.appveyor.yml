@@ -26,7 +26,7 @@ matrix:
       TOXENV: '{{ py38_environments|join(",") }}'
     - image: Visual Studio 2015
       TOXENV: '{{ py39_environments|join(",") }}'
-    - image: Visual Studio 2019
+    - image: Visual Studio 2015
       TOXENV: '{{ pypy_environments|join(",") }}'
     - image: Visual Studio 2015
       TOXENV: '{{ pypy3_environments|join(",") }}'
