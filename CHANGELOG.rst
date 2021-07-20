@@ -1,13 +1,90 @@
 Changelog
 =========
 
-2.8.2 (unreleased)
+2.12.1 (2021-06-01)
+-------------------
+
+* Changed the `toml` requirement to be always be directly required (instead of being required through a coverage extra).
+  This fixes issues with pip-compile (`pip-tools#1300 <https://github.com/jazzband/pip-tools/issues/1300>`_).
+  Contributed by Sorin Sbarnea in `#472 <https://github.com/pytest-dev/pytest-cov/pull/472>`_.
+* Documented ``show_contexts``.
+  Contributed by Brian Rutledge in `#473 <https://github.com/pytest-dev/pytest-cov/pull/473>`_.
+
+2.12.0 (2021-05-14)
+-------------------
+
+* Added coverage's `toml` extra to install requirements in setup.py.
+  Contributed by Christian Riedel in `#410 <https://github.com/pytest-dev/pytest-cov/pull/410>`_.
+* Fixed ``pytest_cov.__version__`` to have the right value (string with version instead of a string
+  including ``__version__ =``).
+* Fixed license classifier in ``setup.py``.
+  Contributed by Chris Sreesangkom in `#467 <https://github.com/pytest-dev/pytest-cov/pull/467>`_.
+* Fixed *commits since* badge.
+  Contributed by Terence Honles in `#470 <https://github.com/pytest-dev/pytest-cov/pull/470>`_.
+
+2.11.1 (2021-01-20)
+-------------------
+
+* Fixed support for newer setuptools (v42+).
+  Contributed by Michał Górny in `#451 <https://github.com/pytest-dev/pytest-cov/pull/451>`_.
+
+2.11.0 (2021-01-18)
+-------------------
+
+* Bumped minimum coverage requirement to 5.2.1. This prevents reporting issues.
+  Contributed by Mateus Berardo de Souza Terra in `#433 <https://github.com/pytest-dev/pytest-cov/pull/433>`_.
+* Improved sample projects (from the `examples <https://github.com/pytest-dev/pytest-cov/tree/master/examples>`_
+  directory) to support running `tox -e pyXY`. Now the example configures a suffixed coverage data file,
+  and that makes the cleanup environment unnecessary.
+  Contributed by Ganden Schaffner in `#435 <https://github.com/pytest-dev/pytest-cov/pull/435>`_.
+* Removed the empty `console_scripts` entrypoint that confused some Gentoo build script.
+  I didn't ask why it was so broken cause I didn't want to ruin my day.
+  Contributed by Michał Górny in `#434 <https://github.com/pytest-dev/pytest-cov/pull/434>`_.
+* Fixed the missing `coverage context <https://coverage.readthedocs.io/en/stable/contexts.html>`_
+  when using subprocesses.
+  Contributed by Bernát Gábor in `#443 <https://github.com/pytest-dev/pytest-cov/pull/443>`_.
+* Updated the config section in the docs.
+  Contributed by Pamela McA'Nulty in `#429 <https://github.com/pytest-dev/pytest-cov/pull/429>`_.
+* Migrated CI to travis-ci.com (from .org).
+
+2.10.1 (2020-08-14)
+-------------------
+
+* Support for ``pytest-xdist`` 2.0, which breaks compatibility with ``pytest-xdist`` before 1.22.3 (from 2017).
+  Contributed by Zac Hatfield-Dodds in `#412 <https://github.com/pytest-dev/pytest-cov/pull/412>`_.
+* Fixed the ``LocalPath has no attribute startswith`` failure that occurred when using the ``pytester`` plugin
+  in inline mode.
+
+2.10.0 (2020-06-12)
+-------------------
+
+* Improved the ``--no-cov`` warning. Now it's only shown if ``--no-cov`` is present before ``--cov``.
+* Removed legacy pytest support. Changed ``setup.py`` so that ``pytest>=4.6`` is required.
+
+2.9.0 (2020-05-22)
 ------------------
 
 * Fixed ``RemovedInPytest4Warning`` when using Pytest 3.10.
   Contributed by Michael Manganiello in `#354 <https://github.com/pytest-dev/pytest-cov/pull/354>`_.
-* Made pytest startup faster when plugin not active by lazy-importing. 
+* Made pytest startup faster when plugin not active by lazy-importing.
   Contributed by Anders Hovmöller in `#339 <https://github.com/pytest-dev/pytest-cov/pull/339>`_.
+* Various CI improvements.
+  Contributed by Daniel Hahler in `#363 <https://github.com/pytest-dev/pytest-cov/pull/>`_ and
+  `#364 <https://github.com/pytest-dev/pytest-cov/pull/364>`_.
+* Various Python support updates (drop EOL 3.4, test against 3.8 final).
+  Contributed by Hugo van Kemenade in
+  `#336 <https://github.com/pytest-dev/pytest-cov/pull/336>`_ and
+  `#367 <https://github.com/pytest-dev/pytest-cov/pull/367>`_.
+* Changed ``--cov-append`` to always enable ``data_suffix`` (a coverage setting).
+  Contributed by Harm Geerts in
+  `#387 <https://github.com/pytest-dev/pytest-cov/pull/387>`_.
+* Changed ``--cov-append`` to handle loading previous data better
+  (fixes various path aliasing issues).
+* Various other testing improvements, github issue templates, example updates.
+* Fixed internal failures that are caused by tests that change the current working directory by
+  ensuring a consistent working directory when coverage is called.
+  See `#306 <https://github.com/pytest-dev/pytest-cov/issues/306>`_ and
+  `coveragepy#881 <https://github.com/nedbat/coveragepy/issues/881>`_
 
 2.8.1 (2019-10-05)
 ------------------
@@ -101,7 +178,7 @@ Changelog
 2.6.0 (2018-09-03)
 ------------------
 
-* Dropped support for Python < 3.4, Pytest < 3.5 and Coverage < 4.4.
+* Dropped support for Python 3 < 3.4, Pytest < 3.5 and Coverage < 4.4.
 * Fixed some documentation formatting. Contributed by Jean Jordaan and Julian.
 * Added an example with ``addopts`` in documentation. Contributed by Samuel Giffard in
   `#195 <https://github.com/pytest-dev/pytest-cov/pull/195>`_.

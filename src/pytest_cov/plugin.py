@@ -128,8 +128,18 @@ def _prepare_cov_source(cov_source):
 
 @pytest.mark.tryfirst
 def pytest_load_initial_conftests(early_config, parser, args):
+    options = early_config.known_args_namespace
+    no_cov = options.no_cov_should_warn = False
+    for arg in args:
+        arg = str(arg)
+        if arg == '--no-cov':
+            no_cov = True
+        elif arg.startswith('--cov') and no_cov:
+            options.no_cov_should_warn = True
+            break
+
     if early_config.known_args_namespace.cov_source:
-        plugin = CovPlugin(early_config.known_args_namespace, early_config.pluginmanager)
+        plugin = CovPlugin(options, early_config.pluginmanager)
         early_config.pluginmanager.register(plugin, '_cov')
 
 
@@ -141,7 +151,7 @@ class CovPlugin(object):
     distributed worker.
     """
 
-    def __init__(self, options, pluginmanager, start=True):
+    def __init__(self, options, pluginmanager, start=True, no_cov_should_warn=False):
         """Creates a coverage pytest plugin.
 
         We read the rc file that coverage uses to get the data file
@@ -156,6 +166,7 @@ class CovPlugin(object):
         self.cov_total = None
         self.failed = False
         self._started = False
+        self._start_path = None
         self._disabled = False
         self.options = options
 
@@ -203,12 +214,13 @@ class CovPlugin(object):
         )
         self.cov_controller.start()
         self._started = True
+        self._start_path = os.getcwd()
         cov_config = self.cov_controller.cov.config
         if self.options.cov_fail_under is None and hasattr(cov_config, 'fail_under'):
             self.options.cov_fail_under = cov_config.fail_under
 
     def _is_worker(self, session):
-        return compat.workerinput(session.config, None) is not None
+        return getattr(session.config, 'workerinput', None) is not None
 
     def pytest_sessionstart(self, session):
         """At session start determine our implementation and delegate to it."""
@@ -225,8 +237,7 @@ class CovPlugin(object):
         self.pid = os.getpid()
         if self._is_worker(session):
             nodeid = (
-                compat.workerinput(session.config)
-                .get(compat.workerid, getattr(session, 'nodeid'))
+                session.config.workerinput.get('workerid', getattr(session, 'nodeid'))
             )
             self.start(engine.DistWorker, session.config, nodeid)
         elif not self._started:
@@ -287,11 +298,7 @@ class CovPlugin(object):
                 message = 'Failed to generate report: %s\n' % exc
                 session.config.pluginmanager.getplugin("terminalreporter").write(
                     'WARNING: %s\n' % message, red=True, bold=True)
-                compat.warn(
-                    config=session.config,
-                    message=message,
-                    category=CovReportWarning,
-                )
+                warnings.warn(CovReportWarning(message))
                 self.cov_total = 0
             assert self.cov_total is not None, 'Test coverage should never be `None`'
             if self._failed_cov_total():
@@ -300,13 +307,10 @@ class CovPlugin(object):
 
     def pytest_terminal_summary(self, terminalreporter):
         if self._disabled:
-            message = 'Coverage disabled via --no-cov switch!'
-            terminalreporter.write('WARNING: %s\n' % message, red=True, bold=True)
-            compat.warn(
-                config=terminalreporter.config,
-                message=message,
-                category=CovDisabledWarning,
-            )
+            if self.options.no_cov_should_warn:
+                message = 'Coverage disabled via --no-cov switch!'
+                terminalreporter.write('WARNING: %s\n' % message, red=True, bold=True)
+                warnings.warn(CovReportWarning(message))
             return
         if self.cov_controller is None:
             return
@@ -368,6 +372,7 @@ class TestContextPlugin(object):
     def switch_context(self, item, when):
         context = "{item.nodeid}|{when}".format(item=item, when=when)
         self.cov.switch_context(context)
+        os.environ['COV_CORE_CONTEXT'] = context
 
 
 @pytest.fixture

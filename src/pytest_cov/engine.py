@@ -1,6 +1,7 @@
 """Coverage controllers for use by pytest-cov and nose-cov."""
 import contextlib
 import copy
+import functools
 import os
 import random
 import socket
@@ -10,8 +11,6 @@ import coverage
 from coverage.data import CoverageData
 
 from .compat import StringIO
-from .compat import workerinput
-from .compat import workeroutput
 from .embed import cleanup
 
 
@@ -29,6 +28,25 @@ def _backup(obj, attr):
         yield
     finally:
         setattr(obj, attr, backup)
+
+
+def _ensure_topdir(meth):
+    @functools.wraps(meth)
+    def ensure_topdir_wrapper(self, *args, **kwargs):
+        try:
+            original_cwd = os.getcwd()
+        except OSError:
+            # Looks like it's gone, this is non-ideal because a side-effect will
+            # be introduced in the tests here but we can't do anything about it.
+            original_cwd = None
+        os.chdir(self.topdir)
+        try:
+            return meth(self, *args, **kwargs)
+        finally:
+            if original_cwd is not None:
+                os.chdir(original_cwd)
+
+    return ensure_topdir_wrapper
 
 
 class CovController(object):
@@ -50,15 +68,26 @@ class CovController(object):
         self.node_descs = set()
         self.failed_workers = []
         self.topdir = os.getcwd()
+        self.is_collocated = None
 
+    @contextlib.contextmanager
+    def ensure_topdir(self):
+        original_cwd = os.getcwd()
+        os.chdir(self.topdir)
+        yield
+        os.chdir(original_cwd)
+
+    @_ensure_topdir
     def pause(self):
         self.cov.stop()
         self.unset_env()
 
+    @_ensure_topdir
     def resume(self):
         self.cov.start()
         self.set_env()
 
+    @_ensure_topdir
     def set_env(self):
         """Put info about coverage into the env so that subprocesses can activate coverage."""
         if self.cov_source is None:
@@ -81,6 +110,7 @@ class CovController(object):
         os.environ.pop('COV_CORE_CONFIG', None)
         os.environ.pop('COV_CORE_DATAFILE', None)
         os.environ.pop('COV_CORE_BRANCH', None)
+        os.environ.pop('COV_CORE_CONTEXT', None)
 
     @staticmethod
     def get_node_desc(platform, version_info):
@@ -99,6 +129,7 @@ class CovController(object):
             out = '%s %s %s\n' % (s * sep_len, txt, s * (sep_len + sep_extra))
             stream.write(out)
 
+    @_ensure_topdir
     def summary(self, stream):
         """Produce coverage reports."""
         total = None
@@ -171,25 +202,27 @@ class CovController(object):
 class Central(CovController):
     """Implementation for centralised operation."""
 
+    @_ensure_topdir
     def start(self):
         cleanup()
 
         self.cov = coverage.Coverage(source=self.cov_source,
                                      branch=self.cov_branch,
+                                     data_suffix=True,
                                      config_file=self.cov_config)
         self.combining_cov = coverage.Coverage(source=self.cov_source,
                                                branch=self.cov_branch,
+                                               data_suffix=True,
                                                data_file=os.path.abspath(self.cov.config.data_file),
                                                config_file=self.cov_config)
 
         # Erase or load any previous coverage data and start coverage.
-        if self.cov_append:
-            self.cov.load()
-        else:
+        if not self.cov_append:
             self.cov.erase()
         self.cov.start()
         self.set_env()
 
+    @_ensure_topdir
     def finish(self):
         """Stop coverage, save data to file and set the list of coverage objects to report on."""
 
@@ -209,6 +242,7 @@ class Central(CovController):
 class DistMaster(CovController):
     """Implementation for distributed master."""
 
+    @_ensure_topdir
     def start(self):
         cleanup()
 
@@ -218,14 +252,17 @@ class DistMaster(CovController):
 
         self.cov = coverage.Coverage(source=self.cov_source,
                                      branch=self.cov_branch,
+                                     data_suffix=True,
                                      config_file=self.cov_config)
+        self.cov._warn_no_data = False
+        self.cov._warn_unimported_source = False
+        self.cov._warn_preimported_source = False
         self.combining_cov = coverage.Coverage(source=self.cov_source,
                                                branch=self.cov_branch,
+                                               data_suffix=True,
                                                data_file=os.path.abspath(self.cov.config.data_file),
                                                config_file=self.cov_config)
-        if self.cov_append:
-            self.cov.load()
-        else:
+        if not self.cov_append:
             self.cov.erase()
         self.cov.start()
         self.cov.config.paths['source'] = [self.topdir]
@@ -233,7 +270,7 @@ class DistMaster(CovController):
     def configure_node(self, node):
         """Workers need to know if they are collocated and what files have moved."""
 
-        workerinput(node).update({
+        node.workerinput.update({
             'cov_master_host': socket.gethostname(),
             'cov_master_topdir': self.topdir,
             'cov_master_rsync_roots': [str(root) for root in node.nodemanager.roots],
@@ -244,7 +281,7 @@ class DistMaster(CovController):
 
         # If worker doesn't return any data then it is likely that this
         # plugin didn't get activated on the worker side.
-        output = workeroutput(node, {})
+        output = getattr(node, 'workeroutput', {})
         if 'cov_worker_node_id' not in output:
             self.failed_workers.append(node)
             return
@@ -256,7 +293,7 @@ class DistMaster(CovController):
                 socket.gethostname(), os.getpid(),
                 random.randint(0, 999999),
                 output['cov_worker_node_id']
-                )
+            )
 
             cov = coverage.Coverage(source=self.cov_source,
                                     branch=self.cov_branch,
@@ -281,6 +318,7 @@ class DistMaster(CovController):
         node_desc = self.get_node_desc(rinfo.platform, rinfo.version_info)
         self.node_descs.add(node_desc)
 
+    @_ensure_topdir
     def finish(self):
         """Combines coverage data and sets the list of coverage objects to report on."""
 
@@ -296,16 +334,18 @@ class DistMaster(CovController):
 class DistWorker(CovController):
     """Implementation for distributed workers."""
 
+    @_ensure_topdir
     def start(self):
+
         cleanup()
 
         # Determine whether we are collocated with master.
-        self.is_collocated = (socket.gethostname() == workerinput(self.config)['cov_master_host'] and
-                              self.topdir == workerinput(self.config)['cov_master_topdir'])
+        self.is_collocated = (socket.gethostname() == self.config.workerinput['cov_master_host'] and
+                              self.topdir == self.config.workerinput['cov_master_topdir'])
 
         # If we are not collocated then rewrite master paths to worker paths.
         if not self.is_collocated:
-            master_topdir = workerinput(self.config)['cov_master_topdir']
+            master_topdir = self.config.workerinput['cov_master_topdir']
             worker_topdir = self.topdir
             if self.cov_source is not None:
                 self.cov_source = [source.replace(master_topdir, worker_topdir)
@@ -320,6 +360,7 @@ class DistWorker(CovController):
         self.cov.start()
         self.set_env()
 
+    @_ensure_topdir
     def finish(self):
         """Stop coverage and send relevant info back to the master."""
         self.unset_env()
@@ -333,7 +374,7 @@ class DistWorker(CovController):
 
             # If we are collocated then just inform the master of our
             # data file to indicate that we have finished.
-            workeroutput(self.config)['cov_worker_node_id'] = self.nodeid
+            self.config.workeroutput['cov_worker_node_id'] = self.nodeid
         else:
             self.cov.combine()
             self.cov.save()
@@ -349,7 +390,7 @@ class DistWorker(CovController):
             else:
                 data = self.cov.get_data().dumps()
 
-            workeroutput(self.config).update({
+            self.config.workeroutput.update({
                 'cov_worker_path': self.topdir,
                 'cov_worker_node_id': self.nodeid,
                 'cov_worker_data': data,

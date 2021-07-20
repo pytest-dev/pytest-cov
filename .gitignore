@@ -1,4 +1,5 @@
 *.py[cod]
+__pycache__
 
 # C extensions
 *.so
@@ -21,6 +22,7 @@ lib
 lib64
 venv*/
 pyvenv*/
+pip-wheel-metadata/
 
 # Installer logs
 pip-log.txt
@@ -29,6 +31,7 @@ pip-log.txt
 .coverage
 .tox
 .coverage.*
+.pytest_cache/
 nosetests.xml
 coverage.xml
 htmlcov
@@ -36,11 +39,14 @@ htmlcov
 # Translations
 *.mo
 
-# Mr Developer
+# Buildout
 .mr.developer.cfg
+
+# IDE project files
 .project
 .pydevproject
 .idea
+.vscode
 *.iml
 *.komodoproject
 
@@ -59,6 +65,10 @@ docs/_build
 .env
 .cache
 .pytest
+.benchmarks
 .bootstrap
 .appveyor.token
 *.bak
+
+# Mypy Cache
+.mypy_cache/

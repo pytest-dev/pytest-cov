@@ -1,4 +1,4 @@
-sphinx==2.3.1
+sphinx==3.0.3
 sphinx-py3doc-enhanced-theme==2.4.0
 docutils==0.16
 -e .

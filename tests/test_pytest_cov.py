@@ -19,7 +19,6 @@ from process_tests import wait_for_strings
 from six import exec_
 
 import pytest_cov.plugin
-from pytest_cov import compat
 
 try:
     from StringIO import StringIO
@@ -28,7 +27,7 @@ except ImportError:
 
 coverage, platform      # required for skipif mark on test_cov_min_from_coveragerc
 
-max_worker_restart_0 = "--max-" + compat.worker + "-restart=0"
+max_worker_restart_0 = "--max-worker-restart=0"
 
 SCRIPT = '''
 import sys, helper
@@ -499,10 +498,6 @@ def test_central_coveragerc(testdir, prop):
         'test_central_coveragerc* %s *' % prop.result,
         '*10 passed*',
     ])
-
-    # single-module coverage report
-    assert all(not line.startswith('TOTAL ') for line in result.stdout.lines[-4:])
-
     assert result.ret == 0
 
 
@@ -537,9 +532,45 @@ parallel = true
         'src[\\/]mod* %s *' % prop.result,
         '*10 passed*',
     ])
+    assert result.ret == 0
 
-    # single-module coverage report
-    assert all(not line.startswith('TOTAL ') for line in result.stdout.lines[-4:])
+
+@xdist_params
+def test_borken_cwd(testdir, monkeypatch, opts):
+    testdir.makepyfile(mod='''
+def foobar(a, b):
+    return a + b
+''')
+
+    script = testdir.makepyfile('''
+import os
+import tempfile
+import pytest
+import mod
+
+@pytest.fixture
+def bad():
+    path = tempfile.mkdtemp('test_borken_cwd')
+    os.chdir(path)
+    yield
+    try:
+        os.rmdir(path)
+    except OSError:
+        pass
+
+def test_foobar(bad):
+    assert mod.foobar(1, 2) == 3
+''')
+    result = testdir.runpytest('-v', '-s',
+                               '--cov=mod',
+                               '--cov-branch',
+                               script, *opts.split())
+
+    result.stdout.fnmatch_lines([
+        '*- coverage: platform *, python * -*',
+        '*mod* 100%',
+        '*1 passed*',
+    ])
 
     assert result.ret == 0
 
@@ -603,9 +634,6 @@ show_missing = true
         '*10 passed*',
     ])
 
-    # single-module coverage report
-    assert all(not line.startswith('TOTAL ') for line in result.stdout.lines[-4:])
-
     assert result.ret == 0
 
 
@@ -626,13 +654,15 @@ def test_fail():
     result.stdout.fnmatch_lines(['*1 failed*'])
 
 
-def test_no_cov(testdir):
+def test_no_cov(testdir, monkeypatch):
     script = testdir.makepyfile(SCRIPT)
-
+    testdir.makeini("""
+        [pytest]
+        addopts=--no-cov
+    """)
     result = testdir.runpytest('-vvv',
                                '--cov=%s' % script.dirpath(),
                                '--cov-report=term-missing',
-                               '--no-cov',
                                '-rw',
                                script)
     result.stdout.fnmatch_lines_random([
@@ -955,7 +985,7 @@ def test_invalid_coverage_source(testdir):
 def test_dist_missing_data(testdir):
     """Test failure when using a worker without pytest-cov installed."""
     venv_path = os.path.join(str(testdir.tmpdir), 'venv')
-    virtualenv.create_environment(venv_path)
+    virtualenv.cli_run([venv_path])
     if sys.platform == 'win32':
         if platform.python_implementation() == "PyPy":
             exe = os.path.join(venv_path, 'bin', 'python.exe')
@@ -1018,7 +1048,7 @@ def test_funcarg_not_active(testdir):
 @pytest.mark.skipif("sys.version_info[0] < 3", reason="no context manager api on Python 2")
 @pytest.mark.skipif('sys.platform == "win32"', reason="multiprocessing support is broken on Windows")
 @pytest.mark.skipif('platform.python_implementation() == "PyPy"', reason="often deadlocks on PyPy")
-@pytest.mark.skipif('sys.version_info[:2] == (3, 8)', reason="deadlocks on Python 3.8, see: https://bugs.python.org/issue38227")
+@pytest.mark.skipif('sys.version_info[:2] >= (3, 8)', reason="deadlocks on Python 3.8+, see: https://bugs.python.org/issue38227")
 def test_multiprocessing_pool(testdir):
     pytest.importorskip('multiprocessing.util')
 
@@ -1059,7 +1089,7 @@ def test_run_target():
 
 @pytest.mark.skipif('sys.platform == "win32"', reason="multiprocessing support is broken on Windows")
 @pytest.mark.skipif('platform.python_implementation() == "PyPy"', reason="often deadlocks on PyPy")
-@pytest.mark.skipif('sys.version_info[:2] == (3, 8)', reason="deadlocks on Python 3.8, see: https://bugs.python.org/issue38227")
+@pytest.mark.skipif('sys.version_info[:2] >= (3, 8)', reason="deadlocks on Python 3.8, see: https://bugs.python.org/issue38227")
 def test_multiprocessing_pool_terminate(testdir):
     pytest.importorskip('multiprocessing.util')
 
@@ -1497,8 +1527,14 @@ def test_cover_looponfail(testdir, monkeypatch):
     testdir.makeconftest(CONFTEST)
     script = testdir.makepyfile(BASIC_TEST)
 
-    monkeypatch.setattr(testdir, 'run',
-                        lambda *args, **kwargs: _TestProcess(*map(str, args)))
+    def mock_run(*args, **kwargs):
+        return _TestProcess(*map(str, args))
+
+    monkeypatch.setattr(testdir, 'run', mock_run)
+    assert testdir.run is mock_run
+    if hasattr(testdir, '_pytester'):
+        monkeypatch.setattr(testdir._pytester, 'run', mock_run)
+        assert testdir._pytester.run is mock_run
     with testdir.runpytest('-v',
                            '--cov=%s' % script.dirpath(),
                            '--looponfail',
@@ -1813,6 +1849,25 @@ data_file = %s
     assert glob.glob(str(testdir.tmpdir.join('some/special/place/coverage-data*')))
 
 
+@pytest.mark.skipif('sys.platform == "win32" and platform.python_implementation() == "PyPy"')
+def test_xdist_no_data_collected(testdir):
+    testdir.makepyfile(target="x = 123")
+    script = testdir.makepyfile("""
+import target
+def test_foobar():
+    assert target.x == 123
+""")
+    result = testdir.runpytest('-v',
+                               '--cov=target',
+                               '-n', '1',
+                               script)
+    assert 'no-data-collected' not in result.stderr.str()
+    assert 'no-data-collected' not in result.stdout.str()
+    assert 'module-not-imported' not in result.stderr.str()
+    assert 'module-not-imported' not in result.stdout.str()
+    assert result.ret == 0
+
+
 def test_external_data_file_negative(testdir):
     script = testdir.makepyfile(SCRIPT)
     testdir.tmpdir.join('.coveragerc').write("")
@@ -1867,6 +1922,29 @@ def test_do_not_append_coverage(testdir, opts, prop):
         'test_1* 0%',
         'test_2* %s*' % prop.result2,
     ])
+
+
+@pytest.mark.skipif('sys.platform == "win32" and platform.python_implementation() == "PyPy"')
+def test_append_coverage_subprocess(testdir):
+    scripts = testdir.makepyfile(parent_script=SCRIPT_PARENT,
+                                 child_script=SCRIPT_CHILD)
+    parent_script = scripts.dirpath().join('parent_script.py')
+
+    result = testdir.runpytest('-v',
+                               '--cov=%s' % scripts.dirpath(),
+                               '--cov-append',
+                               '--cov-report=term-missing',
+                               '--dist=load',
+                               '--tx=2*popen',
+                               max_worker_restart_0,
+                               parent_script)
+
+    result.stdout.fnmatch_lines([
+        '*- coverage: platform *, python * -*',
+        'child_script* %s*' % CHILD_SCRIPT_RESULT,
+        'parent_script* %s*' % PARENT_SCRIPT_RESULT,
+    ])
+    assert result.ret == 0
 
 
 def test_pth_failure(monkeypatch):
@@ -1927,8 +2005,10 @@ def test_cov_and_no_cov(testdir):
     result = testdir.runpytest('-v',
                                '--cov', '--no-cov',
                                '-n', '1',
+                               '-s',
                                script)
-
+    assert 'Coverage disabled via --no-cov switch!' not in result.stdout.str()
+    assert 'Coverage disabled via --no-cov switch!' not in result.stderr.str()
     assert result.ret == 0
 
 
@@ -2022,3 +2102,9 @@ def test_contexts_not_supported(testdir):
         '*argument --cov-context: Contexts are only supported with coverage.py >= 5.x',
     ])
     assert result.ret != 0
+
+
+def test_issue_417(testdir):
+    # https://github.com/pytest-dev/pytest-cov/issues/417
+    whatever = testdir.maketxtfile(whatever="")
+    testdir.inline_genitems(whatever)
