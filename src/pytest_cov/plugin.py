@@ -311,7 +311,7 @@ class CovPlugin(object):
             if self.options.no_cov_should_warn:
                 message = 'Coverage disabled via --no-cov switch!'
                 terminalreporter.write('WARNING: %s\n' % message, red=True, bold=True)
-                warnings.warn(CovReportWarning(message))
+                warnings.warn(CovDisabledWarning(message))
             return
         if self.cov_controller is None:
             return
