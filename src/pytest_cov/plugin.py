@@ -1,6 +1,7 @@
 """Coverage plugin for pytest."""
 import argparse
 import os
+import warnings
 
 import coverage
 import pytest
