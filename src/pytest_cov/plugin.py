@@ -18,17 +18,14 @@ class PytestCovWarning(pytest.PytestWarning):
     """
     The base for all pytest-cov warnings, never raised directly
     """
-    code = "COV-0"
 
 
 class CovDisabledWarning(PytestCovWarning):
     """Indicates that Coverage was manually disabled"""
-    code = "COV-1"
 
 
 class CovReportWarning(PytestCovWarning):
     """Indicates that we failed to generate a report"""
-    code = "COV-2"
 
 
 def validate_report(arg):
