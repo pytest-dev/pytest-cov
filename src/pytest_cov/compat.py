@@ -3,9 +3,9 @@ try:
 except ImportError:
     from io import StringIO
 
-StringIO  # pyflakes, this is for re-export
+import pytest
 
-PYTEST_VERSION = tuple(int(v) for v in pytest.__version__.split('.')[:3])
+StringIO  # pyflakes, this is for re-export
 
 if hasattr(pytest, 'hookimpl'):
     hookwrapper = pytest.hookimpl(hookwrapper=True)
