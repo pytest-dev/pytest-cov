@@ -14,6 +14,20 @@ class CoverageError(Exception):
     """Indicates that our coverage is too low"""
 
 
+class PytestCovWarning(pytest.PytestWarning):
+    """
+    The base for all pytest-cov warnings, never raised directly
+    """
+
+
+class CovDisabledWarning(PytestCovWarning):
+    """Indicates that Coverage was manually disabled"""
+
+
+class CovReportWarning(PytestCovWarning):
+    """Indicates that we failed to generate a report"""
+
+
 def validate_report(arg):
     file_choices = ['annotate', 'html', 'xml']
     term_choices = ['term', 'term-missing']
@@ -282,7 +296,7 @@ class CovPlugin(object):
                 message = 'Failed to generate report: %s\n' % exc
                 session.config.pluginmanager.getplugin("terminalreporter").write(
                     'WARNING: %s\n' % message, red=True, bold=True)
-                warnings.warn(pytest.PytestWarning(message))
+                warnings.warn(CovReportWarning(message))
                 self.cov_total = 0
             assert self.cov_total is not None, 'Test coverage should never be `None`'
             if self._failed_cov_total():
@@ -294,7 +308,7 @@ class CovPlugin(object):
             if self.options.no_cov_should_warn:
                 message = 'Coverage disabled via --no-cov switch!'
                 terminalreporter.write('WARNING: %s\n' % message, red=True, bold=True)
-                warnings.warn(pytest.PytestWarning(message))
+                warnings.warn(CovDisabledWarning(message))
             return
         if self.cov_controller is None:
             return
