@@ -56,16 +56,23 @@ def validate_report(arg):
 
 def validate_fail_under(num_str):
     try:
-        return int(num_str)
+        value = int(num_str)
     except ValueError:
-        return float(num_str)
+        try:
+            value = float(num_str)
+        except ValueError:
+            raise argparse.ArgumentTypeError('An integer or float value is required.')
+    if value > 100:
+        raise argparse.ArgumentTypeError('Your desire for over-achievement is admirable but misplaced. '
+                                         'The maximum value is 100. Perhaps write more integration tests?')
+    return value
 
 
 def validate_context(arg):
     if coverage.version_info <= (5, 0):
         raise argparse.ArgumentTypeError('Contexts are only supported with coverage.py >= 5.x')
     if arg != "test":
-        raise argparse.ArgumentTypeError('--cov-context=test is the only supported value')
+        raise argparse.ArgumentTypeError('The only supported value is "test".')
     return arg
 
 
