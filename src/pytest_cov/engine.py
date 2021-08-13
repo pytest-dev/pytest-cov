@@ -116,7 +116,7 @@ class CovController(object):
     def get_node_desc(platform, version_info):
         """Return a description of this node."""
 
-        return 'platform %s, python %s' % (platform, '%s.%s.%s-%s-%s' % version_info[:5])
+        return 'platform {}, python {}'.format(platform, '%s.%s.%s-%s-%s' % version_info[:5])
 
     @staticmethod
     def sep(stream, s, txt):
@@ -126,7 +126,7 @@ class CovController(object):
             sep_total = max((70 - 2 - len(txt)), 2)
             sep_len = sep_total // 2
             sep_extra = sep_total % 2
-            out = '%s %s %s\n' % (s * sep_len, txt, s * (sep_len + sep_extra))
+            out = '{} {} {}\n'.format(s * sep_len, txt, s * (sep_len + sep_extra))
             stream.write(out)
 
     @_ensure_topdir

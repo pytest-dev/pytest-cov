@@ -780,13 +780,13 @@ def test_dist_not_collocated_coveragerc_source(testdir, prop):
     dir2 = testdir.mkdir('dir2')
     testdir.tmpdir.join('.coveragerc').write('''
 [run]
-%s
-source = %s
+{}
+source = {}
 [paths]
 source =
     .
     dir1
-    dir2''' % (prop.conf, script.dirpath()))
+    dir2'''.format(prop.conf, script.dirpath()))
 
     result = testdir.runpytest('-v',
                                '--cov',

@@ -47,7 +47,7 @@ html_split_index = True
 html_sidebars = {
    '**': ['searchbox.html', 'globaltoc.html', 'sourcelink.html'],
 }
-html_short_title = '%s-%s' % (project, version)
+html_short_title = '{}-{}'.format(project, version)
 
 napoleon_use_ivar = True
 napoleon_use_rtype = False

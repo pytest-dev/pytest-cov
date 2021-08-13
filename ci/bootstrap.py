@@ -30,7 +30,7 @@ def exec_in_env():
     if not exists(env_path):
         import subprocess
 
-        print("Making bootstrap env in: {0} ...".format(env_path))
+        print("Making bootstrap env in: {} ...".format(env_path))
         try:
             check_call([sys.executable, "-m", "venv", env_path])
         except subprocess.CalledProcessError:
@@ -44,7 +44,7 @@ def exec_in_env():
     if not os.path.exists(python_executable):
         python_executable += '.exe'
 
-    print("Re-executing with: {0}".format(python_executable))
+    print("Re-executing with: {}".format(python_executable))
     print("+ exec", python_executable, __file__, "--no-env")
     os.execv(python_executable, [python_executable, __file__, "--no-env"])
 
@@ -52,7 +52,7 @@ def exec_in_env():
 def main():
     import jinja2
 
-    print("Project path: {0}".format(base_path))
+    print("Project path: {}".format(base_path))
 
     jinja = jinja2.Environment(
         loader=jinja2.FileSystemLoader(join(base_path, "ci", "templates")),
@@ -89,5 +89,5 @@ if __name__ == "__main__":
     elif not args:
         exec_in_env()
     else:
-        print("Unexpected arguments {0}".format(args), file=sys.stderr)
+        print("Unexpected arguments {}".format(args), file=sys.stderr)
         sys.exit(1)
