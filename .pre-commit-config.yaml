@@ -22,3 +22,4 @@ repos:
     rev: v2.23.3
     hooks:
       - id: pyupgrade
+        args: [--py36-plus]
