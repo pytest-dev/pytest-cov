@@ -16,7 +16,6 @@ from fields import Namespace
 from process_tests import TestProcess as _TestProcess
 from process_tests import dump_on_error
 from process_tests import wait_for_strings
-from six import exec_
 
 import pytest_cov.plugin
 
