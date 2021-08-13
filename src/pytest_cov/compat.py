@@ -14,7 +14,7 @@ else:
     hookwrapper = pytest.mark.hookwrapper
 
 
-class SessionWrapper(object):
+class SessionWrapper:
     def __init__(self, session):
         self._session = session
         if hasattr(session, 'testsfailed'):

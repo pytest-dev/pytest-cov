@@ -1964,7 +1964,7 @@ def test_pth_failure(monkeypatch):
     monkeypatch.setattr(embed, 'init', bad_init)
     monkeypatch.setattr(sys, 'stderr', buff)
     monkeypatch.setitem(os.environ, 'COV_CORE_SOURCE', 'foobar')
-    exec_(payload)
+    exec(payload)
     assert buff.getvalue() == '''pytest-cov: Failed to setup subprocess coverage. Environ: {'COV_CORE_SOURCE': 'foobar'} Exception: SpecificError()
 '''
 
@@ -2087,7 +2087,7 @@ def test_contexts(testdir, opts):
             continue
         data.set_query_context(context)
         actual = set(data.lines(test_context_path))
-        assert line_data[label] == actual, "Wrong lines for context {!r}".format(context)
+        assert line_data[label] == actual, f"Wrong lines for context {context!r}"
 
 
 @pytest.mark.skipif("coverage.version_info >= (5, 0)")
