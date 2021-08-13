@@ -1,6 +1,5 @@
 #!/usr/bin/env python
 
-import io
 import re
 from distutils.command.build import build
 from glob import glob
