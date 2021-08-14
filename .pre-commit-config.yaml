@@ -5,16 +5,16 @@
 exclude: '^(src/.*\.pth|\.tox|ci/templates|\.bumpversion\.cfg)(/|$)'
 repos:
   - repo: https://github.com/pre-commit/pre-commit-hooks
-    rev: master
+    rev: v4.0.1
     hooks:
       - id: trailing-whitespace
       - id: end-of-file-fixer
       - id: debug-statements
   - repo: https://github.com/timothycrosley/isort
-    rev: master
+    rev: 5.9.3
     hooks:
       - id: isort
   - repo: https://gitlab.com/pycqa/flake8
-    rev: master
+    rev: 3.9.2
     hooks:
       - id: flake8

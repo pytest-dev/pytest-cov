@@ -22,8 +22,8 @@ id, and each set of parameter values is recorded as a separate test.
 To view contexts when using ``--cov-report=html``, add this to your ``.coveragerc``::
 
     [html]
-    show_contexts = True    
-   
+    show_contexts = True
+
 The HTML report will include an annotation on each covered line, indicating the
-number of contexts that executed the line. Clicking the annotation displays a 
+number of contexts that executed the line. Clicking the annotation displays a
 list of the contexts.
