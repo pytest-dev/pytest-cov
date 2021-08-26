@@ -1,6 +1,3 @@
-# -*- coding: utf-8 -*-
-from __future__ import unicode_literals
-
 import os
 
 import sphinx_py3doc_enhanced_theme
@@ -25,7 +22,7 @@ master_doc = 'index'
 project = 'pytest-cov'
 year = '2016'
 author = 'pytest-cov contributors'
-copyright = '{}, {}'.format(year, author)
+copyright = f'{year}, {author}'
 version = release = '2.12.1'
 
 pygments_style = 'trac'
@@ -47,7 +44,7 @@ html_split_index = True
 html_sidebars = {
    '**': ['searchbox.html', 'globaltoc.html', 'sourcelink.html'],
 }
-html_short_title = '%s-%s' % (project, version)
+html_short_title = f'{project}-{version}'
 
 napoleon_use_ivar = True
 napoleon_use_rtype = False

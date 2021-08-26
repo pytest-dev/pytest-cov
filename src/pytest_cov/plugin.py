@@ -36,7 +36,7 @@ def validate_report(arg):
     values = arg.split(":", 1)
     report_type = values[0]
     if report_type not in all_choices + ['']:
-        msg = 'invalid choice: "{}" (choose from "{}")'.format(arg, all_choices)
+        msg = f'invalid choice: "{arg}" (choose from "{all_choices}")'
         raise argparse.ArgumentTypeError(msg)
 
     if len(values) == 1:
@@ -141,7 +141,7 @@ def pytest_load_initial_conftests(early_config, parser, args):
         early_config.pluginmanager.register(plugin, '_cov')
 
 
-class CovPlugin(object):
+class CovPlugin:
     """Use coverage package to produce code coverage reports.
 
     Delegates all work to a particular implementation based on whether
@@ -196,7 +196,7 @@ class CovPlugin(object):
 
         if config is None:
             # fake config option for engine
-            class Config(object):
+            class Config:
                 option = self.options
 
             config = Config()
@@ -354,7 +354,7 @@ class CovPlugin(object):
             yield
 
 
-class TestContextPlugin(object):
+class TestContextPlugin:
     def __init__(self, cov):
         self.cov = cov
 
@@ -368,7 +368,7 @@ class TestContextPlugin(object):
         self.switch_context(item, 'run')
 
     def switch_context(self, item, when):
-        context = "{item.nodeid}|{when}".format(item=item, when=when)
+        context = f"{item.nodeid}|{when}"
         self.cov.switch_context(context)
         os.environ['COV_CORE_CONTEXT'] = context
 

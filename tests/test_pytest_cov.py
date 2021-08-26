@@ -16,7 +16,6 @@ from fields import Namespace
 from process_tests import TestProcess as _TestProcess
 from process_tests import dump_on_error
 from process_tests import wait_for_strings
-from six import exec_
 
 import pytest_cov.plugin
 
@@ -780,13 +779,13 @@ def test_dist_not_collocated_coveragerc_source(testdir, prop):
     dir2 = testdir.mkdir('dir2')
     testdir.tmpdir.join('.coveragerc').write('''
 [run]
-%s
-source = %s
+{}
+source = {}
 [paths]
 source =
     .
     dir1
-    dir2''' % (prop.conf, script.dirpath()))
+    dir2'''.format(prop.conf, script.dirpath()))
 
     result = testdir.runpytest('-v',
                                '--cov',
@@ -1964,7 +1963,7 @@ def test_pth_failure(monkeypatch):
     monkeypatch.setattr(embed, 'init', bad_init)
     monkeypatch.setattr(sys, 'stderr', buff)
     monkeypatch.setitem(os.environ, 'COV_CORE_SOURCE', 'foobar')
-    exec_(payload)
+    exec(payload)
     assert buff.getvalue() == '''pytest-cov: Failed to setup subprocess coverage. Environ: {'COV_CORE_SOURCE': 'foobar'} Exception: SpecificError()
 '''
 
@@ -2087,7 +2086,7 @@ def test_contexts(testdir, opts):
             continue
         data.set_query_context(context)
         actual = set(data.lines(test_context_path))
-        assert line_data[label] == actual, "Wrong lines for context {!r}".format(context)
+        assert line_data[label] == actual, f"Wrong lines for context {context!r}"
 
 
 @pytest.mark.skipif("coverage.version_info >= (5, 0)")

@@ -1,8 +1,4 @@
 #!/usr/bin/env python
-# -*- coding: utf-8 -*-
-from __future__ import absolute_import
-from __future__ import print_function
-from __future__ import unicode_literals
 
 import os
 import subprocess
@@ -30,7 +26,7 @@ def exec_in_env():
     if not exists(env_path):
         import subprocess
 
-        print("Making bootstrap env in: {0} ...".format(env_path))
+        print(f"Making bootstrap env in: {env_path} ...")
         try:
             check_call([sys.executable, "-m", "venv", env_path])
         except subprocess.CalledProcessError:
@@ -44,7 +40,7 @@ def exec_in_env():
     if not os.path.exists(python_executable):
         python_executable += '.exe'
 
-    print("Re-executing with: {0}".format(python_executable))
+    print(f"Re-executing with: {python_executable}")
     print("+ exec", python_executable, __file__, "--no-env")
     os.execv(python_executable, [python_executable, __file__, "--no-env"])
 
@@ -52,7 +48,7 @@ def exec_in_env():
 def main():
     import jinja2
 
-    print("Project path: {0}".format(base_path))
+    print(f"Project path: {base_path}")
 
     jinja = jinja2.Environment(
         loader=jinja2.FileSystemLoader(join(base_path, "ci", "templates")),
@@ -78,7 +74,7 @@ def main():
         with open(join(base_path, name), "w") as fh:
             fh.write('# NOTE: this file is auto-generated via ci/bootstrap.py (ci/templates/%s).\n' % name)
             fh.write(jinja.get_template(name).render(**template_vars))
-        print("Wrote {}".format(name))
+        print(f"Wrote {name}")
     print("DONE.")
 
 
@@ -89,5 +85,5 @@ if __name__ == "__main__":
     elif not args:
         exec_in_env()
     else:
-        print("Unexpected arguments {0}".format(args), file=sys.stderr)
+        print(f"Unexpected arguments {args}", file=sys.stderr)
         sys.exit(1)

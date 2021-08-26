@@ -14,7 +14,7 @@ from .compat import StringIO
 from .embed import cleanup
 
 
-class _NullFile(object):
+class _NullFile:
     @staticmethod
     def write(v):
         pass
@@ -49,7 +49,7 @@ def _ensure_topdir(meth):
     return ensure_topdir_wrapper
 
 
-class CovController(object):
+class CovController:
     """Base class for different plugin implementations."""
 
     def __init__(self, cov_source, cov_report, cov_config, cov_append, cov_branch, config=None, nodeid=None):
@@ -116,7 +116,7 @@ class CovController(object):
     def get_node_desc(platform, version_info):
         """Return a description of this node."""
 
-        return 'platform %s, python %s' % (platform, '%s.%s.%s-%s-%s' % version_info[:5])
+        return 'platform {}, python {}'.format(platform, '%s.%s.%s-%s-%s' % version_info[:5])
 
     @staticmethod
     def sep(stream, s, txt):
@@ -126,7 +126,7 @@ class CovController(object):
             sep_total = max((70 - 2 - len(txt)), 2)
             sep_len = sep_total // 2
             sep_extra = sep_total % 2
-            out = '%s %s %s\n' % (s * sep_len, txt, s * (sep_len + sep_extra))
+            out = f'{s * sep_len} {txt} {s * (sep_len + sep_extra)}\n'
             stream.write(out)
 
     @_ensure_topdir

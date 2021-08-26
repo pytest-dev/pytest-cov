@@ -1,9 +1,5 @@
 #!/usr/bin/env python
-# -*- encoding: utf-8 -*-
-from __future__ import absolute_import
-from __future__ import print_function
 
-import io
 import re
 from distutils.command.build import build
 from glob import glob
@@ -22,7 +18,7 @@ from setuptools.command.install_lib import install_lib
 
 
 def read(*names, **kwargs):
-    with io.open(
+    with open(
         join(dirname(__file__), *names),
         encoding=kwargs.get('encoding', 'utf8')
     ) as fh:
@@ -88,7 +84,7 @@ setup(
     version='2.12.1',
     license='MIT',
     description='Pytest plugin for measuring coverage.',
-    long_description='%s\n%s' % (read('README.rst'), re.sub(':[a-z]+:`~?(.*?)`', r'``\1``', read('CHANGELOG.rst'))),
+    long_description='{}\n{}'.format(read('README.rst'), re.sub(':[a-z]+:`~?(.*?)`', r'``\1``', read('CHANGELOG.rst'))),
     author='Marc Schlaich',
     author_email='marc.schlaich@gmail.com',
     url='https://github.com/pytest-dev/pytest-cov',
@@ -107,9 +103,8 @@ setup(
         'Operating System :: POSIX',
         'Operating System :: Unix',
         'Programming Language :: Python',
-        'Programming Language :: Python :: 2',
-        'Programming Language :: Python :: 2.7',
         'Programming Language :: Python :: 3',
+        'Programming Language :: Python :: 3 :: Only',
         'Programming Language :: Python :: 3.6',
         'Programming Language :: Python :: 3.7',
         'Programming Language :: Python :: 3.8',
@@ -126,7 +121,7 @@ setup(
         'pytest>=4.6',
         'coverage[toml]>=5.2.1'
     ],
-    python_requires='>=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*, !=3.4.*',
+    python_requires='>=3.6',
     extras_require={
         'testing': [
             'fields',
