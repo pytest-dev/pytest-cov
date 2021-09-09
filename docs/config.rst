@@ -66,6 +66,8 @@ The complete list of command line options is:
                         False
   --no-cov              Disable coverage report completely (useful for
                         debuggers). Default: False
+  --cov-reset           Reset cov sources accumulated in options so far.
+                        Mostly useful for scripts and configuration files.
   --cov-fail-under=MIN  Fail if the total coverage is less than MIN.
   --cov-append          Do not delete coverage but append to current. Default:
                         False

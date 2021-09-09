@@ -91,6 +91,8 @@ def pytest_addoption(parser):
                     nargs='?', const=True, dest='cov_source',
                     help='Path or package name to measure during execution (multi-allowed). '
                          'Use --cov= to not do any source filtering and record everything.')
+    group.addoption('--cov-reset', action='store_const', const=[], dest='cov_source',
+                    help='Reset cov sources accumulated in options so far. ')
     group.addoption('--cov-report', action=StoreReport, default={},
                     metavar='TYPE', type=validate_report,
                     help='Type of report to generate: term, term-missing, '
