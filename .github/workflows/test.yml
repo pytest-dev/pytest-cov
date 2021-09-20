@@ -25,6 +25,12 @@ jobs:
           - {python-version: "3.7", tox-python-version: "py37"}
           - {python-version: "3.8", tox-python-version: "py38"}
           - {python-version: "3.9", tox-python-version: "py39"}
+        exclude:
+          # Remove some jobs from the matrix
+          - {tox-extra-versions: "pytest46-xdist127", python-version: "3.8"}
+          - {tox-extra-versions: "pytest46-xdist127", python-version: "3.9"}
+          - {tox-extra-versions: "pytest46-xdist133", python-version: "3.9"}
+          - {tox-extra-versions: "pytest54-xdist133", python-version: "3.9"}
 
     steps:
       - uses: actions/checkout@v2
