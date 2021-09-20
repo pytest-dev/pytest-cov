@@ -10,7 +10,7 @@ Overview
     * - docs
       - |docs|
     * - tests
-      - | |travis| |appveyor| |requires|
+      - | |github-actions| |appveyor| |requires|
     * - package
       - | |version| |conda-forge| |wheel| |supported-versions| |supported-implementations|
         | |commits-since|
@@ -19,9 +19,9 @@ Overview
     :target: https://readthedocs.org/projects/pytest-cov
     :alt: Documentation Status
 
-.. |travis| image:: https://api.travis-ci.com/pytest-dev/pytest-cov.svg?branch=master
-    :alt: Travis-CI Build Status
-    :target: https://travis-ci.com/github/pytest-dev/pytest-cov
+.. |github-actions| image:: https://github.com/pytest-dev/pytest-cov/actions/workflows/test.yml/badge.svg
+    :alt: GitHub Actions Status
+    :target: https://github.com/pytest-dev/pytest-cov/actions
 
 .. |appveyor| image:: https://ci.appveyor.com/api/projects/status/github/pytest-dev/pytest-cov?branch=master&svg=true
     :alt: AppVeyor Build Status
