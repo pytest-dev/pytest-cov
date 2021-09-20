@@ -13,9 +13,10 @@ jobs:
       matrix:
         python-version: ["pypy3", "3.6", "3.7", "3.8", "3.9"]
         tox-extra-versions: [
-            "pytest46-xdist133-coverage55",
-            "pytest54-xdist133-coverage55",
-            "pytest62-xdist202-coverage55",
+            "pytest46-xdist127",
+            "pytest46-xdist133",
+            "pytest54-xdist133",
+            "pytest62-xdist202",
         ]
         include:
           # Add new helper variables to existing jobs
@@ -24,13 +25,6 @@ jobs:
           - {python-version: "3.7", tox-python-version: "py37"}
           - {python-version: "3.8", tox-python-version: "py38"}
           - {python-version: "3.9", tox-python-version: "py39"}
-         # Add extra jobs to the matrix
-          - {tox-extra-versions: "pytest46-xdist127", python-version: "pypy-2.7", tox-python-version: "pypy"}
-          - {tox-extra-versions: "pytest46-xdist127", python-version: "pypy3", tox-python-version: "pypy3"}
-          - {tox-extra-versions: "pytest46-xdist127", python-version: "2.7", tox-python-version: "py27"}
-          - {tox-extra-versions: "pytest46-xdist127", python-version: "3.5", tox-python-version: "py35"}
-          - {tox-extra-versions: "pytest46-xdist127", python-version: "3.6", tox-python-version: "py36"}
-          - {tox-extra-versions: "pytest46-xdist127", python-version: "3.7", tox-python-version: "py37"}
 
     steps:
       - uses: actions/checkout@v2
@@ -65,4 +59,4 @@ jobs:
 
       - name: Tox tests
         run: |
-          tox -v -e ${{ matrix.tox-python-version }}-${{ matrix.tox-extra-versions }}
+          tox -v -e ${{ matrix.tox-python-version }}-${{ matrix.tox-extra-versions }}-coverage55
