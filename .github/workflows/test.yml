@@ -67,3 +67,11 @@ jobs:
       - name: Tox tests
         run: |
           tox -v -e ${{ matrix.tox-python-version }}-${{ matrix.tox-extra-versions }}-coverage55
+
+  allgood:
+    needs: test
+    runs-on: ubuntu-latest
+    name: Test successful
+    steps:
+      - name: Success
+        run: echo Test successful
