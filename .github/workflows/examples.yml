@@ -11,18 +11,22 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
+        python-version: ["pypy-3.7", "3.9"]
         target: [
             "src-layout",
             "adhoc-layout",
         ]
-
+        include:
+          # Add new helper variables to existing jobs
+          - {python-version: "pypy-3.7", tox-python-version: "pypy3"}
+          - {python-version: "3.9", tox-python-version: "py39"}
     steps:
       - uses: actions/checkout@v2
 
-      - name: Set up Python
+      - name: Set up Python ${{ matrix.python-version }}
         uses: actions/setup-python@v2
         with:
-          python-version: 3.9
+          python-version: ${{ matrix.python-version }}
 
       - name: Cache
         uses: actions/cache@v2
@@ -42,4 +46,4 @@ jobs:
       - name: Examples
         run: |
           cd examples/${{ matrix.target }}
-          tox -v
+          tox -v -e ${{ matrix.tox-python-version }}
