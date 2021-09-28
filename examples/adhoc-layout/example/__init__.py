@@ -1,11 +1,10 @@
-import sys
+import platform
 
-PY2 = sys.version_info[0] == 2
-
-
-if PY2:
+# test merging multiple tox runs with a platform
+# based branch
+if platform.python_implementation() == "PyPy":
     def add(a, b):
-        return b + a
+        return a + b
 
 else:
     def add(a, b):

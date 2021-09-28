@@ -71,4 +71,4 @@ The final report option can also suppress printing to the terminal::
 
 This mode can be especially useful on continuous integration servers, where a coverage file
 is needed for subsequent processing, but no local report needs to be viewed. For example,
-tests run on Travis-CI could produce a .coverage file for use with Coveralls.
+tests run on GitHub Actions could produce a .coverage file for use with Coveralls.
