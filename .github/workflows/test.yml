@@ -11,7 +11,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        python-version: ["pypy-3.6", "pypy-3.7", "3.6", "3.7", "3.8", "3.9"]
+        python-version: ["pypy-3.6", "pypy-3.7", "3.6", "3.7", "3.8", "3.9", "3.10-dev"]
         tox-extra-versions: [
             "pytest46-xdist127",
             "pytest46-xdist133",
@@ -26,12 +26,16 @@ jobs:
           - {python-version: "3.7", tox-python-version: "py37"}
           - {python-version: "3.8", tox-python-version: "py38"}
           - {python-version: "3.9", tox-python-version: "py39"}
+          - {python-version: "3.10-dev", tox-python-version: "py310"}
         exclude:
           # Remove some jobs from the matrix
           - {tox-extra-versions: "pytest46-xdist127", python-version: "3.8"}
           - {tox-extra-versions: "pytest46-xdist127", python-version: "3.9"}
           - {tox-extra-versions: "pytest46-xdist133", python-version: "3.9"}
           - {tox-extra-versions: "pytest54-xdist133", python-version: "3.9"}
+          - {tox-extra-versions: "pytest46-xdist127", python-version: "3.10-dev"}
+          - {tox-extra-versions: "pytest46-xdist133", python-version: "3.10-dev"}
+          - {tox-extra-versions: "pytest54-xdist133", python-version: "3.10-dev"}
 
     steps:
       - uses: actions/checkout@v2
