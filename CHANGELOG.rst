@@ -1,6 +1,41 @@
 Changelog
 =========
 
+
+3.0.0 (2021-10-04)
+-------------------
+
+**Note that this release drops support for Python 2.7 and Python 3.5.**
+
+* Added support for Python 3.10 and updated various test dependencies.
+  Contributed by Hugo van Kemenade in
+  `#500 <https://github.com/pytest-dev/pytest-cov/pull/500>`_.
+* Switched from Travis CI to GitHub Actions. Contributed by Hugo van Kemenade in
+  `#494 <https://github.com/pytest-dev/pytest-cov/pull/494>`_ and
+  `#495 <https://github.com/pytest-dev/pytest-cov/pull/495>`_.
+* Add a ``--cov-reset`` CLI option.
+  Contributed by Danilo Šegan in
+  `#459 <https://github.com/pytest-dev/pytest-cov/pull/459>`_.
+* Improved validation of ``--cov-fail-under`` CLI option.
+  Contributed by ... Ronny Pfannschmidt's desire for skark in
+  `#480 <https://github.com/pytest-dev/pytest-cov/pull/480>`_.
+* Dropped Python 2.7 support.
+  Contributed by Thomas Grainger in
+  `#488 <https://github.com/pytest-dev/pytest-cov/pull/488>`_.
+* Updated trove classifiers. Contributed by Michał Bielawski in
+  `#481 <https://github.com/pytest-dev/pytest-cov/pull/481>`_.
+
+
+2.13.0 (2021-06-01)
+-------------------
+
+* Changed the `toml` requirement to be always be directly required (instead of being required through a coverage extra).
+  This fixes issues with pip-compile (`pip-tools#1300 <https://github.com/jazzband/pip-tools/issues/1300>`_).
+  Contributed by Sorin Sbarnea in `#472 <https://github.com/pytest-dev/pytest-cov/pull/472>`_.
+* Documented ``show_contexts``.
+  Contributed by Brian Rutledge in `#473 <https://github.com/pytest-dev/pytest-cov/pull/473>`_.
+
+
 2.12.1 (2021-06-01)
 -------------------
 

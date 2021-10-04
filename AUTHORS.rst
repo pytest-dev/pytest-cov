@@ -48,3 +48,5 @@ Authors
 * Chris Sreesangkom - https://github.com/csreesan
 * Sorin Sbarnea - https://github.com/ssbarnea
 * Brian Rutledge - https://github.com/bhrutledge
+* Danilo Šegan - https://github.com/dsegan
+* Michał Bielawski - https://github.com/D3X
