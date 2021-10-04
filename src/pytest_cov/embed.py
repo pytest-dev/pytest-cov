@@ -100,9 +100,9 @@ def cleanup():
     _active_cov = None
     _cleanup_in_progress = False
     if _pending_signal:
-        pending_singal = _pending_signal
+        pending_signal = _pending_signal
         _pending_signal = None
-        _signal_cleanup_handler(*pending_singal)
+        _signal_cleanup_handler(*pending_signal)
 
 
 multiprocessing_finish = cleanup  # in case someone dared to use this internal
