@@ -27,7 +27,7 @@ def read(*names, **kwargs):
 
 class BuildWithPTH(build):
     def run(self, *args, **kwargs):
-        build.run(self, *args, **kwargs)
+        super().run(*args, **kwargs)
         path = join(dirname(__file__), 'src', 'pytest-cov.pth')
         dest = join(self.build_lib, basename(path))
         self.copy_file(path, dest)
@@ -35,7 +35,7 @@ class BuildWithPTH(build):
 
 class EasyInstallWithPTH(easy_install):
     def run(self, *args, **kwargs):
-        easy_install.run(self, *args, **kwargs)
+        super().run(*args, **kwargs)
         path = join(dirname(__file__), 'src', 'pytest-cov.pth')
         dest = join(self.install_dir, basename(path))
         self.copy_file(path, dest)
@@ -43,19 +43,19 @@ class EasyInstallWithPTH(easy_install):
 
 class InstallLibWithPTH(install_lib):
     def run(self, *args, **kwargs):
-        install_lib.run(self, *args, **kwargs)
+        super().run(*args, **kwargs)
         path = join(dirname(__file__), 'src', 'pytest-cov.pth')
         dest = join(self.install_dir, basename(path))
         self.copy_file(path, dest)
         self.outputs = [dest]
 
     def get_outputs(self):
-        return chain(install_lib.get_outputs(self), self.outputs)
+        return chain(super().get_outputs(), self.outputs)
 
 
 class DevelopWithPTH(develop):
     def run(self, *args, **kwargs):
-        develop.run(self, *args, **kwargs)
+        super().run(*args, **kwargs)
         path = join(dirname(__file__), 'src', 'pytest-cov.pth')
         dest = join(self.install_dir, basename(path))
         self.copy_file(path, dest)
