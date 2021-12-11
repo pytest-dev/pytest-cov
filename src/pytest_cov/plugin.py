@@ -308,7 +308,7 @@ class CovPlugin:
                 warnings.warn(CovReportWarning(message))
                 self.cov_total = 0
             assert self.cov_total is not None, 'Test coverage should never be `None`'
-            if self._failed_cov_total():
+            if self._failed_cov_total() and not self.options.collectonly:
                 # make sure we get the EXIT_TESTSFAILED exit code
                 compat_session.testsfailed += 1
 

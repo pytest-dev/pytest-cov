@@ -2,6 +2,14 @@ Changelog
 =========
 
 
+3.1.0 (future)
+-------------------
+
+* `--cov-fail-under` no longer causes `pytest --collect-only` to fail
+  Contributed by Zac Hatfield-Dodds in
+  `#511 <https://github.com/pytest-dev/pytest-cov/pull/511>`_.
+
+
 3.0.0 (2021-10-04)
 -------------------
 
