@@ -32,6 +32,9 @@ Changelog
   `#488 <https://github.com/pytest-dev/pytest-cov/pull/488>`_.
 * Updated trove classifiers. Contributed by Michał Bielawski in
   `#481 <https://github.com/pytest-dev/pytest-cov/pull/481>`_.
+* Reverted change for `toml` requirement.
+  Contributed by Thomas Grainger in
+  `#477 <https://github.com/pytest-dev/pytest-cov/pull/477>`_.
 
 
 2.13.0 (2021-06-01)
