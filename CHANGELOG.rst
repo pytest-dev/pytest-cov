@@ -2,6 +2,14 @@ Changelog
 =========
 
 
+3.1.0 (future)
+-------------------
+
+* `--cov-fail-under` no longer causes `pytest --collect-only` to fail
+  Contributed by Zac Hatfield-Dodds in
+  `#511 <https://github.com/pytest-dev/pytest-cov/pull/511>`_.
+
+
 3.0.0 (2021-10-04)
 -------------------
 
@@ -24,6 +32,9 @@ Changelog
   `#488 <https://github.com/pytest-dev/pytest-cov/pull/488>`_.
 * Updated trove classifiers. Contributed by Michał Bielawski in
   `#481 <https://github.com/pytest-dev/pytest-cov/pull/481>`_.
+* Reverted change for `toml` requirement.
+  Contributed by Thomas Grainger in
+  `#477 <https://github.com/pytest-dev/pytest-cov/pull/477>`_.
 
 
 2.13.0 (2021-06-01)

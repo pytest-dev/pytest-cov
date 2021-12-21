@@ -389,6 +389,19 @@ def test_cov_min_100(testdir):
     ])
 
 
+def test_cov_min_100_passes_if_collectonly(testdir):
+    script = testdir.makepyfile(SCRIPT)
+
+    result = testdir.runpytest('-v',
+                               '--cov=%s' % script.dirpath(),
+                               '--cov-report=term-missing',
+                               '--cov-fail-under=100',
+                               '--collect-only',
+                               script)
+
+    assert result.ret == 0
+
+
 def test_cov_min_50(testdir):
     script = testdir.makepyfile(SCRIPT)
 
