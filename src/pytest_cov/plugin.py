@@ -29,7 +29,7 @@ class CovReportWarning(PytestCovWarning):
 
 
 def validate_report(arg):
-    file_choices = ['annotate', 'html', 'xml']
+    file_choices = ['annotate', 'html', 'xml', 'json']
     term_choices = ['term', 'term-missing']
     term_modifier_choices = ['skip-covered']
     all_choices = term_choices + file_choices
