@@ -981,7 +981,7 @@ def test_invalid_coverage_source(testdir):
         '*10 passed*'
     ])
     result.stderr.fnmatch_lines([
-        'Coverage.py warning: No data was collected.*'
+        '*No data was collected.*'
     ])
     result.stdout.fnmatch_lines([
         '*Failed to generate report: No data to report.',
