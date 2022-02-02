@@ -157,6 +157,15 @@ xdist_params = pytest.mark.parametrize('opts', [
     pytest.param('-n 1', marks=pytest.mark.skipif('sys.platform == "win32" and platform.python_implementation() == "PyPy"'))
 ], ids=['nodist', 'xdist'])
 
+skipif_multiprocessing_is_broken = pytest.mark.skipif(
+    'sys.version_info[:2] >= (3, 8)',
+    reason="deadlocks on Python 3.8+, see: https://bugs.python.org/issue38227"
+)
+method_params = pytest.mark.parametrize('method', [
+    pytest.param('fork', marks=skipif_multiprocessing_is_broken),
+    pytest.param('spawn', marks=skipif_multiprocessing_is_broken),
+])
+
 
 @pytest.fixture(scope='session', autouse=True)
 def adjust_sys_path():
@@ -1025,7 +1034,7 @@ def test_dist_missing_data(testdir):
                                '--dist=load',
                                '--tx=popen//python=%s' % exe,
                                max_worker_restart_0,
-                               script)
+                               str(script))
     result.stdout.fnmatch_lines([
         'The following workers failed to return coverage data, ensure that pytest-cov is installed on these workers.'
     ])
@@ -1062,18 +1071,19 @@ def test_funcarg_not_active(testdir):
 @pytest.mark.skipif("sys.version_info[0] < 3", reason="no context manager api on Python 2")
 @pytest.mark.skipif('sys.platform == "win32"', reason="multiprocessing support is broken on Windows")
 @pytest.mark.skipif('platform.python_implementation() == "PyPy"', reason="often deadlocks on PyPy")
-@pytest.mark.skipif('sys.version_info[:2] >= (3, 8)', reason="deadlocks on Python 3.8+, see: https://bugs.python.org/issue38227")
-def test_multiprocessing_pool(testdir):
+@method_params
+def test_multiprocessing_pool(testdir, method):
     pytest.importorskip('multiprocessing.util')
 
     script = testdir.makepyfile('''
 import multiprocessing
 
 def target_fn(a):
-    %sse:  # pragma: nocover
+    {}se:  # pragma: nocover
         return None
 
 def test_run_target():
+    multiprocessing.set_start_method({!r})
     from pytest_cov.embed import cleanup_on_sigterm
     cleanup_on_sigterm()
 
@@ -1081,9 +1091,9 @@ def test_run_target():
         with multiprocessing.Pool(3) as p:
             p.map(target_fn, [i * 3 + j for j in range(3)])
         p.join()
-''' % ''.join('''if a == %r:
+'''.format(''.join('''if a == %r:
         return a
-    el''' % i for i in range(99)))
+    el''' % i for i in range(99)), method))
 
     result = testdir.runpytest('-v',
                                '--cov=%s' % script.dirpath(),
@@ -1103,18 +1113,19 @@ def test_run_target():
 
 @pytest.mark.skipif('sys.platform == "win32"', reason="multiprocessing support is broken on Windows")
 @pytest.mark.skipif('platform.python_implementation() == "PyPy"', reason="often deadlocks on PyPy")
-@pytest.mark.skipif('sys.version_info[:2] >= (3, 8)', reason="deadlocks on Python 3.8, see: https://bugs.python.org/issue38227")
-def test_multiprocessing_pool_terminate(testdir):
+@method_params
+def test_multiprocessing_pool_terminate(testdir, method):
     pytest.importorskip('multiprocessing.util')
 
     script = testdir.makepyfile('''
 import multiprocessing
 
 def target_fn(a):
-    %sse:  # pragma: nocover
+    {}se:  # pragma: nocover
         return None
 
 def test_run_target():
+    multiprocessing.set_start_method({!r})
     from pytest_cov.embed import cleanup_on_sigterm
     cleanup_on_sigterm()
 
@@ -1125,9 +1136,9 @@ def test_run_target():
         finally:
             p.terminate()
             p.join()
-''' % ''.join('''if a == %r:
+'''.format(''.join('''if a == %r:
         return a
-    el''' % i for i in range(99)))
+    el''' % i for i in range(99)), method))
 
     result = testdir.runpytest('-v',
                                '--cov=%s' % script.dirpath(),
@@ -1147,17 +1158,19 @@ def test_run_target():
 
 @pytest.mark.skipif('sys.platform == "win32"', reason="multiprocessing support is broken on Windows")
 @pytest.mark.skipif('sys.version_info[0] > 2 and platform.python_implementation() == "PyPy"', reason="broken on PyPy3")
-def test_multiprocessing_pool_close(testdir):
+@method_params
+def test_multiprocessing_pool_close(testdir, method):
     pytest.importorskip('multiprocessing.util')
 
     script = testdir.makepyfile('''
 import multiprocessing
 
 def target_fn(a):
-    %sse:  # pragma: nocover
+    {}se:  # pragma: nocover
         return None
 
 def test_run_target():
+    multiprocessing.set_start_method({!r})
     for i in range(33):
         p = multiprocessing.Pool(3)
         try:
@@ -1165,9 +1178,9 @@ def test_run_target():
         finally:
             p.close()
             p.join()
-''' % ''.join('''if a == %r:
+'''.format(''.join('''if a == %r:
         return a
-    el''' % i for i in range(99)))
+    el''' % i for i in range(99)), method))
 
     result = testdir.runpytest('-v',
                                '--cov=%s' % script.dirpath(),
@@ -1185,7 +1198,8 @@ def test_run_target():
 
 
 @pytest.mark.skipif('sys.platform == "win32"', reason="multiprocessing support is broken on Windows")
-def test_multiprocessing_process(testdir):
+@method_params
+def test_multiprocessing_process(testdir, method):
     pytest.importorskip('multiprocessing.util')
 
     script = testdir.makepyfile('''
@@ -1196,10 +1210,11 @@ def target_fn():
     return a
 
 def test_run_target():
+    multiprocessing.set_start_method({!r})
     p = multiprocessing.Process(target=target_fn)
     p.start()
     p.join()
-''')
+'''.format(method))
 
     result = testdir.runpytest('-v',
                                '--cov=%s' % script.dirpath(),
@@ -1215,7 +1230,8 @@ def test_run_target():
 
 
 @pytest.mark.skipif('sys.platform == "win32"', reason="multiprocessing support is broken on Windows")
-def test_multiprocessing_process_no_source(testdir):
+@method_params
+def test_multiprocessing_process_no_source(testdir, method):
     pytest.importorskip('multiprocessing.util')
 
     script = testdir.makepyfile('''
@@ -1245,7 +1261,8 @@ def test_run_target():
 
 
 @pytest.mark.skipif('sys.platform == "win32"', reason="multiprocessing support is broken on Windows")
-def test_multiprocessing_process_with_terminate(testdir):
+@method_params
+def test_multiprocessing_process_with_terminate(testdir, method):
     pytest.importorskip('multiprocessing.util')
 
     script = testdir.makepyfile('''
@@ -1783,6 +1800,7 @@ def test_not_started_plugin_does_not_fail(testdir):
     class ns:
         cov_source = [True]
         cov_report = ''
+
     plugin = pytest_cov.plugin.CovPlugin(ns, None, start=False)
     plugin.pytest_runtestloop(None)
     plugin.pytest_terminal_summary(None)
@@ -1900,7 +1918,7 @@ def test_append_coverage(testdir, opts, prop):
     result = testdir.runpytest('-v',
                                '--cov=%s' % script.dirpath(),
                                script,
-                               *opts.split()+prop.args)
+                               *opts.split() + prop.args)
     result.stdout.fnmatch_lines([
         'test_1* %s*' % prop.result,
     ])
@@ -1909,7 +1927,7 @@ def test_append_coverage(testdir, opts, prop):
                                '--cov-append',
                                '--cov=%s' % script2.dirpath(),
                                script2,
-                               *opts.split()+prop.args)
+                               *opts.split() + prop.args)
     result.stdout.fnmatch_lines([
         'test_1* %s*' % prop.result,
         'test_2* %s*' % prop.result2,
