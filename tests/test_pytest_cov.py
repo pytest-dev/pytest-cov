@@ -994,6 +994,8 @@ def test_invalid_coverage_source(testdir):
 
 @pytest.mark.skipif("'dev' in pytest.__version__")
 @pytest.mark.skipif('sys.platform == "win32" and platform.python_implementation() == "PyPy"')
+@pytest.mark.skipif('tuple(map(int, xdist.__version__.split("."))) >= (2, 3, 0)',
+                    reason="Since pytest-xdist 2.3.0 the parent sys.path is copied in the child process")
 def test_dist_missing_data(testdir):
     """Test failure when using a worker without pytest-cov installed."""
     venv_path = os.path.join(str(testdir.tmpdir), 'venv')
