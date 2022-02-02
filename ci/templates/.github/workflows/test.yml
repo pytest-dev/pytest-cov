@@ -1,0 +1,65 @@
+name: build
+on: [push, pull_request]
+jobs:
+  test:
+    name: {{ '${{ matrix.name }}' }}
+    runs-on: {{ '${{ matrix.os }}' }}
+    timeout-minutes: 30
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - name: 'check'
+            python: '3.9'
+            toxpython: 'python3.9'
+            tox_env: 'check'
+            os: 'ubuntu-latest'
+          - name: 'docs'
+            python: '3.9'
+            toxpython: 'python3.9'
+            tox_env: 'docs'
+            os: 'ubuntu-latest'
+{% for env in tox_environments %}
+{% set prefix = env.split('-')[0] -%}
+{% if prefix.startswith('pypy') %}
+{% set python %}pypy-{{ prefix[4] }}.{{ prefix[5] }}{% endset %}
+{% set cpython %}pp{{ prefix[4:5] }}{% endset %}
+{% set toxpython %}pypy{{ prefix[4] }}.{{ prefix[5] }}{% endset %}
+{% else %}
+{% set python %}{{ prefix[2] }}.{{ prefix[3:] }}{% endset %}
+{% set cpython %}cp{{ prefix[2:] }}{% endset %}
+{% set toxpython %}python{{ prefix[2] }}.{{ prefix[3:] }}{% endset %}
+{% endif %}
+{% for os, python_arch in [
+    ['ubuntu', 'x64'],
+    ['windows', 'x64'],
+    ['macos', 'x64'],
+] %}
+          - name: '{{ env }} ({{ os }})'
+            python: '{{ python }}'
+            toxpython: '{{ toxpython }}'
+            python_arch: '{{ python_arch }}'
+            tox_env: '{{ env }}'
+            os: '{{ os }}-latest'
+{% endfor %}
+{% endfor %}
+    steps:
+    - uses: actions/checkout@v2
+      with:
+        fetch-depth: 0
+    - uses: actions/setup-python@v2
+      with:
+        python-version: {{ '${{ matrix.python }}' }}
+        architecture: {{ '${{ matrix.python_arch }}' }}
+    - name: install dependencies
+      run: |
+        python -mpip install --progress-bar=off -r ci/requirements.txt
+        virtualenv --version
+        pip --version
+        tox --version
+        pip list --format=freeze
+    - name: test
+      env:
+        TOXPYTHON: '{{ '${{ matrix.toxpython }}' }}'
+      run: >
+        tox -e {{ '${{ matrix.tox_env }}' }} -v

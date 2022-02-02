@@ -115,6 +115,11 @@ setup(
         'Topic :: Software Development :: Testing',
         'Topic :: Utilities',
     ],
+    project_urls={
+        'Documentation': 'https://pytest-cov.readthedocs.io/',
+        'Changelog': 'https://pytest-cov.readthedocs.io/en/latest/changelog.html',
+        'Issue Tracker': 'https://github.com/pytest-dev/pytest-cov/issues',
+    },
     keywords=[
         'cover', 'coverage', 'pytest', 'py.test', 'distributed', 'parallel',
     ],

@@ -12,16 +12,17 @@ graft ci
 graft tests
 
 include .bumpversion.cfg
-include .coveragerc
 include .cookiecutterrc
+include .coveragerc
 include .editorconfig
-
+include tox.ini
+include .readthedocs.yml
+include .pre-commit-config.yaml
 include AUTHORS.rst
 include CHANGELOG.rst
 include CONTRIBUTING.rst
 include LICENSE
 include README.rst
 
-include tox.ini .appveyor.yml .readthedocs.yml .pre-commit-config.yaml
 
-global-exclude *.py[cod] __pycache__/* *.so *.dylib .coverage .coverage.*
+global-exclude *.py[cod] __pycache__/* *.so *.dylib
