@@ -1223,15 +1223,14 @@ def test_run_target():
 
     result.stdout.fnmatch_lines([
         '*- coverage: platform *, python * -*',
-        'test_multiprocessing_process* 8 * 100%*',
+        'test_multiprocessing_process* 9 * 100%*',
         '*1 passed*'
     ])
     assert result.ret == 0
 
 
 @pytest.mark.skipif('sys.platform == "win32"', reason="multiprocessing support is broken on Windows")
-@method_params
-def test_multiprocessing_process_no_source(testdir, method):
+def test_multiprocessing_process_no_source(testdir):
     pytest.importorskip('multiprocessing.util')
 
     script = testdir.makepyfile('''
@@ -1261,8 +1260,7 @@ def test_run_target():
 
 
 @pytest.mark.skipif('sys.platform == "win32"', reason="multiprocessing support is broken on Windows")
-@method_params
-def test_multiprocessing_process_with_terminate(testdir, method):
+def test_multiprocessing_process_with_terminate(testdir):
     pytest.importorskip('multiprocessing.util')
 
     script = testdir.makepyfile('''
