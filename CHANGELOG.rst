@@ -21,6 +21,9 @@ Changelog
     concurrency = multiprocessing
     parallel = true
     sigterm = true
+* Added support for LCOV output format via `--cov-report=lcov`. Only works with coverage 6.3+.
+  Contributed by Christian Fetzer in
+  `#536 <https://github.com/pytest-dev/pytest-cov/issues/536>`_.
 
 
 3.0.0 (2021-10-04)

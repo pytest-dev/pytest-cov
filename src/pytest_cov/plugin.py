@@ -29,7 +29,7 @@ class CovReportWarning(PytestCovWarning):
 
 
 def validate_report(arg):
-    file_choices = ['annotate', 'html', 'xml']
+    file_choices = ['annotate', 'html', 'xml', 'lcov']
     term_choices = ['term', 'term-missing']
     term_modifier_choices = ['skip-covered']
     all_choices = term_choices + file_choices
@@ -38,6 +38,9 @@ def validate_report(arg):
     if report_type not in all_choices + ['']:
         msg = f'invalid choice: "{arg}" (choose from "{all_choices}")'
         raise argparse.ArgumentTypeError(msg)
+
+    if report_type == 'lcov' and coverage.version_info <= (6, 3):
+        raise argparse.ArgumentTypeError('LCOV output is only supported with coverage.py >= 6.3')
 
     if len(values) == 1:
         return report_type, None
@@ -96,9 +99,9 @@ def pytest_addoption(parser):
     group.addoption('--cov-report', action=StoreReport, default={},
                     metavar='TYPE', type=validate_report,
                     help='Type of report to generate: term, term-missing, '
-                         'annotate, html, xml (multi-allowed). '
+                         'annotate, html, xml, lcov (multi-allowed). '
                          'term, term-missing may be followed by ":skip-covered". '
-                         'annotate, html and xml may be followed by ":DEST" '
+                         'annotate, html, xml and lcov may be followed by ":DEST" '
                          'where DEST specifies the output location. '
                          'Use --cov-report= to not generate any output.')
     group.addoption('--cov-config', action='store', default='.coveragerc',
