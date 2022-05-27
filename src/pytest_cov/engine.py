@@ -196,6 +196,18 @@ class CovController:
                 total = self.cov.xml_report(ignore_errors=True, outfile=output)
             stream.write('Coverage XML written to file %s\n' % (self.cov.config.xml_output if output is None else output))
 
+        # Produce lcov report if wanted.
+        if 'lcov' in self.cov_report:
+            output = self.cov_report['lcov']
+            with _backup(self.cov, "config"):
+                self.cov.lcov_report(ignore_errors=True, outfile=output)
+
+                # We need to call Coverage.report here, just to get the total
+                # Coverage.lcov_report doesn't return any total and we need it for --cov-fail-under.
+                total = self.cov.report(ignore_errors=True, file=_NullFile)
+
+            stream.write('Coverage LCOV written to file %s\n' % (self.cov.config.lcov_output if output is None else output))
+
         return total
 
 
