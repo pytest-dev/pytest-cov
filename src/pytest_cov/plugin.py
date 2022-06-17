@@ -326,7 +326,11 @@ class CovPlugin:
             # we shouldn't report, or report generation failed (error raised above)
             return
 
-        terminalreporter.write('\n' + self.cov_report.getvalue() + '\n')
+        report = self.cov_report.getvalue()
+
+        # Avoid undesirable new lines when output is disabled with "--cov-report=".
+        if report:
+            terminalreporter.write('\n' + report + '\n')
 
         if self.options.cov_fail_under is not None and self.options.cov_fail_under > 0:
             failed = self.cov_total < self.options.cov_fail_under
