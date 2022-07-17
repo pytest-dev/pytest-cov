@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 
 import re
-from distutils.command.build import build
 from glob import glob
 from itertools import chain
 from os.path import basename
@@ -12,6 +11,11 @@ from os.path import splitext
 from setuptools import Command
 from setuptools import find_packages
 from setuptools import setup
+try:
+    # https://setuptools.pypa.io/en/latest/deprecated/distutils-legacy.html
+    from setuptools.command.build import build
+except ImportError:
+    from distutils.command.build import build
 from setuptools.command.develop import develop
 from setuptools.command.easy_install import easy_install
 from setuptools.command.install_lib import install_lib
