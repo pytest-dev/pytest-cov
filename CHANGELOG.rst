@@ -185,8 +185,6 @@ Changelog
   `#272 <https://github.com/pytest-dev/pytest-cov/pull/272>`_,
   `#271 <https://github.com/pytest-dev/pytest-cov/pull/271>`_ and
   `#269 <https://github.com/pytest-dev/pytest-cov/pull/269>`_.
-* Improved documentation regarding subprocess and multiprocessing.
-  Contributed in `#265 <https://github.com/pytest-dev/pytest-cov/pull/265>`_.
 * Improved ``pytest_cov.embed.cleanup_on_sigterm`` to be reentrant (signal deliveries while signal handling is
   running won't break stuff).
 * Added ``pytest_cov.embed.cleanup_on_signal`` for customized cleanup.
