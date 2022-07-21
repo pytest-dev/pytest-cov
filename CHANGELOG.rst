@@ -36,17 +36,6 @@ Changelog
   Contributed by Thomas Grainger in
   `#477 <https://github.com/pytest-dev/pytest-cov/pull/477>`_.
 
-
-2.13.0 (2021-06-01)
--------------------
-
-* Changed the `toml` requirement to be always be directly required (instead of being required through a coverage extra).
-  This fixes issues with pip-compile (`pip-tools#1300 <https://github.com/jazzband/pip-tools/issues/1300>`_).
-  Contributed by Sorin Sbarnea in `#472 <https://github.com/pytest-dev/pytest-cov/pull/472>`_.
-* Documented ``show_contexts``.
-  Contributed by Brian Rutledge in `#473 <https://github.com/pytest-dev/pytest-cov/pull/473>`_.
-
-
 2.12.1 (2021-06-01)
 -------------------
 
