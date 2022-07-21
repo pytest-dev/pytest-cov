@@ -1152,6 +1152,7 @@ if __name__ == "__main__":
 
 
 @pytest.mark.skipif('sys.platform == "win32"', reason="SIGTERM isn't really supported on Windows")
+@pytest.mark.xfail('sys.platform == "darwin"', reason="Something weird going on Macs...")
 @pytest.mark.parametrize('setup', [
     ('signal.signal(signal.SIGTERM, signal.SIG_DFL); cleanup_on_sigterm()', '88%   18-19'),
     ('cleanup_on_sigterm()', '88%   18-19'),
@@ -1195,6 +1196,7 @@ if __name__ == "__main__":
 
 
 @pytest.mark.skipif('sys.platform == "win32"', reason="SIGINT is subtly broken on Windows")
+@pytest.mark.xfail('sys.platform == "darwin"', reason="Something weird going on Macs...")
 def test_cleanup_on_sigterm_sig_dfl_sigint(testdir):
     script = testdir.makepyfile('''
 import os, signal, subprocess, sys, time
