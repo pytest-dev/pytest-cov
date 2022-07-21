@@ -2,12 +2,25 @@ Changelog
 =========
 
 
-3.1.0 (future)
+4.0.0 (future)
 -------------------
+
+**Note that this release drops support for multiprocessing.**
+
 
 * `--cov-fail-under` no longer causes `pytest --collect-only` to fail
   Contributed by Zac Hatfield-Dodds in
   `#511 <https://github.com/pytest-dev/pytest-cov/pull/511>`_.
+* Dropped support for multiprocessing (mostly because `issue 82408 <https://github.com/python/cpython/issues/82408>`_). This feature was
+  mostly working but made out test suite very flaky and slow.
+
+  There is builtin multiprocessing support in coverage and you can switch to that if you feel lucky. All you need is this in your
+  ``.coveragerc``::
+
+    [run]
+    concurrency = multiprocessing
+    parallel = true
+    sigterm = true
 
 
 3.0.0 (2021-10-04)

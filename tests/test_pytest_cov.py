@@ -1400,13 +1400,6 @@ exclude_lines =
     raise NotImplementedError
 '''
 
-MP_COVERAGERC = '''
-[run]
-concurrency = multiprocessing
-parallel = true
-sigterm = True
-'''
-
 EXCLUDED_TEST = '''
 
 def func():
