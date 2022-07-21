@@ -1060,6 +1060,7 @@ def test_funcarg_not_active(testdir):
 
 
 @pytest.mark.skipif('sys.platform == "win32"', reason="SIGTERM isn't really supported on Windows")
+@pytest.mark.xfail('platform.python_implementation() == "PyPy"', reason="Interpreter seems buggy")
 def test_cleanup_on_sigterm(testdir):
     script = testdir.makepyfile('''
 import os, signal, subprocess, sys, time
