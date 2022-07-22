@@ -1198,6 +1198,7 @@ if __name__ == "__main__":
 
 @pytest.mark.skipif('sys.platform == "win32"', reason="SIGINT is subtly broken on Windows")
 @pytest.mark.xfail('sys.platform == "darwin"', reason="Something weird going on Macs...")
+@pytest.mark.xfail('platform.python_implementation() == "PyPy"', reason="Interpreter seems buggy")
 def test_cleanup_on_sigterm_sig_dfl_sigint(testdir):
     script = testdir.makepyfile('''
 import os, signal, subprocess, sys, time
