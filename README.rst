@@ -10,7 +10,8 @@ Overview
     * - docs
       - |docs|
     * - tests
-      - | |github-actions| |appveyor| |requires|
+      - | |github-actions| |requires|
+        |
     * - package
       - | |version| |conda-forge| |wheel| |supported-versions| |supported-implementations|
         | |commits-since|

@@ -2,12 +2,25 @@ Changelog
 =========
 
 
-3.1.0 (future)
+4.0.0 (future)
 -------------------
 
-* ``--cov-fail-under`` no longer causes ``pytest --collect-only`` to fail
+**Note that this release drops support for multiprocessing.**
+
+
+* `--cov-fail-under` no longer causes `pytest --collect-only` to fail
   Contributed by Zac Hatfield-Dodds in
   `#511 <https://github.com/pytest-dev/pytest-cov/pull/511>`_.
+* Dropped support for multiprocessing (mostly because `issue 82408 <https://github.com/python/cpython/issues/82408>`_). This feature was
+  mostly working but made out test suite very flaky and slow.
+
+  There is builtin multiprocessing support in coverage and you can switch to that if you feel lucky. All you need is this in your
+  ``.coveragerc``::
+
+    [run]
+    concurrency = multiprocessing
+    parallel = true
+    sigterm = true
 * Remove forced config file default of ``.coveragerc``
   Contributed by Ofek Lev in
   `#508 <https://github.com/pytest-dev/pytest-cov/pull/508>`_.
@@ -38,17 +51,6 @@ Changelog
 * Reverted change for `toml` requirement.
   Contributed by Thomas Grainger in
   `#477 <https://github.com/pytest-dev/pytest-cov/pull/477>`_.
-
-
-2.13.0 (2021-06-01)
--------------------
-
-* Changed the `toml` requirement to be always be directly required (instead of being required through a coverage extra).
-  This fixes issues with pip-compile (`pip-tools#1300 <https://github.com/jazzband/pip-tools/issues/1300>`_).
-  Contributed by Sorin Sbarnea in `#472 <https://github.com/pytest-dev/pytest-cov/pull/472>`_.
-* Documented ``show_contexts``.
-  Contributed by Brian Rutledge in `#473 <https://github.com/pytest-dev/pytest-cov/pull/473>`_.
-
 
 2.12.1 (2021-06-01)
 -------------------
@@ -199,8 +201,6 @@ Changelog
   `#272 <https://github.com/pytest-dev/pytest-cov/pull/272>`_,
   `#271 <https://github.com/pytest-dev/pytest-cov/pull/271>`_ and
   `#269 <https://github.com/pytest-dev/pytest-cov/pull/269>`_.
-* Improved documentation regarding subprocess and multiprocessing.
-  Contributed in `#265 <https://github.com/pytest-dev/pytest-cov/pull/265>`_.
 * Improved ``pytest_cov.embed.cleanup_on_sigterm`` to be reentrant (signal deliveries while signal handling is
   running won't break stuff).
 * Added ``pytest_cov.embed.cleanup_on_signal`` for customized cleanup.

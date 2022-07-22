@@ -194,7 +194,7 @@ def prop(request):
     )
 
 
-def test_central(testdir, prop):
+def test_central(pytester, testdir, prop):
     script = testdir.makepyfile(prop.code)
     testdir.tmpdir.join('.coveragerc').write(prop.fullconf)
 
@@ -461,7 +461,7 @@ def test_cov_min_no_report(testdir):
     ])
 
 
-def test_central_nonspecific(testdir, prop):
+def test_central_nonspecific(pytester, testdir, prop):
     script = testdir.makepyfile(prop.code)
     testdir.tmpdir.join('.coveragerc').write(prop.fullconf)
     result = testdir.runpytest('-v',
@@ -496,7 +496,7 @@ fail_under = 100
     assert result.ret != 0
 
 
-def test_central_coveragerc(testdir, prop):
+def test_central_coveragerc(pytester, testdir, prop):
     script = testdir.makepyfile(prop.code)
     testdir.tmpdir.join('.coveragerc').write(COVERAGERC_SOURCE + prop.conf)
 
@@ -514,7 +514,7 @@ def test_central_coveragerc(testdir, prop):
 
 
 @xdist_params
-def test_central_with_path_aliasing(testdir, monkeypatch, opts, prop):
+def test_central_with_path_aliasing(pytester, testdir, monkeypatch, opts, prop):
     mod1 = testdir.mkdir('src').join('mod.py')
     mod1.write(SCRIPT)
     mod2 = testdir.mkdir('aliased').join('mod.py')
@@ -548,7 +548,7 @@ parallel = true
 
 
 @xdist_params
-def test_borken_cwd(testdir, monkeypatch, opts):
+def test_borken_cwd(pytester, testdir, monkeypatch, opts):
     testdir.makepyfile(mod='''
 def foobar(a, b):
     return a + b
@@ -587,7 +587,7 @@ def test_foobar(bad):
     assert result.ret == 0
 
 
-def test_subprocess_with_path_aliasing(testdir, monkeypatch):
+def test_subprocess_with_path_aliasing(pytester, testdir, monkeypatch):
     src = testdir.mkdir('src')
     src.join('parent_script.py').write(SCRIPT_PARENT)
     src.join('child_script.py').write(SCRIPT_CHILD)
@@ -623,7 +623,7 @@ parallel = true
     assert result.ret == 0
 
 
-def test_show_missing_coveragerc(testdir, prop):
+def test_show_missing_coveragerc(pytester, testdir, prop):
     script = testdir.makepyfile(prop.code)
     testdir.tmpdir.join('.coveragerc').write("""
 [run]
@@ -666,7 +666,7 @@ def test_fail():
     result.stdout.fnmatch_lines(['*1 failed*'])
 
 
-def test_no_cov(testdir, monkeypatch):
+def test_no_cov(pytester, testdir, monkeypatch):
     script = testdir.makepyfile(SCRIPT)
     testdir.makeini("""
         [pytest]
@@ -733,7 +733,7 @@ def test_foo(foo):
 
 
 @pytest.mark.skipif('sys.platform == "win32" and platform.python_implementation() == "PyPy"')
-def test_dist_collocated(testdir, prop):
+def test_dist_collocated(pytester, testdir, prop):
     script = testdir.makepyfile(prop.code)
     testdir.tmpdir.join('.coveragerc').write(prop.fullconf)
     result = testdir.runpytest('-v',
@@ -753,7 +753,7 @@ def test_dist_collocated(testdir, prop):
 
 
 @pytest.mark.skipif('sys.platform == "win32" and platform.python_implementation() == "PyPy"')
-def test_dist_not_collocated(testdir, prop):
+def test_dist_not_collocated(pytester, testdir, prop):
     script = testdir.makepyfile(prop.code)
     dir1 = testdir.mkdir('dir1')
     dir2 = testdir.mkdir('dir2')
@@ -786,7 +786,7 @@ source =
 
 
 @pytest.mark.skipif('sys.platform == "win32" and platform.python_implementation() == "PyPy"')
-def test_dist_not_collocated_coveragerc_source(testdir, prop):
+def test_dist_not_collocated_coveragerc_source(pytester, testdir, prop):
     script = testdir.makepyfile(prop.code)
     dir1 = testdir.mkdir('dir1')
     dir2 = testdir.mkdir('dir2')
@@ -861,7 +861,7 @@ parallel = true
     assert result.ret == 0
 
 
-def test_central_subprocess_change_cwd_with_pythonpath(testdir, monkeypatch):
+def test_central_subprocess_change_cwd_with_pythonpath(pytester, testdir, monkeypatch):
     stuff = testdir.mkdir('stuff')
     parent_script = stuff.join('parent_script.py')
     parent_script.write(SCRIPT_PARENT_CHANGE_CWD_IMPORT_CHILD)
@@ -932,7 +932,7 @@ def test_dist_subprocess_collocated(testdir):
 
 
 @pytest.mark.skipif('sys.platform == "win32" and platform.python_implementation() == "PyPy"')
-def test_dist_subprocess_not_collocated(testdir, tmpdir):
+def test_dist_subprocess_not_collocated(pytester, testdir, tmpdir):
     scripts = testdir.makepyfile(parent_script=SCRIPT_PARENT,
                                  child_script=SCRIPT_CHILD)
     parent_script = scripts.dirpath().join('parent_script.py')
@@ -981,7 +981,7 @@ def test_invalid_coverage_source(testdir):
         '*10 passed*'
     ])
     result.stderr.fnmatch_lines([
-        'Coverage.py warning: No data was collected.*'
+        '*No data was collected.*'
     ])
     result.stdout.fnmatch_lines([
         '*Failed to generate report: No data to report.',
@@ -994,6 +994,8 @@ def test_invalid_coverage_source(testdir):
 
 @pytest.mark.skipif("'dev' in pytest.__version__")
 @pytest.mark.skipif('sys.platform == "win32" and platform.python_implementation() == "PyPy"')
+@pytest.mark.skipif('tuple(map(int, xdist.__version__.split("."))) >= (2, 3, 0)',
+                    reason="Since pytest-xdist 2.3.0 the parent sys.path is copied in the child process")
 def test_dist_missing_data(testdir):
     """Test failure when using a worker without pytest-cov installed."""
     venv_path = os.path.join(str(testdir.tmpdir), 'venv')
@@ -1023,7 +1025,7 @@ def test_dist_missing_data(testdir):
                                '--dist=load',
                                '--tx=popen//python=%s' % exe,
                                max_worker_restart_0,
-                               script)
+                               str(script))
     result.stdout.fnmatch_lines([
         'The following workers failed to return coverage data, ensure that pytest-cov is installed on these workers.'
     ])
@@ -1057,231 +1059,8 @@ def test_funcarg_not_active(testdir):
     assert result.ret == 0
 
 
-@pytest.mark.skipif("sys.version_info[0] < 3", reason="no context manager api on Python 2")
-@pytest.mark.skipif('sys.platform == "win32"', reason="multiprocessing support is broken on Windows")
-@pytest.mark.skipif('platform.python_implementation() == "PyPy"', reason="often deadlocks on PyPy")
-@pytest.mark.skipif('sys.version_info[:2] >= (3, 8)', reason="deadlocks on Python 3.8+, see: https://bugs.python.org/issue38227")
-def test_multiprocessing_pool(testdir):
-    pytest.importorskip('multiprocessing.util')
-
-    script = testdir.makepyfile('''
-import multiprocessing
-
-def target_fn(a):
-    %sse:  # pragma: nocover
-        return None
-
-def test_run_target():
-    from pytest_cov.embed import cleanup_on_sigterm
-    cleanup_on_sigterm()
-
-    for i in range(33):
-        with multiprocessing.Pool(3) as p:
-            p.map(target_fn, [i * 3 + j for j in range(3)])
-        p.join()
-''' % ''.join('''if a == %r:
-        return a
-    el''' % i for i in range(99)))
-
-    result = testdir.runpytest('-v',
-                               '--cov=%s' % script.dirpath(),
-                               '--cov-report=term-missing',
-                               script)
-
-    assert "Doesn't seem to be a coverage.py data file" not in result.stdout.str()
-    assert "Doesn't seem to be a coverage.py data file" not in result.stderr.str()
-    assert not testdir.tmpdir.listdir(".coverage.*")
-    result.stdout.fnmatch_lines([
-        '*- coverage: platform *, python * -*',
-        'test_multiprocessing_pool* 100%*',
-        '*1 passed*'
-    ])
-    assert result.ret == 0
-
-
-@pytest.mark.skipif('sys.platform == "win32"', reason="multiprocessing support is broken on Windows")
-@pytest.mark.skipif('platform.python_implementation() == "PyPy"', reason="often deadlocks on PyPy")
-@pytest.mark.skipif('sys.version_info[:2] >= (3, 8)', reason="deadlocks on Python 3.8, see: https://bugs.python.org/issue38227")
-def test_multiprocessing_pool_terminate(testdir):
-    pytest.importorskip('multiprocessing.util')
-
-    script = testdir.makepyfile('''
-import multiprocessing
-
-def target_fn(a):
-    %sse:  # pragma: nocover
-        return None
-
-def test_run_target():
-    from pytest_cov.embed import cleanup_on_sigterm
-    cleanup_on_sigterm()
-
-    for i in range(33):
-        p = multiprocessing.Pool(3)
-        try:
-            p.map(target_fn, [i * 3 + j for j in range(3)])
-        finally:
-            p.terminate()
-            p.join()
-''' % ''.join('''if a == %r:
-        return a
-    el''' % i for i in range(99)))
-
-    result = testdir.runpytest('-v',
-                               '--cov=%s' % script.dirpath(),
-                               '--cov-report=term-missing',
-                               script)
-
-    assert "Doesn't seem to be a coverage.py data file" not in result.stdout.str()
-    assert "Doesn't seem to be a coverage.py data file" not in result.stderr.str()
-    assert not testdir.tmpdir.listdir(".coverage.*")
-    result.stdout.fnmatch_lines([
-        '*- coverage: platform *, python * -*',
-        'test_multiprocessing_pool* 100%*',
-        '*1 passed*'
-    ])
-    assert result.ret == 0
-
-
-@pytest.mark.skipif('sys.platform == "win32"', reason="multiprocessing support is broken on Windows")
-@pytest.mark.skipif('sys.version_info[0] > 2 and platform.python_implementation() == "PyPy"', reason="broken on PyPy3")
-def test_multiprocessing_pool_close(testdir):
-    pytest.importorskip('multiprocessing.util')
-
-    script = testdir.makepyfile('''
-import multiprocessing
-
-def target_fn(a):
-    %sse:  # pragma: nocover
-        return None
-
-def test_run_target():
-    for i in range(33):
-        p = multiprocessing.Pool(3)
-        try:
-            p.map(target_fn, [i * 3 + j for j in range(3)])
-        finally:
-            p.close()
-            p.join()
-''' % ''.join('''if a == %r:
-        return a
-    el''' % i for i in range(99)))
-
-    result = testdir.runpytest('-v',
-                               '--cov=%s' % script.dirpath(),
-                               '--cov-report=term-missing',
-                               script)
-    assert "Doesn't seem to be a coverage.py data file" not in result.stdout.str()
-    assert "Doesn't seem to be a coverage.py data file" not in result.stderr.str()
-    assert not testdir.tmpdir.listdir(".coverage.*")
-    result.stdout.fnmatch_lines([
-        '*- coverage: platform *, python * -*',
-        'test_multiprocessing_pool* 100%*',
-        '*1 passed*'
-    ])
-    assert result.ret == 0
-
-
-@pytest.mark.skipif('sys.platform == "win32"', reason="multiprocessing support is broken on Windows")
-def test_multiprocessing_process(testdir):
-    pytest.importorskip('multiprocessing.util')
-
-    script = testdir.makepyfile('''
-import multiprocessing
-
-def target_fn():
-    a = True
-    return a
-
-def test_run_target():
-    p = multiprocessing.Process(target=target_fn)
-    p.start()
-    p.join()
-''')
-
-    result = testdir.runpytest('-v',
-                               '--cov=%s' % script.dirpath(),
-                               '--cov-report=term-missing',
-                               script)
-
-    result.stdout.fnmatch_lines([
-        '*- coverage: platform *, python * -*',
-        'test_multiprocessing_process* 8 * 100%*',
-        '*1 passed*'
-    ])
-    assert result.ret == 0
-
-
-@pytest.mark.skipif('sys.platform == "win32"', reason="multiprocessing support is broken on Windows")
-def test_multiprocessing_process_no_source(testdir):
-    pytest.importorskip('multiprocessing.util')
-
-    script = testdir.makepyfile('''
-import multiprocessing
-
-def target_fn():
-    a = True
-    return a
-
-def test_run_target():
-    p = multiprocessing.Process(target=target_fn)
-    p.start()
-    p.join()
-''')
-
-    result = testdir.runpytest('-v',
-                               '--cov',
-                               '--cov-report=term-missing',
-                               script)
-
-    result.stdout.fnmatch_lines([
-        '*- coverage: platform *, python * -*',
-        'test_multiprocessing_process* 8 * 100%*',
-        '*1 passed*'
-    ])
-    assert result.ret == 0
-
-
-@pytest.mark.skipif('sys.platform == "win32"', reason="multiprocessing support is broken on Windows")
-def test_multiprocessing_process_with_terminate(testdir):
-    pytest.importorskip('multiprocessing.util')
-
-    script = testdir.makepyfile('''
-import multiprocessing
-import time
-from pytest_cov.embed import cleanup_on_sigterm
-cleanup_on_sigterm()
-
-event = multiprocessing.Event()
-
-def target_fn():
-    a = True
-    event.set()
-    time.sleep(5)
-
-def test_run_target():
-    p = multiprocessing.Process(target=target_fn)
-    p.start()
-    time.sleep(0.5)
-    event.wait(1)
-    p.terminate()
-    p.join()
-''')
-
-    result = testdir.runpytest('-v',
-                               '--cov=%s' % script.dirpath(),
-                               '--cov-report=term-missing',
-                               script)
-
-    result.stdout.fnmatch_lines([
-        '*- coverage: platform *, python * -*',
-        'test_multiprocessing_process* 16 * 100%*',
-        '*1 passed*'
-    ])
-    assert result.ret == 0
-
-
 @pytest.mark.skipif('sys.platform == "win32"', reason="SIGTERM isn't really supported on Windows")
+@pytest.mark.xfail('platform.python_implementation() == "PyPy"', reason="Interpreter seems buggy")
 def test_cleanup_on_sigterm(testdir):
     script = testdir.makepyfile('''
 import os, signal, subprocess, sys, time
@@ -1332,7 +1111,7 @@ if __name__ == "__main__":
     ('cleanup_on_signal(signal.SIGBREAK)', '87%   21-22'),
     ('cleanup()', '73%   19-22'),
 ])
-def test_cleanup_on_sigterm_sig_break(testdir, setup):
+def test_cleanup_on_sigterm_sig_break(pytester, testdir, setup):
     # worth a read: https://stefan.sofa-rockers.org/2013/08/15/handling-sub-process-hierarchies-python-linux-os-x/
     script = testdir.makepyfile('''
 import os, signal, subprocess, sys, time
@@ -1373,12 +1152,14 @@ if __name__ == "__main__":
 
 
 @pytest.mark.skipif('sys.platform == "win32"', reason="SIGTERM isn't really supported on Windows")
+@pytest.mark.xfail('sys.platform == "darwin"', reason="Something weird going on Macs...")
+@pytest.mark.xfail('platform.python_implementation() == "PyPy"', reason="Interpreter seems buggy")
 @pytest.mark.parametrize('setup', [
     ('signal.signal(signal.SIGTERM, signal.SIG_DFL); cleanup_on_sigterm()', '88%   18-19'),
     ('cleanup_on_sigterm()', '88%   18-19'),
     ('cleanup()', '75%   16-19'),
 ])
-def test_cleanup_on_sigterm_sig_dfl(testdir, setup):
+def test_cleanup_on_sigterm_sig_dfl(pytester, testdir, setup):
     script = testdir.makepyfile('''
 import os, signal, subprocess, sys, time
 
@@ -1416,6 +1197,8 @@ if __name__ == "__main__":
 
 
 @pytest.mark.skipif('sys.platform == "win32"', reason="SIGINT is subtly broken on Windows")
+@pytest.mark.xfail('sys.platform == "darwin"', reason="Something weird going on Macs...")
+@pytest.mark.xfail('platform.python_implementation() == "PyPy"', reason="Interpreter seems buggy")
 def test_cleanup_on_sigterm_sig_dfl_sigint(testdir):
     script = testdir.makepyfile('''
 import os, signal, subprocess, sys, time
@@ -1455,6 +1238,7 @@ if __name__ == "__main__":
 
 
 @pytest.mark.skipif('sys.platform == "win32"', reason="fork not available on Windows")
+@pytest.mark.xfail('platform.python_implementation() == "PyPy"', reason="Interpreter seems buggy")
 def test_cleanup_on_sigterm_sig_ign(testdir):
     script = testdir.makepyfile('''
 import os, signal, subprocess, sys, time
@@ -1620,7 +1404,6 @@ COVERAGERC = '''
 # Regexes for lines to exclude from consideration
 exclude_lines =
     raise NotImplementedError
-
 '''
 
 EXCLUDED_TEST = '''
@@ -1687,7 +1470,7 @@ SKIP_COVERED_RESULT = '1 file skipped due to complete coverage.'
 @pytest.mark.parametrize('report_option', [
     'term-missing:skip-covered',
     'term:skip-covered'])
-def test_skip_covered_cli(testdir, report_option):
+def test_skip_covered_cli(pytester, testdir, report_option):
     testdir.makefile('', coveragerc=SKIP_COVERED_COVERAGERC)
     script = testdir.makepyfile(SKIP_COVERED_TEST)
     result = testdir.runpytest('-v',
@@ -1781,6 +1564,7 @@ def test_not_started_plugin_does_not_fail(testdir):
     class ns:
         cov_source = [True]
         cov_report = ''
+
     plugin = pytest_cov.plugin.CovPlugin(ns, None, start=False)
     plugin.pytest_runtestloop(None)
     plugin.pytest_terminal_summary(None)
@@ -1892,13 +1676,13 @@ def test_external_data_file_negative(testdir):
 
 
 @xdist_params
-def test_append_coverage(testdir, opts, prop):
+def test_append_coverage(pytester, testdir, opts, prop):
     script = testdir.makepyfile(test_1=prop.code)
     testdir.tmpdir.join('.coveragerc').write(prop.fullconf)
     result = testdir.runpytest('-v',
                                '--cov=%s' % script.dirpath(),
                                script,
-                               *opts.split()+prop.args)
+                               *opts.split() + prop.args)
     result.stdout.fnmatch_lines([
         'test_1* %s*' % prop.result,
     ])
@@ -1907,7 +1691,7 @@ def test_append_coverage(testdir, opts, prop):
                                '--cov-append',
                                '--cov=%s' % script2.dirpath(),
                                script2,
-                               *opts.split()+prop.args)
+                               *opts.split() + prop.args)
     result.stdout.fnmatch_lines([
         'test_1* %s*' % prop.result,
         'test_2* %s*' % prop.result2,
@@ -1915,7 +1699,7 @@ def test_append_coverage(testdir, opts, prop):
 
 
 @xdist_params
-def test_do_not_append_coverage(testdir, opts, prop):
+def test_do_not_append_coverage(pytester, testdir, opts, prop):
     script = testdir.makepyfile(test_1=prop.code)
     testdir.tmpdir.join('.coveragerc').write(prop.fullconf)
     result = testdir.runpytest('-v',
@@ -2097,7 +1881,7 @@ EXPECTED_CONTEXTS = {
 
 @pytest.mark.skipif("coverage.version_info < (5, 0)")
 @xdist_params
-def test_contexts(testdir, opts):
+def test_contexts(pytester, testdir, opts):
     with open(os.path.join(os.path.dirname(__file__), "contextful.py")) as f:
         contextful_tests = f.read()
     script = testdir.makepyfile(contextful_tests)
