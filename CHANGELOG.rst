@@ -22,6 +22,8 @@ Changelog
     parallel = true
     sigterm = true
 
+* Use modern way to specify hook options to avoid deprecation warnings with pytest >=7.2.
+
 
 3.0.0 (2021-10-04)
 -------------------
