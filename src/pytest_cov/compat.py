@@ -10,8 +10,10 @@ StringIO  # pyflakes, this is for re-export
 
 if hasattr(pytest, 'hookimpl'):
     hookwrapper = pytest.hookimpl(hookwrapper=True)
+    tryfirst = pytest.hookimpl(tryfirst=True)
 else:
     hookwrapper = pytest.mark.hookwrapper
+    tryfirst = pytest.mark.tryfirst
 
 
 class SessionWrapper:

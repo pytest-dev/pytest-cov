@@ -133,7 +133,7 @@ def _prepare_cov_source(cov_source):
     return None if True in cov_source else [path for path in cov_source if path is not True]
 
 
-@pytest.mark.tryfirst
+@compat.tryfirst
 def pytest_load_initial_conftests(early_config, parser, args):
     options = early_config.known_args_namespace
     no_cov = options.no_cov_should_warn = False
