@@ -21,12 +21,12 @@ The process for releasing should follow these steps:
 #. Make sure you have a clean checkout, run ``git status`` to verify.
 #. Manually clean temporary files (that are ignored and won't show up in ``git status``)::
 
-        rm -rf dist build src/*.egg-info
+        rm -rf dist
 
    These files need to be removed to force distutils/setuptools to rebuild everything and recreate the egg-info metadata.
 #. Build the dists::
 
-        python3 setup.py clean --all sdist bdist_wheel
+        python -m build
 
 #. Verify that the resulting archives (found in ``dist/``) are good.
 #. Upload the sdist and wheel with twine::

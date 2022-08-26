@@ -1777,8 +1777,8 @@ def test_append_coverage_subprocess(testdir):
 
 
 def test_pth_failure(monkeypatch):
-    with open('src/pytest-cov.pth') as fh:
-        payload = fh.read()
+    with open('src/pytest-cov.embed') as fh:
+        payload = f'import os, sys;exec({fh.read()!r})'
 
     class SpecificError(Exception):
         pass

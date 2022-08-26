@@ -1,0 +1,76 @@
+[build-system]
+requires = ["hatchling", "hatch-fancy-pypi-readme"]
+build-backend = "hatchling.build"
+
+[project]
+name = "pytest-cov"
+dynamic = ["readme"]
+version = "3.0.0"
+description = "Pytest plugin for measuring coverage."
+license = "MIT"
+requires-python = ">=3.7"
+authors = [
+  { name = "Marc Schlaich", email = "marc.schlaich@gmail.com" },
+]
+keywords = [
+  "cover",
+  "coverage",
+  "distributed",
+  "parallel",
+  "py.test",
+  "pytest",
+]
+classifiers = [
+  "Development Status :: 5 - Production/Stable",
+  "Framework :: Pytest",
+  "Intended Audience :: Developers",
+  "License :: OSI Approved :: MIT License",
+  "Operating System :: Microsoft :: Windows",
+  "Operating System :: POSIX",
+  "Operating System :: Unix",
+  "Programming Language :: Python",
+  "Programming Language :: Python :: 3",
+  "Programming Language :: Python :: 3 :: Only",
+  "Programming Language :: Python :: 3.7",
+  "Programming Language :: Python :: 3.8",
+  "Programming Language :: Python :: 3.9",
+  "Programming Language :: Python :: 3.10",
+  "Programming Language :: Python :: Implementation :: CPython",
+  "Programming Language :: Python :: Implementation :: PyPy",
+  "Topic :: Software Development :: Testing",
+  "Topic :: Utilities",
+]
+dependencies = [
+  "coverage[toml]>=5.2.1",
+  "pytest>=4.6",
+]
+
+[project.optional-dependencies]
+testing = [
+  "fields",
+  "hunter",
+  "process-tests",
+  "pytest-xdist",
+  "six",
+  "virtualenv",
+]
+
+[project.entry-points.pytest11]
+pytest_cov = "pytest_cov.plugin"
+
+[project.urls]
+Changelog = "https://pytest-cov.readthedocs.io/en/latest/changelog.html"
+Documentation = "https://pytest-cov.readthedocs.io/"
+Homepage = "https://github.com/pytest-dev/pytest-cov"
+"Issue Tracker" = "https://github.com/pytest-dev/pytest-cov/issues"
+
+[tool.hatch.metadata.hooks.fancy-pypi-readme]
+content-type = "text/x-rst"
+fragments = [
+  { path = "README.rst" },
+  { path = "CHANGELOG.rst" },
+]
+
+[tool.hatch.build.targets.wheel.hooks.autorun]
+dependencies = ["hatch-autorun"]
+file = "src/pytest-cov.embed"
