@@ -142,7 +142,9 @@ setup(
             'six',
             'pytest-xdist',
             'virtualenv',
-        ]
+        ],
+        # Enable pyproject.toml support.
+        'toml': ['coverage[toml]'],
     },
     entry_points={
         'pytest11': [
