@@ -9,23 +9,29 @@ Changelog
 
 
 * `--cov-fail-under` no longer causes `pytest --collect-only` to fail
-  Contributed by Zac Hatfield-Dodds in
-  `#511 <https://github.com/pytest-dev/pytest-cov/pull/511>`_.
+  Contributed by Zac Hatfield-Dodds in `#511 <https://github.com/pytest-dev/pytest-cov/pull/511>`_.
 * Dropped support for multiprocessing (mostly because `issue 82408 <https://github.com/python/cpython/issues/82408>`_). This feature was
-  mostly working but made out test suite very flaky and slow.
+  mostly working but very broken in certain scenarios and made the test suite very flaky and slow.
 
-  There is builtin multiprocessing support in coverage and you can switch to that if you feel lucky. All you need is this in your
+  There is builtin multiprocessing support in coverage and you can migrate to that. All you need is this in your
   ``.coveragerc``::
 
     [run]
     concurrency = multiprocessing
     parallel = true
     sigterm = true
+* Fixed deprecation in ``setup.py`` by trying to import setuptools before distutils.
+  Contributed by Ben Greiner in `#545 <https://github.com/pytest-dev/pytest-cov/pull/545>`_.
+* Removed undesirable new lines that were displayed while reporting was disabled.
+  Contributed by Delgan in `#540 <https://github.com/pytest-dev/pytest-cov/pull/540>`_.
+* Documentation fixes.
+  Contributed by Andre Brisco in `#543 <https://github.com/pytest-dev/pytest-cov/pull/543>`_
+  and Colin O'Dell in `#525 <https://github.com/pytest-dev/pytest-cov/pull/525>`_.
 * Added support for LCOV output format via `--cov-report=lcov`. Only works with coverage 6.3+.
-  Contributed by Christian Fetzer in
-  `#536 <https://github.com/pytest-dev/pytest-cov/issues/536>`_.
-* Use modern way to specify hook options to avoid deprecation warnings with pytest >=7.2.
-  Contributed by Ronny Pfannschmidt in `#550 <https://github.com/pytest-dev/pytest-cov/pull/550>`_.
+  Contributed by Christian Fetzer in `#536 <https://github.com/pytest-dev/pytest-cov/issues/536>`_.
+* Modernized pytest hook implementation.
+  Contributed by Bruno Oliveira in `#549 <https://github.com/pytest-dev/pytest-cov/pull/549>`_
+  and Ronny Pfannschmidt in `#550 <https://github.com/pytest-dev/pytest-cov/pull/550>`_.
 
 
 3.0.0 (2021-10-04)
