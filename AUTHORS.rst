@@ -51,4 +51,5 @@ Authors
 * Danilo Šegan - https://github.com/dsegan
 * Michał Bielawski - https://github.com/D3X
 * Zac Hatfield-Dodds - https://github.com/Zac-HD
+* Ronny Pfannschmidt - https://github.com/RonnyPfannschmidt
 * Christian Fetzer - https://github.com/fetzerch

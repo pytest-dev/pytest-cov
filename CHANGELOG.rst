@@ -2,8 +2,8 @@ Changelog
 =========
 
 
-4.0.0 (future)
--------------------
+4.0.0 (2022-09-28)
+------------------
 
 **Note that this release drops support for multiprocessing.**
 
@@ -24,8 +24,8 @@ Changelog
 * Added support for LCOV output format via `--cov-report=lcov`. Only works with coverage 6.3+.
   Contributed by Christian Fetzer in
   `#536 <https://github.com/pytest-dev/pytest-cov/issues/536>`_.
-
 * Use modern way to specify hook options to avoid deprecation warnings with pytest >=7.2.
+  Contributed by Ronny Pfannschmidt in `#550 <https://github.com/pytest-dev/pytest-cov/pull/550>`_.
 
 
 3.0.0 (2021-10-04)
