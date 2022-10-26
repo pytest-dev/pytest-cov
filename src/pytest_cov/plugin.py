@@ -29,7 +29,7 @@ class CovReportWarning(PytestCovWarning):
 
 
 def validate_report(arg):
-    file_choices = ['annotate', 'html', 'xml']
+    file_choices = ['annotate', 'html', 'xml', 'lcov']
     term_choices = ['term', 'term-missing']
     term_modifier_choices = ['skip-covered']
     all_choices = term_choices + file_choices
@@ -38,6 +38,9 @@ def validate_report(arg):
     if report_type not in all_choices + ['']:
         msg = f'invalid choice: "{arg}" (choose from "{all_choices}")'
         raise argparse.ArgumentTypeError(msg)
+
+    if report_type == 'lcov' and coverage.version_info <= (6, 3):
+        raise argparse.ArgumentTypeError('LCOV output is only supported with coverage.py >= 6.3')
 
     if len(values) == 1:
         return report_type, None
@@ -96,9 +99,9 @@ def pytest_addoption(parser):
     group.addoption('--cov-report', action=StoreReport, default={},
                     metavar='TYPE', type=validate_report,
                     help='Type of report to generate: term, term-missing, '
-                         'annotate, html, xml (multi-allowed). '
+                         'annotate, html, xml, lcov (multi-allowed). '
                          'term, term-missing may be followed by ":skip-covered". '
-                         'annotate, html and xml may be followed by ":DEST" '
+                         'annotate, html, xml and lcov may be followed by ":DEST" '
                          'where DEST specifies the output location. '
                          'Use --cov-report= to not generate any output.')
     group.addoption('--cov-config', action='store', default='',
@@ -133,7 +136,7 @@ def _prepare_cov_source(cov_source):
     return None if True in cov_source else [path for path in cov_source if path is not True]
 
 
-@pytest.mark.tryfirst
+@pytest.hookimpl(tryfirst=True)
 def pytest_load_initial_conftests(early_config, parser, args):
     options = early_config.known_args_namespace
     no_cov = options.no_cov_should_warn = False
@@ -253,6 +256,7 @@ class CovPlugin:
         if self.options.cov_context == 'test':
             session.config.pluginmanager.register(TestContextPlugin(self.cov_controller.cov), '_cov_contexts')
 
+    @pytest.hookimpl(optionalhook=True)
     def pytest_configure_node(self, node):
         """Delegate to our implementation.
 
@@ -260,8 +264,8 @@ class CovPlugin:
         """
         if not self._disabled:
             self.cov_controller.configure_node(node)
-    pytest_configure_node.optionalhook = True
 
+    @pytest.hookimpl(optionalhook=True)
     def pytest_testnodedown(self, node, error):
         """Delegate to our implementation.
 
@@ -269,7 +273,6 @@ class CovPlugin:
         """
         if not self._disabled:
             self.cov_controller.testnodedown(node, error)
-    pytest_testnodedown.optionalhook = True
 
     def _should_report(self):
         return not (self.failed and self.options.no_cov_on_fail)
@@ -280,7 +283,7 @@ class CovPlugin:
 
     # we need to wrap pytest_runtestloop. by the time pytest_sessionfinish
     # runs, it's too late to set testsfailed
-    @compat.hookwrapper
+    @pytest.hookimpl(hookwrapper=True)
     def pytest_runtestloop(self, session):
         yield
 
@@ -356,7 +359,7 @@ class CovPlugin:
     def pytest_runtest_teardown(self, item):
         embed.cleanup()
 
-    @compat.hookwrapper
+    @pytest.hookimpl(hookwrapper=True)
     def pytest_runtest_call(self, item):
         if (item.get_closest_marker('no_cover')
                 or 'no_cover' in getattr(item, 'fixturenames', ())):

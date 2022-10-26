@@ -23,8 +23,8 @@ For full details refer to the `coverage config file`_ documentation.
 
 .. note:: Important Note
 
-    This plugin overrides the ``data_file`` and ``parallel`` options of coverage. Unless you also run coverage without
-    pytest-cov it's pointless to set those options in your ``.coveragerc``.
+    This plugin overrides the ``parallel`` option of coverage. Unless you also run coverage without pytest-cov it's
+    pointless to set those options in your ``.coveragerc``.
 
     If you use the ``--cov=something`` option (with a value) then coverage's ``source`` option will also get overridden.
     If you have multiple sources it might be easier to set those in ``.coveragerc`` and always use ``--cov`` (without a value)
@@ -56,9 +56,9 @@ The complete list of command line options is:
 
   --cov=PATH            Measure coverage for filesystem path. (multi-allowed)
   --cov-report=type     Type of report to generate: term, term-missing,
-                        annotate, html, xml (multi-allowed). term, term-
+                        annotate, html, xml, lcov (multi-allowed). term, term-
                         missing may be followed by ":skip-covered". annotate,
-                        html and xml may be followed by ":DEST" where DEST
+                        html, xml and lcov may be followed by ":DEST" where DEST
                         specifies the output location. Use --cov-report= to
                         not generate any output.
   --cov-config=path     Config file for coverage. Default: .coveragerc

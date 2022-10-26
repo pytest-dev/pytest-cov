@@ -11,11 +11,13 @@ from os.path import splitext
 from setuptools import Command
 from setuptools import find_packages
 from setuptools import setup
+
 try:
     # https://setuptools.pypa.io/en/latest/deprecated/distutils-legacy.html
     from setuptools.command.build import build
 except ImportError:
     from distutils.command.build import build
+
 from setuptools.command.develop import develop
 from setuptools.command.easy_install import easy_install
 from setuptools.command.install_lib import install_lib
@@ -85,7 +87,7 @@ class GeneratePTH(Command):
 
 setup(
     name='pytest-cov',
-    version='3.0.0',
+    version='4.0.0',
     license='MIT',
     description='Pytest plugin for measuring coverage.',
     long_description='{}\n{}'.format(read('README.rst'), re.sub(':[a-z]+:`~?(.*?)`', r'``\1``', read('CHANGELOG.rst'))),

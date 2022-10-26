@@ -150,7 +150,8 @@ def test_foo(cov):
 CHILD_SCRIPT_RESULT = '[56] * 100%'
 PARENT_SCRIPT_RESULT = '9 * 100%'
 DEST_DIR = 'cov_dest'
-REPORT_NAME = 'cov.xml'
+XML_REPORT_NAME = 'cov.xml'
+LCOV_REPORT_NAME = 'cov.info'
 
 xdist_params = pytest.mark.parametrize('opts', [
     '',
@@ -333,16 +334,48 @@ def test_xml_output_dir(testdir):
 
     result = testdir.runpytest('-v',
                                '--cov=%s' % script.dirpath(),
-                               '--cov-report=xml:' + REPORT_NAME,
+                               '--cov-report=xml:' + XML_REPORT_NAME,
                                script)
 
     result.stdout.fnmatch_lines([
         '*- coverage: platform *, python * -*',
-        'Coverage XML written to file ' + REPORT_NAME,
+        'Coverage XML written to file ' + XML_REPORT_NAME,
         '*10 passed*',
     ])
-    assert testdir.tmpdir.join(REPORT_NAME).check()
+    assert testdir.tmpdir.join(XML_REPORT_NAME).check()
     assert result.ret == 0
+
+
+@pytest.mark.skipif("coverage.version_info < (6, 3)")
+def test_lcov_output_dir(testdir):
+    script = testdir.makepyfile(SCRIPT)
+
+    result = testdir.runpytest('-v',
+                               '--cov=%s' % script.dirpath(),
+                               '--cov-report=lcov:' + LCOV_REPORT_NAME,
+                               script)
+
+    result.stdout.fnmatch_lines([
+        '*- coverage: platform *, python * -*',
+        'Coverage LCOV written to file ' + LCOV_REPORT_NAME,
+        '*10 passed*',
+    ])
+    assert testdir.tmpdir.join(LCOV_REPORT_NAME).check()
+    assert result.ret == 0
+
+
+@pytest.mark.skipif("coverage.version_info >= (6, 3)")
+def test_lcov_not_supported(testdir):
+    script = testdir.makepyfile("a = 1")
+    result = testdir.runpytest('-v',
+                               '--cov=%s' % script.dirpath(),
+                               '--cov-report=lcov',
+                               script,
+                               )
+    result.stderr.fnmatch_lines([
+        '*argument --cov-report: LCOV output is only supported with coverage.py >= 6.3',
+    ])
+    assert result.ret != 0
 
 
 def test_term_output_dir(testdir):
@@ -1761,8 +1794,11 @@ def test_pth_failure(monkeypatch):
     monkeypatch.setattr(sys, 'stderr', buff)
     monkeypatch.setitem(os.environ, 'COV_CORE_SOURCE', 'foobar')
     exec(payload)
-    assert buff.getvalue() == '''pytest-cov: Failed to setup subprocess coverage. Environ: {'COV_CORE_SOURCE': 'foobar'} Exception: SpecificError()
-'''
+    expected = (
+        "pytest-cov: Failed to setup subprocess coverage. "
+        "Environ: {'COV_CORE_SOURCE': 'foobar'} Exception: SpecificError()\n"
+    )
+    assert buff.getvalue() == expected
 
 
 def test_double_cov(testdir):
