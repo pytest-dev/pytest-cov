@@ -1,6 +1,12 @@
 Changelog
 =========
 
+4.0.1 (2022-10-26)
+------------------
+
+* Remove forced config file default of ``.coveragerc``
+  Contributed by Ofek Lev in
+  `#508 <https://github.com/pytest-dev/pytest-cov/pull/508>`_.
 
 4.0.0 (2022-09-28)
 ------------------
@@ -32,9 +38,6 @@ Changelog
 * Modernized pytest hook implementation.
   Contributed by Bruno Oliveira in `#549 <https://github.com/pytest-dev/pytest-cov/pull/549>`_
   and Ronny Pfannschmidt in `#550 <https://github.com/pytest-dev/pytest-cov/pull/550>`_.
-* Remove forced config file default of ``.coveragerc``
-  Contributed by Ofek Lev in
-  `#508 <https://github.com/pytest-dev/pytest-cov/pull/508>`_.
 
 3.0.0 (2021-10-04)
 -------------------
