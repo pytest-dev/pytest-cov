@@ -14,16 +14,33 @@ class CoverageError(Exception):
     """Indicates that our coverage is too low"""
 
 
+class PytestCovWarning(pytest.PytestWarning):
+    """
+    The base for all pytest-cov warnings, never raised directly
+    """
+
+
+class CovDisabledWarning(PytestCovWarning):
+    """Indicates that Coverage was manually disabled"""
+
+
+class CovReportWarning(PytestCovWarning):
+    """Indicates that we failed to generate a report"""
+
+
 def validate_report(arg):
-    file_choices = ['annotate', 'html', 'xml']
+    file_choices = ['annotate', 'html', 'xml', 'lcov']
     term_choices = ['term', 'term-missing']
     term_modifier_choices = ['skip-covered']
     all_choices = term_choices + file_choices
     values = arg.split(":", 1)
     report_type = values[0]
     if report_type not in all_choices + ['']:
-        msg = 'invalid choice: "{}" (choose from "{}")'.format(arg, all_choices)
+        msg = f'invalid choice: "{arg}" (choose from "{all_choices}")'
         raise argparse.ArgumentTypeError(msg)
+
+    if report_type == 'lcov' and coverage.version_info <= (6, 3):
+        raise argparse.ArgumentTypeError('LCOV output is only supported with coverage.py >= 6.3')
 
     if len(values) == 1:
         return report_type, None
@@ -42,16 +59,23 @@ def validate_report(arg):
 
 def validate_fail_under(num_str):
     try:
-        return int(num_str)
+        value = int(num_str)
     except ValueError:
-        return float(num_str)
+        try:
+            value = float(num_str)
+        except ValueError:
+            raise argparse.ArgumentTypeError('An integer or float value is required.')
+    if value > 100:
+        raise argparse.ArgumentTypeError('Your desire for over-achievement is admirable but misplaced. '
+                                         'The maximum value is 100. Perhaps write more integration tests?')
+    return value
 
 
 def validate_context(arg):
     if coverage.version_info <= (5, 0):
         raise argparse.ArgumentTypeError('Contexts are only supported with coverage.py >= 5.x')
     if arg != "test":
-        raise argparse.ArgumentTypeError('--cov-context=test is the only supported value')
+        raise argparse.ArgumentTypeError('The only supported value is "test".')
     return arg
 
 
@@ -70,12 +94,14 @@ def pytest_addoption(parser):
                     nargs='?', const=True, dest='cov_source',
                     help='Path or package name to measure during execution (multi-allowed). '
                          'Use --cov= to not do any source filtering and record everything.')
+    group.addoption('--cov-reset', action='store_const', const=[], dest='cov_source',
+                    help='Reset cov sources accumulated in options so far. ')
     group.addoption('--cov-report', action=StoreReport, default={},
                     metavar='TYPE', type=validate_report,
                     help='Type of report to generate: term, term-missing, '
-                         'annotate, html, xml (multi-allowed). '
+                         'annotate, html, xml, lcov (multi-allowed). '
                          'term, term-missing may be followed by ":skip-covered". '
-                         'annotate, html and xml may be followed by ":DEST" '
+                         'annotate, html, xml and lcov may be followed by ":DEST" '
                          'where DEST specifies the output location. '
                          'Use --cov-report= to not generate any output.')
     group.addoption('--cov-config', action='store', default='.coveragerc',
@@ -110,7 +136,7 @@ def _prepare_cov_source(cov_source):
     return None if True in cov_source else [path for path in cov_source if path is not True]
 
 
-@pytest.mark.tryfirst
+@pytest.hookimpl(tryfirst=True)
 def pytest_load_initial_conftests(early_config, parser, args):
     options = early_config.known_args_namespace
     no_cov = options.no_cov_should_warn = False
@@ -127,7 +153,7 @@ def pytest_load_initial_conftests(early_config, parser, args):
         early_config.pluginmanager.register(plugin, '_cov')
 
 
-class CovPlugin(object):
+class CovPlugin:
     """Use coverage package to produce code coverage reports.
 
     Delegates all work to a particular implementation based on whether
@@ -182,7 +208,7 @@ class CovPlugin(object):
 
         if config is None:
             # fake config option for engine
-            class Config(object):
+            class Config:
                 option = self.options
 
             config = Config()
@@ -230,6 +256,7 @@ class CovPlugin(object):
         if self.options.cov_context == 'test':
             session.config.pluginmanager.register(TestContextPlugin(self.cov_controller.cov), '_cov_contexts')
 
+    @pytest.hookimpl(optionalhook=True)
     def pytest_configure_node(self, node):
         """Delegate to our implementation.
 
@@ -237,8 +264,8 @@ class CovPlugin(object):
         """
         if not self._disabled:
             self.cov_controller.configure_node(node)
-    pytest_configure_node.optionalhook = True
 
+    @pytest.hookimpl(optionalhook=True)
     def pytest_testnodedown(self, node, error):
         """Delegate to our implementation.
 
@@ -246,7 +273,6 @@ class CovPlugin(object):
         """
         if not self._disabled:
             self.cov_controller.testnodedown(node, error)
-    pytest_testnodedown.optionalhook = True
 
     def _should_report(self):
         return not (self.failed and self.options.no_cov_on_fail)
@@ -257,7 +283,7 @@ class CovPlugin(object):
 
     # we need to wrap pytest_runtestloop. by the time pytest_sessionfinish
     # runs, it's too late to set testsfailed
-    @compat.hookwrapper
+    @pytest.hookimpl(hookwrapper=True)
     def pytest_runtestloop(self, session):
         yield
 
@@ -282,10 +308,10 @@ class CovPlugin(object):
                 message = 'Failed to generate report: %s\n' % exc
                 session.config.pluginmanager.getplugin("terminalreporter").write(
                     'WARNING: %s\n' % message, red=True, bold=True)
-                warnings.warn(pytest.PytestWarning(message))
+                warnings.warn(CovReportWarning(message))
                 self.cov_total = 0
             assert self.cov_total is not None, 'Test coverage should never be `None`'
-            if self._failed_cov_total():
+            if self._failed_cov_total() and not self.options.collectonly:
                 # make sure we get the EXIT_TESTSFAILED exit code
                 compat_session.testsfailed += 1
 
@@ -294,7 +320,7 @@ class CovPlugin(object):
             if self.options.no_cov_should_warn:
                 message = 'Coverage disabled via --no-cov switch!'
                 terminalreporter.write('WARNING: %s\n' % message, red=True, bold=True)
-                warnings.warn(pytest.PytestWarning(message))
+                warnings.warn(CovDisabledWarning(message))
             return
         if self.cov_controller is None:
             return
@@ -303,7 +329,11 @@ class CovPlugin(object):
             # we shouldn't report, or report generation failed (error raised above)
             return
 
-        terminalreporter.write('\n' + self.cov_report.getvalue() + '\n')
+        report = self.cov_report.getvalue()
+
+        # Avoid undesirable new lines when output is disabled with "--cov-report=".
+        if report:
+            terminalreporter.write('\n' + report + '\n')
 
         if self.options.cov_fail_under is not None and self.options.cov_fail_under > 0:
             failed = self.cov_total < self.options.cov_fail_under
@@ -329,7 +359,7 @@ class CovPlugin(object):
     def pytest_runtest_teardown(self, item):
         embed.cleanup()
 
-    @compat.hookwrapper
+    @pytest.hookimpl(hookwrapper=True)
     def pytest_runtest_call(self, item):
         if (item.get_closest_marker('no_cover')
                 or 'no_cover' in getattr(item, 'fixturenames', ())):
@@ -340,7 +370,7 @@ class CovPlugin(object):
             yield
 
 
-class TestContextPlugin(object):
+class TestContextPlugin:
     def __init__(self, cov):
         self.cov = cov
 
@@ -354,7 +384,7 @@ class TestContextPlugin(object):
         self.switch_context(item, 'run')
 
     def switch_context(self, item, when):
-        context = "{item.nodeid}|{when}".format(item=item, when=when)
+        context = f"{item.nodeid}|{when}"
         self.cov.switch_context(context)
         os.environ['COV_CORE_CONTEXT'] = context
 

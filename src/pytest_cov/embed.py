@@ -20,22 +20,6 @@ import signal
 _active_cov = None
 
 
-def multiprocessing_start(_):
-    global _active_cov
-    cov = init()
-    if cov:
-        _active_cov = cov
-        multiprocessing.util.Finalize(None, cleanup, exitpriority=1000)
-
-
-try:
-    import multiprocessing.util
-except ImportError:
-    pass
-else:
-    multiprocessing.util.register_after_fork(multiprocessing_start, multiprocessing_start)
-
-
 def init():
     # Only continue if ancestor process has set everything needed in
     # the env.
@@ -100,12 +84,10 @@ def cleanup():
     _active_cov = None
     _cleanup_in_progress = False
     if _pending_signal:
-        pending_singal = _pending_signal
+        pending_signal = _pending_signal
         _pending_signal = None
-        _signal_cleanup_handler(*pending_singal)
+        _signal_cleanup_handler(*pending_signal)
 
-
-multiprocessing_finish = cleanup  # in case someone dared to use this internal
 
 _previous_handlers = {}
 _pending_signal = None

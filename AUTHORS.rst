@@ -46,3 +46,14 @@ Authors
 * Pamela McA'Nulty - https://github.com/PamelaM
 * Christian Riedel - https://github.com/Cielquan
 * Chris Sreesangkom - https://github.com/csreesan
+* Sorin Sbarnea - https://github.com/ssbarnea
+* Brian Rutledge - https://github.com/bhrutledge
+* Danilo Šegan - https://github.com/dsegan
+* Michał Bielawski - https://github.com/D3X
+* Zac Hatfield-Dodds - https://github.com/Zac-HD
+* Ben Greiner - https://github.com/bnavigator
+* Delgan - https://github.com/Delgan
+* Andre Brisco - https://github.com/abrisco
+* Colin O'Dell - https://github.com/colinodell
+* Ronny Pfannschmidt - https://github.com/RonnyPfannschmidt
+* Christian Fetzer - https://github.com/fetzerch

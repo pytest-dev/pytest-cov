@@ -1,0 +1,124 @@
+name: Tests
+on: [push, pull_request, workflow_dispatch]
+jobs:
+{%- raw %}
+  examples:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: ["pypy-3.7", "3.9"]
+        target: [
+            "src-layout",
+            "adhoc-layout",
+        ]
+        include:
+          # Add new helper variables to existing jobs
+          - {python-version: "pypy-3.7", tox-python-version: "pypy3"}
+          - {python-version: "3.9", tox-python-version: "py39"}
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v2
+        with:
+          python-version: ${{ matrix.python-version }}
+
+      - name: Cache
+        uses: actions/cache@v2
+        with:
+          path: ~/.cache/pip
+          key:
+            examples-v1-${{ hashFiles('**/tox.ini') }}
+          restore-keys: |
+            examples-v1-
+
+      - name: Install dependencies
+        run: |
+          python -m pip install -U pip
+          python -m pip install -U wheel
+          python -m pip install --progress-bar=off tox -rci/requirements.txt
+
+      - name: Examples
+        run: |
+          cd examples/${{ matrix.target }}
+          tox -v -e ${{ matrix.tox-python-version }}
+{%- endraw %}
+
+  test:
+    name: {{ '${{ matrix.name }}' }}
+    runs-on: {{ '${{ matrix.os }}' }}
+    timeout-minutes: 30
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - name: 'check'
+            python: '3.9'
+            toxpython: 'python3.9'
+            tox_env: 'check'
+            os: 'ubuntu-latest'
+          - name: 'docs'
+            python: '3.9'
+            toxpython: 'python3.9'
+            tox_env: 'docs'
+            os: 'ubuntu-latest'
+{% for env in tox_environments %}
+{% set prefix = env.split('-')[0] -%}
+{% if prefix.startswith('pypy') %}
+{% set python %}pypy-{{ prefix[4] }}.{{ prefix[5] }}{% endset %}
+{% set cpython %}pp{{ prefix[4:5] }}{% endset %}
+{% set toxpython %}pypy{{ prefix[4] }}.{{ prefix[5] }}{% endset %}
+{% else %}
+{% set python %}{{ prefix[2] }}.{{ prefix[3:] }}{% endset %}
+{% set cpython %}cp{{ prefix[2:] }}{% endset %}
+{% set toxpython %}python{{ prefix[2] }}.{{ prefix[3:] }}{% endset %}
+{% endif %}
+{% for os, python_arch in [
+    ['ubuntu', 'x64'],
+    ['windows', 'x64'],
+    ['macos', 'x64'],
+] %}
+          - name: '{{ env }} ({{ os }})'
+            python: '{{ python }}'
+            toxpython: '{{ toxpython }}'
+            python_arch: '{{ python_arch }}'
+            tox_env: '{{ env }}'
+            os: '{{ os }}-latest'
+{% endfor %}
+{% endfor %}
+    steps:
+    - uses: actions/checkout@v2
+      with:
+        fetch-depth: 0
+    - uses: actions/setup-python@v2
+      with:
+        python-version: {{ '${{ matrix.python }}' }}
+        architecture: {{ '${{ matrix.python_arch }}' }}
+    - name: install dependencies
+      run: |
+        python -mpip install --progress-bar=off -r ci/requirements.txt
+        virtualenv --version
+        pip --version
+        tox --version
+        pip list --format=freeze
+    - name: test
+      env:
+        TOXPYTHON: '{{ '${{ matrix.toxpython }}' }}'
+      run: >
+        tox -e {{ '${{ matrix.tox_env }}' }} -v
+{% raw %}
+  successful:
+    # this provides a single status check for branch merge rules
+    # (use this in `Require status checks to pass before merging` in branch settings)
+    if: always()
+    needs:
+      - test
+      - examples
+    runs-on: ubuntu-latest
+    steps:
+      - name: Decide whether the needed jobs succeeded or failed
+        uses: re-actors/alls-green@release/v1
+        with:
+          jobs: ${{ toJSON(needs) }}
+{% endraw %}

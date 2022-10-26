@@ -2,7 +2,7 @@
 
 default_context:
     allow_tests_inside_package: no
-    appveyor: yes
+    appveyor: no
     c_extension_function: '-'
     c_extension_module: '-'
     c_extension_optional: no
@@ -16,10 +16,10 @@ default_context:
     command_line_interface: no
     command_line_interface_bin_name: '-'
     coveralls: no
-    coveralls_token: '[Required for Appveyor, take it from https://coveralls.io/github/ionelmc/pytest-cov]'
     distribution_name: pytest-cov
     email: contact@ionelmc.ro
     full_name: Ionel Cristian Mărieș
+    github_actions: yes
     legacy_python: yes
     license: MIT license
     linter: flake8
@@ -29,9 +29,10 @@ default_context:
     project_short_description: This plugin produces coverage reports. It supports centralised testing and distributed testing in both load and each modes. It also supports coverage of subprocesses.
     pypi_badge: yes
     pypi_disable_upload: no
-    release_date: '2020-06-12'
+    release_date: '2021-10-04'
     repo_hosting: github.com
     repo_hosting_domain: github.com
+    repo_main_branch: master
     repo_name: pytest-cov
     repo_username: pytest-dev
     requiresio: yes
@@ -45,9 +46,10 @@ default_context:
     test_matrix_configurator: no
     test_matrix_separate_coverage: no
     test_runner: pytest
-    travis: yes
+    travis: no
     travis_osx: no
-    version: 2.10.1
+    version: 3.0.0
+    version_manager: bump2version
     website: http://blog.ionelmc.ro
     year_from: '2010'
-    year_to: '2020'
+    year_to: '2022'

@@ -1,0 +1,220 @@
+name: Tests
+on: [push, pull_request, workflow_dispatch]
+jobs:
+  examples:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        python-version: ["pypy-3.7", "3.9"]
+        target: [
+            "src-layout",
+            "adhoc-layout",
+        ]
+        include:
+          # Add new helper variables to existing jobs
+          - {python-version: "pypy-3.7", tox-python-version: "pypy3"}
+          - {python-version: "3.9", tox-python-version: "py39"}
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v2
+        with:
+          python-version: ${{ matrix.python-version }}
+
+      - name: Cache
+        uses: actions/cache@v2
+        with:
+          path: ~/.cache/pip
+          key:
+            examples-v1-${{ hashFiles('**/tox.ini') }}
+          restore-keys: |
+            examples-v1-
+
+      - name: Install dependencies
+        run: |
+          python -m pip install -U pip
+          python -m pip install -U wheel
+          python -m pip install --progress-bar=off tox -rci/requirements.txt
+
+      - name: Examples
+        run: |
+          cd examples/${{ matrix.target }}
+          tox -v -e ${{ matrix.tox-python-version }}
+  test:
+    name: ${{ matrix.name }}
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 30
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - name: 'check'
+            python: '3.9'
+            toxpython: 'python3.9'
+            tox_env: 'check'
+            os: 'ubuntu-latest'
+          - name: 'docs'
+            python: '3.9'
+            toxpython: 'python3.9'
+            tox_env: 'docs'
+            os: 'ubuntu-latest'
+          - name: 'py36-pytest70-xdist250-coverage62 (ubuntu)'
+            python: '3.6'
+            toxpython: 'python3.6'
+            python_arch: 'x64'
+            tox_env: 'py36-pytest70-xdist250-coverage62'
+            os: 'ubuntu-latest'
+          - name: 'py36-pytest70-xdist250-coverage62 (windows)'
+            python: '3.6'
+            toxpython: 'python3.6'
+            python_arch: 'x64'
+            tox_env: 'py36-pytest70-xdist250-coverage62'
+            os: 'windows-latest'
+          - name: 'py36-pytest70-xdist250-coverage62 (macos)'
+            python: '3.6'
+            toxpython: 'python3.6'
+            python_arch: 'x64'
+            tox_env: 'py36-pytest70-xdist250-coverage62'
+            os: 'macos-latest'
+          - name: 'py37-pytest71-xdist250-coverage64 (ubuntu)'
+            python: '3.7'
+            toxpython: 'python3.7'
+            python_arch: 'x64'
+            tox_env: 'py37-pytest71-xdist250-coverage64'
+            os: 'ubuntu-latest'
+          - name: 'py37-pytest71-xdist250-coverage64 (windows)'
+            python: '3.7'
+            toxpython: 'python3.7'
+            python_arch: 'x64'
+            tox_env: 'py37-pytest71-xdist250-coverage64'
+            os: 'windows-latest'
+          - name: 'py37-pytest71-xdist250-coverage64 (macos)'
+            python: '3.7'
+            toxpython: 'python3.7'
+            python_arch: 'x64'
+            tox_env: 'py37-pytest71-xdist250-coverage64'
+            os: 'macos-latest'
+          - name: 'py38-pytest71-xdist250-coverage64 (ubuntu)'
+            python: '3.8'
+            toxpython: 'python3.8'
+            python_arch: 'x64'
+            tox_env: 'py38-pytest71-xdist250-coverage64'
+            os: 'ubuntu-latest'
+          - name: 'py38-pytest71-xdist250-coverage64 (windows)'
+            python: '3.8'
+            toxpython: 'python3.8'
+            python_arch: 'x64'
+            tox_env: 'py38-pytest71-xdist250-coverage64'
+            os: 'windows-latest'
+          - name: 'py38-pytest71-xdist250-coverage64 (macos)'
+            python: '3.8'
+            toxpython: 'python3.8'
+            python_arch: 'x64'
+            tox_env: 'py38-pytest71-xdist250-coverage64'
+            os: 'macos-latest'
+          - name: 'py39-pytest71-xdist250-coverage64 (ubuntu)'
+            python: '3.9'
+            toxpython: 'python3.9'
+            python_arch: 'x64'
+            tox_env: 'py39-pytest71-xdist250-coverage64'
+            os: 'ubuntu-latest'
+          - name: 'py39-pytest71-xdist250-coverage64 (windows)'
+            python: '3.9'
+            toxpython: 'python3.9'
+            python_arch: 'x64'
+            tox_env: 'py39-pytest71-xdist250-coverage64'
+            os: 'windows-latest'
+          - name: 'py39-pytest71-xdist250-coverage64 (macos)'
+            python: '3.9'
+            toxpython: 'python3.9'
+            python_arch: 'x64'
+            tox_env: 'py39-pytest71-xdist250-coverage64'
+            os: 'macos-latest'
+          - name: 'py310-pytest71-xdist250-coverage64 (ubuntu)'
+            python: '3.10'
+            toxpython: 'python3.10'
+            python_arch: 'x64'
+            tox_env: 'py310-pytest71-xdist250-coverage64'
+            os: 'ubuntu-latest'
+          - name: 'py310-pytest71-xdist250-coverage64 (windows)'
+            python: '3.10'
+            toxpython: 'python3.10'
+            python_arch: 'x64'
+            tox_env: 'py310-pytest71-xdist250-coverage64'
+            os: 'windows-latest'
+          - name: 'py310-pytest71-xdist250-coverage64 (macos)'
+            python: '3.10'
+            toxpython: 'python3.10'
+            python_arch: 'x64'
+            tox_env: 'py310-pytest71-xdist250-coverage64'
+            os: 'macos-latest'
+          - name: 'pypy37-pytest71-xdist250-coverage64 (ubuntu)'
+            python: 'pypy-3.7'
+            toxpython: 'pypy3.7'
+            python_arch: 'x64'
+            tox_env: 'pypy37-pytest71-xdist250-coverage64'
+            os: 'ubuntu-latest'
+          - name: 'pypy37-pytest71-xdist250-coverage64 (windows)'
+            python: 'pypy-3.7'
+            toxpython: 'pypy3.7'
+            python_arch: 'x64'
+            tox_env: 'pypy37-pytest71-xdist250-coverage64'
+            os: 'windows-latest'
+          - name: 'pypy37-pytest71-xdist250-coverage64 (macos)'
+            python: 'pypy-3.7'
+            toxpython: 'pypy3.7'
+            python_arch: 'x64'
+            tox_env: 'pypy37-pytest71-xdist250-coverage64'
+            os: 'macos-latest'
+          - name: 'pypy38-pytest71-xdist250-coverage64 (ubuntu)'
+            python: 'pypy-3.8'
+            toxpython: 'pypy3.8'
+            python_arch: 'x64'
+            tox_env: 'pypy38-pytest71-xdist250-coverage64'
+            os: 'ubuntu-latest'
+          - name: 'pypy38-pytest71-xdist250-coverage64 (windows)'
+            python: 'pypy-3.8'
+            toxpython: 'pypy3.8'
+            python_arch: 'x64'
+            tox_env: 'pypy38-pytest71-xdist250-coverage64'
+            os: 'windows-latest'
+          - name: 'pypy38-pytest71-xdist250-coverage64 (macos)'
+            python: 'pypy-3.8'
+            toxpython: 'pypy3.8'
+            python_arch: 'x64'
+            tox_env: 'pypy38-pytest71-xdist250-coverage64'
+            os: 'macos-latest'
+    steps:
+    - uses: actions/checkout@v2
+      with:
+        fetch-depth: 0
+    - uses: actions/setup-python@v2
+      with:
+        python-version: ${{ matrix.python }}
+        architecture: ${{ matrix.python_arch }}
+    - name: install dependencies
+      run: |
+        python -mpip install --progress-bar=off -r ci/requirements.txt
+        virtualenv --version
+        pip --version
+        tox --version
+        pip list --format=freeze
+    - name: test
+      env:
+        TOXPYTHON: '${{ matrix.toxpython }}'
+      run: >
+        tox -e ${{ matrix.tox_env }} -v
+
+  check:
+    if: always()
+    needs:
+      - test
+      - examples
+    runs-on: ubuntu-latest
+    steps:
+      - name: Decide whether the needed jobs succeeded or failed
+        uses: re-actors/alls-green@release/v1
+        with:
+          jobs: ${{ toJSON(needs) }}

@@ -2,6 +2,73 @@ Changelog
 =========
 
 
+4.0.0 (2022-09-28)
+------------------
+
+**Note that this release drops support for multiprocessing.**
+
+
+* `--cov-fail-under` no longer causes `pytest --collect-only` to fail
+  Contributed by Zac Hatfield-Dodds in `#511 <https://github.com/pytest-dev/pytest-cov/pull/511>`_.
+* Dropped support for multiprocessing (mostly because `issue 82408 <https://github.com/python/cpython/issues/82408>`_). This feature was
+  mostly working but very broken in certain scenarios and made the test suite very flaky and slow.
+
+  There is builtin multiprocessing support in coverage and you can migrate to that. All you need is this in your
+  ``.coveragerc``::
+
+    [run]
+    concurrency = multiprocessing
+    parallel = true
+    sigterm = true
+* Fixed deprecation in ``setup.py`` by trying to import setuptools before distutils.
+  Contributed by Ben Greiner in `#545 <https://github.com/pytest-dev/pytest-cov/pull/545>`_.
+* Removed undesirable new lines that were displayed while reporting was disabled.
+  Contributed by Delgan in `#540 <https://github.com/pytest-dev/pytest-cov/pull/540>`_.
+* Documentation fixes.
+  Contributed by Andre Brisco in `#543 <https://github.com/pytest-dev/pytest-cov/pull/543>`_
+  and Colin O'Dell in `#525 <https://github.com/pytest-dev/pytest-cov/pull/525>`_.
+* Added support for LCOV output format via `--cov-report=lcov`. Only works with coverage 6.3+.
+  Contributed by Christian Fetzer in `#536 <https://github.com/pytest-dev/pytest-cov/issues/536>`_.
+* Modernized pytest hook implementation.
+  Contributed by Bruno Oliveira in `#549 <https://github.com/pytest-dev/pytest-cov/pull/549>`_
+  and Ronny Pfannschmidt in `#550 <https://github.com/pytest-dev/pytest-cov/pull/550>`_.
+
+
+3.0.0 (2021-10-04)
+-------------------
+
+**Note that this release drops support for Python 2.7 and Python 3.5.**
+
+* Added support for Python 3.10 and updated various test dependencies.
+  Contributed by Hugo van Kemenade in
+  `#500 <https://github.com/pytest-dev/pytest-cov/pull/500>`_.
+* Switched from Travis CI to GitHub Actions. Contributed by Hugo van Kemenade in
+  `#494 <https://github.com/pytest-dev/pytest-cov/pull/494>`_ and
+  `#495 <https://github.com/pytest-dev/pytest-cov/pull/495>`_.
+* Add a ``--cov-reset`` CLI option.
+  Contributed by Danilo Šegan in
+  `#459 <https://github.com/pytest-dev/pytest-cov/pull/459>`_.
+* Improved validation of ``--cov-fail-under`` CLI option.
+  Contributed by ... Ronny Pfannschmidt's desire for skark in
+  `#480 <https://github.com/pytest-dev/pytest-cov/pull/480>`_.
+* Dropped Python 2.7 support.
+  Contributed by Thomas Grainger in
+  `#488 <https://github.com/pytest-dev/pytest-cov/pull/488>`_.
+* Updated trove classifiers. Contributed by Michał Bielawski in
+  `#481 <https://github.com/pytest-dev/pytest-cov/pull/481>`_.
+* Reverted change for `toml` requirement.
+  Contributed by Thomas Grainger in
+  `#477 <https://github.com/pytest-dev/pytest-cov/pull/477>`_.
+
+2.12.1 (2021-06-01)
+-------------------
+
+* Changed the `toml` requirement to be always be directly required (instead of being required through a coverage extra).
+  This fixes issues with pip-compile (`pip-tools#1300 <https://github.com/jazzband/pip-tools/issues/1300>`_).
+  Contributed by Sorin Sbarnea in `#472 <https://github.com/pytest-dev/pytest-cov/pull/472>`_.
+* Documented ``show_contexts``.
+  Contributed by Brian Rutledge in `#473 <https://github.com/pytest-dev/pytest-cov/pull/473>`_.
+
 2.12.0 (2021-05-14)
 -------------------
 
@@ -142,8 +209,6 @@ Changelog
   `#272 <https://github.com/pytest-dev/pytest-cov/pull/272>`_,
   `#271 <https://github.com/pytest-dev/pytest-cov/pull/271>`_ and
   `#269 <https://github.com/pytest-dev/pytest-cov/pull/269>`_.
-* Improved documentation regarding subprocess and multiprocessing.
-  Contributed in `#265 <https://github.com/pytest-dev/pytest-cov/pull/265>`_.
 * Improved ``pytest_cov.embed.cleanup_on_sigterm`` to be reentrant (signal deliveries while signal handling is
   running won't break stuff).
 * Added ``pytest_cov.embed.cleanup_on_signal`` for customized cleanup.
