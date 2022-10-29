@@ -72,7 +72,7 @@ class CovController:
 
         # If unset (the default), indicate fallback behavior for other files like pyproject.toml.
         # See https://github.com/nedbat/coveragepy/blob/6.2/coverage/control.py#L144-L146
-        self.config_file_choice = self.cov_config or True
+        self.config_file = self.cov_config or True
 
     @contextlib.contextmanager
     def ensure_topdir(self):
@@ -225,12 +225,12 @@ class Central(CovController):
         self.cov = coverage.Coverage(source=self.cov_source,
                                      branch=self.cov_branch,
                                      data_suffix=True,
-                                     config_file=self.config_file_choice)
+                                     config_file=self.config_file)
         self.combining_cov = coverage.Coverage(source=self.cov_source,
                                                branch=self.cov_branch,
                                                data_suffix=True,
                                                data_file=os.path.abspath(self.cov.config.data_file),
-                                               config_file=self.config_file_choice)
+                                               config_file=self.config_file)
 
         # Erase or load any previous coverage data and start coverage.
         if not self.cov_append:
@@ -269,7 +269,7 @@ class DistMaster(CovController):
         self.cov = coverage.Coverage(source=self.cov_source,
                                      branch=self.cov_branch,
                                      data_suffix=True,
-                                     config_file=self.config_file_choice)
+                                     config_file=self.config_file)
         self.cov._warn_no_data = False
         self.cov._warn_unimported_source = False
         self.cov._warn_preimported_source = False
@@ -277,7 +277,7 @@ class DistMaster(CovController):
                                                branch=self.cov_branch,
                                                data_suffix=True,
                                                data_file=os.path.abspath(self.cov.config.data_file),
-                                               config_file=self.config_file_choice)
+                                               config_file=self.config_file)
         if not self.cov_append:
             self.cov.erase()
         self.cov.start()
@@ -314,7 +314,7 @@ class DistMaster(CovController):
             cov = coverage.Coverage(source=self.cov_source,
                                     branch=self.cov_branch,
                                     data_suffix=data_suffix,
-                                    config_file=self.config_file_choice)
+                                    config_file=self.config_file)
             cov.start()
             if coverage.version_info < (5, 0):
                 data = CoverageData()
@@ -372,7 +372,7 @@ class DistWorker(CovController):
         self.cov = coverage.Coverage(source=self.cov_source,
                                      branch=self.cov_branch,
                                      data_suffix=True,
-                                     config_file=self.config_file_choice)
+                                     config_file=self.config_file)
         self.cov.start()
         self.set_env()
 

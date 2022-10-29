@@ -42,7 +42,7 @@ def init():
             cov_source = None
         else:
             cov_source = cov_source.split(os.pathsep)
-        if cov_config == os.pathsep:
+        if cov_config != '':
             cov_config = True
 
         # Activate coverage for this process.
