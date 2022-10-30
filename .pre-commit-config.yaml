@@ -1,10 +1,10 @@
 # To install the git pre-commit hook run:
 #   pre-commit install
 # To update the pre-commit hooks run:
-#   pre-commit install-hooks
+#   pre-commit autoupdate
 repos:
   - repo: https://github.com/pre-commit/pre-commit-hooks
-    rev: v4.2.0
+    rev: v4.3.0
     hooks:
       - id: trailing-whitespace
       - id: end-of-file-fixer
@@ -14,12 +14,12 @@ repos:
     rev: 5.10.1
     hooks:
       - id: isort
-  - repo: https://github.com/PyCQA/flake8
-    rev: 4.0.1
-    hooks:
-      - id: flake8
   - repo: https://github.com/asottile/pyupgrade
-    rev: v2.32.1
+    rev: v3.2.0
     hooks:
       - id: pyupgrade
         args: [--py36-plus]
+  - repo: https://github.com/PyCQA/flake8
+    rev: 5.0.4
+    hooks:
+      - id: flake8
