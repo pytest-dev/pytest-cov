@@ -1555,7 +1555,8 @@ def test_foo():
 
 SCRIPT_SIMPLE_RESULT = '4 * 100%'
 
-
+@pytest.mark.skipif('tuple(map(int, xdist.__version__.split("."))) >= (2, 5, 0)',
+                    reason="--boxed option was removed in version 2.5.0")
 @pytest.mark.skipif('sys.platform == "win32"')
 def test_dist_boxed(testdir):
     script = testdir.makepyfile(SCRIPT_SIMPLE)
