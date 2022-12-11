@@ -80,8 +80,7 @@ class GeneratePTH(Command):
         with open(join(dirname(__file__), 'src', 'pytest-cov.pth'), 'w') as fh:
             with open(join(dirname(__file__), 'src', 'pytest-cov.embed')) as sh:
                 fh.write(
-                    'import os, sys;'
-                    'exec(%r)' % sh.read().replace('    ', ' ')
+                    f"import os, sys;exec({sh.read().replace('    ', ' ')!r})"
                 )
 
 

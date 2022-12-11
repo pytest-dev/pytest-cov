@@ -305,9 +305,9 @@ class CovPlugin:
             try:
                 self.cov_total = self.cov_controller.summary(self.cov_report)
             except CoverageException as exc:
-                message = 'Failed to generate report: %s\n' % exc
+                message = f'Failed to generate report: {exc}\n'
                 session.config.pluginmanager.getplugin("terminalreporter").write(
-                    'WARNING: %s\n' % message, red=True, bold=True)
+                    f'WARNING: {message}\n', red=True, bold=True)
                 warnings.warn(CovReportWarning(message))
                 self.cov_total = 0
             assert self.cov_total is not None, 'Test coverage should never be `None`'
@@ -319,7 +319,7 @@ class CovPlugin:
         if self._disabled:
             if self.options.no_cov_should_warn:
                 message = 'Coverage disabled via --no-cov switch!'
-                terminalreporter.write('WARNING: %s\n' % message, red=True, bold=True)
+                terminalreporter.write(f'WARNING: {message}\n', red=True, bold=True)
                 warnings.warn(CovDisabledWarning(message))
             return
         if self.cov_controller is None:
