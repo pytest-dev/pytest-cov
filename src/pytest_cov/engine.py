@@ -140,11 +140,11 @@ class CovController:
 
         # Output coverage section header.
         if len(self.node_descs) == 1:
-            self.sep(stream, '-', 'coverage: %s' % ''.join(self.node_descs))
+            self.sep(stream, '-', f"coverage: {''.join(self.node_descs)}")
         else:
             self.sep(stream, '-', 'coverage')
             for node_desc in sorted(self.node_descs):
-                self.sep(stream, ' ', '%s' % node_desc)
+                self.sep(stream, ' ', f'{node_desc}')
 
         # Report on any failed workers.
         if self.failed_workers:
@@ -152,7 +152,7 @@ class CovController:
             stream.write('The following workers failed to return coverage data, '
                          'ensure that pytest-cov is installed on these workers.\n')
             for node in self.failed_workers:
-                stream.write('%s\n' % node.gateway.id)
+                stream.write(f'{node.gateway.id}\n')
 
         # Produce terminal report if wanted.
         if any(x in self.cov_report for x in ['term', 'term-missing']):
@@ -178,7 +178,7 @@ class CovController:
             with _backup(self.cov, "config"):
                 total = self.cov.report(ignore_errors=True, file=_NullFile)
             if annotate_dir:
-                stream.write('Coverage annotated source written to dir %s\n' % annotate_dir)
+                stream.write(f'Coverage annotated source written to dir {annotate_dir}\n')
             else:
                 stream.write('Coverage annotated source written next to source\n')
 
@@ -187,14 +187,14 @@ class CovController:
             output = self.cov_report['html']
             with _backup(self.cov, "config"):
                 total = self.cov.html_report(ignore_errors=True, directory=output)
-            stream.write('Coverage HTML written to dir %s\n' % (self.cov.config.html_dir if output is None else output))
+            stream.write(f'Coverage HTML written to dir {self.cov.config.html_dir if output is None else output}\n')
 
         # Produce xml report if wanted.
         if 'xml' in self.cov_report:
             output = self.cov_report['xml']
             with _backup(self.cov, "config"):
                 total = self.cov.xml_report(ignore_errors=True, outfile=output)
-            stream.write('Coverage XML written to file %s\n' % (self.cov.config.xml_output if output is None else output))
+            stream.write(f'Coverage XML written to file {self.cov.config.xml_output if output is None else output}\n')
 
         # Produce json report if wanted
         if 'json' in self.cov_report:
@@ -213,7 +213,7 @@ class CovController:
                 # Coverage.lcov_report doesn't return any total and we need it for --cov-fail-under.
                 total = self.cov.report(ignore_errors=True, file=_NullFile)
 
-            stream.write('Coverage LCOV written to file %s\n' % (self.cov.config.lcov_output if output is None else output))
+            stream.write(f'Coverage LCOV written to file {self.cov.config.lcov_output if output is None else output}\n')
 
         return total
 
