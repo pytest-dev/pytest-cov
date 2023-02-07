@@ -35,8 +35,8 @@ For full details refer to the `coverage config file`_ documentation.
 If you wish to always add pytest-cov with pytest, you can use ``addopts`` under ``pytest`` or ``tool:pytest`` section.
 For example: ::
 
-    [tool:pytest]
-    addopts = --cov=<project-name> --cov-report html
+    [tool.pytest.ini_options]
+    addopts = "--cov=<project-name> --cov-report html"
 
 Caveats
 =======
