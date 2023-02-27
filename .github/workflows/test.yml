@@ -6,7 +6,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        python-version: ["pypy-3.8", "3.11"]
+        python-version: ["pypy-3.9", "3.11"]
         target: [
             "src-layout",
             "adhoc-layout",
