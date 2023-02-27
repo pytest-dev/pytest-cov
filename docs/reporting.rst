@@ -3,7 +3,7 @@ Reporting
 
 It is possible to generate any combination of the reports for a single test run.
 
-The available reports are terminal (with or without missing line numbers shown), HTML, XML, LCOV and
+The available reports are terminal (with or without missing line numbers shown), HTML, XML, JSON, LCOV and
 annotated source code.
 
 The terminal report without line numbers (default)::
@@ -53,16 +53,18 @@ These four report options output to files without showing anything on the termin
 
     pytest --cov-report html
             --cov-report xml
+            --cov-report json
             --cov-report lcov
             --cov-report annotate
             --cov=myproj tests/
 
-The output location for each of these reports can be specified. The output location for the XML and LCOV
+The output location for each of these reports can be specified. The output location for the XML, JSON and LCOV
 report is a file. Where as the output location for the HTML and annotated source code reports are
 directories::
 
     pytest --cov-report html:cov_html
             --cov-report xml:cov.xml
+            --cov-report json:cov.json
             --cov-report lcov:cov.info
             --cov-report annotate:cov_annotate
             --cov=myproj tests/

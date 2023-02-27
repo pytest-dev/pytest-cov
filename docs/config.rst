@@ -56,9 +56,9 @@ The complete list of command line options is:
 
   --cov=PATH            Measure coverage for filesystem path. (multi-allowed)
   --cov-report=type     Type of report to generate: term, term-missing,
-                        annotate, html, xml, lcov (multi-allowed). term, term-
+                        annotate, html, xml, json, lcov (multi-allowed). term, term-
                         missing may be followed by ":skip-covered". annotate,
-                        html, xml and lcov may be followed by ":DEST" where DEST
+                        html, xml, json and lcov may be followed by ":DEST" where DEST
                         specifies the output location. Use --cov-report= to
                         not generate any output.
   --cov-config=path     Config file for coverage. Default: .coveragerc

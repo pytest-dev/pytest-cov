@@ -196,6 +196,13 @@ class CovController:
                 total = self.cov.xml_report(ignore_errors=True, outfile=output)
             stream.write('Coverage XML written to file %s\n' % (self.cov.config.xml_output if output is None else output))
 
+        # Produce json report if wanted
+        if 'json' in self.cov_report:
+            output = self.cov_report['json']
+            with _backup(self.cov, "config"):
+                total = self.cov.json_report(ignore_errors=True, outfile=output)
+            stream.write('Coverage JSON written to file %s\n' % (self.cov.config.json_output if output is None else output))
+
         # Produce lcov report if wanted.
         if 'lcov' in self.cov_report:
             output = self.cov_report['lcov']
