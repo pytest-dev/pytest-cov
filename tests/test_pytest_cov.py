@@ -151,6 +151,7 @@ CHILD_SCRIPT_RESULT = '[56] * 100%'
 PARENT_SCRIPT_RESULT = '9 * 100%'
 DEST_DIR = 'cov_dest'
 XML_REPORT_NAME = 'cov.xml'
+JSON_REPORT_NAME = 'cov.json'
 LCOV_REPORT_NAME = 'cov.info'
 
 xdist_params = pytest.mark.parametrize('opts', [
@@ -343,6 +344,23 @@ def test_xml_output_dir(testdir):
         '*10 passed*',
     ])
     assert testdir.tmpdir.join(XML_REPORT_NAME).check()
+    assert result.ret == 0
+
+
+def test_json_output_dir(testdir):
+    script = testdir.makepyfile(SCRIPT)
+
+    result = testdir.runpytest('-v',
+                               '--cov=%s' % script.dirpath(),
+                               '--cov-report=json:' + JSON_REPORT_NAME,
+                               script)
+
+    result.stdout.fnmatch_lines([
+        '*- coverage: platform *, python * -*',
+        'Coverage JSON written to file ' + JSON_REPORT_NAME,
+        '*10 passed*',
+    ])
+    assert testdir.tmpdir.join(JSON_REPORT_NAME).check()
     assert result.ret == 0
 
 
