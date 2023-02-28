@@ -7,22 +7,22 @@ prune examples/adhoc-layout/*.egg-info
 prune examples/src-layout/src/*.egg-info
 
 graft .github/workflows
-graft src
 graft ci
+graft src
 graft tests
 
 include .bumpversion.cfg
 include .cookiecutterrc
 include .coveragerc
 include .editorconfig
-include tox.ini
-include .readthedocs.yml
 include .pre-commit-config.yaml
+include .readthedocs.yml
+include .ruff.toml
 include AUTHORS.rst
 include CHANGELOG.rst
 include CONTRIBUTING.rst
 include LICENSE
 include README.rst
-
+include tox.ini
 
 global-exclude *.py[cod] __pycache__/* *.so *.dylib

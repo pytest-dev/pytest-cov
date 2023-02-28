@@ -1,0 +1,26 @@
+# [tool.ruff]  # <- TODO Uncomment when migrating to pyproject.toml
+exclude = [
+    ".eggs",
+    ".tox",
+    "build",
+    "ci/templates",
+    "dist",
+]
+line-length = 140
+select = [
+    "E",
+    "F",
+    "I",
+    "PLC",
+    "PLE",
+    "UP",
+    "W",
+]
+target-version = "py37"
+
+# [tool.ruff.isort]  # <- TODO Uncomment when migrating to pyproject.toml
+[isort]
+# default-section = "THIRDPARTY"
+force-single-line = true
+forced-separate = ["test_pytest_cov"]
+known-first-party = ["pytest_cov"]
