@@ -31,36 +31,34 @@ def init():
     cov_branch = True if os.environ.get('COV_CORE_BRANCH') == 'enabled' else None
     cov_context = os.environ.get('COV_CORE_CONTEXT')
 
-    if cov_datafile:
-        if _active_cov:
-            cleanup()
-        # Import what we need to activate coverage.
-        import coverage
+    if not cov_datafile:
+        return None
 
-        # Determine all source roots.
-        if cov_source in os.pathsep:
-            cov_source = None
-        else:
-            cov_source = cov_source.split(os.pathsep)
-        if cov_config == os.pathsep:
-            cov_config = True
+    if _active_cov:
+        cleanup()
+    # Import what we need to activate coverage.
+    import coverage
 
-        # Activate coverage for this process.
-        cov = _active_cov = coverage.Coverage(
-            source=cov_source,
-            branch=cov_branch,
-            data_suffix=True,
-            config_file=cov_config,
-            auto_data=True,
-            data_file=cov_datafile
-        )
-        cov.load()
-        cov.start()
-        if cov_context:
-            cov.switch_context(cov_context)
-        cov._warn_no_data = False
-        cov._warn_unimported_source = False
-        return cov
+    # Determine all source roots.
+    cov_source = None if cov_source in os.pathsep else cov_source.split(os.pathsep)
+    if cov_config == os.pathsep:
+        cov_config = True
+    # Activate coverage for this process.
+    cov = _active_cov = coverage.Coverage(
+        source=cov_source,
+        branch=cov_branch,
+        data_suffix=True,
+        config_file=cov_config,
+        auto_data=True,
+        data_file=cov_datafile
+    )
+    cov.load()
+    cov.start()
+    if cov_context:
+        cov.switch_context(cov_context)
+    cov._warn_no_data = False
+    cov._warn_unimported_source = False
+    return cov
 
 
 def _cleanup(cov):

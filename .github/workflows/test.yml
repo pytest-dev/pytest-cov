@@ -65,7 +65,7 @@ jobs:
             toxpython: 'python3.6'
             python_arch: 'x64'
             tox_env: 'py36-pytest70-xdist250-coverage62'
-            os: 'ubuntu-latest'
+            os: 'ubuntu-20.04'
           - name: 'py36-pytest70-xdist250-coverage62 (windows)'
             python: '3.6'
             toxpython: 'python3.6'

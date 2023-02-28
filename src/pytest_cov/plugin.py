@@ -247,7 +247,7 @@ class CovPlugin:
         self.pid = os.getpid()
         if self._is_worker(session):
             nodeid = (
-                session.config.workerinput.get('workerid', getattr(session, 'nodeid'))
+                session.config.workerinput.get('workerid', session.nodeid)
             )
             self.start(engine.DistWorker, session.config, nodeid)
         elif not self._started:
