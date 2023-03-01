@@ -1556,6 +1556,8 @@ def test_foo():
 SCRIPT_SIMPLE_RESULT = '4 * 100%'
 
 
+@pytest.mark.skipif('tuple(int(x) for x in xdist.__version__.split(".")) >= (2, 5, 0)',
+                    reason="--boxed option was removed in version 2.5.0")
 @pytest.mark.skipif('sys.platform == "win32"')
 def test_dist_boxed(testdir):
     script = testdir.makepyfile(SCRIPT_SIMPLE)
@@ -1916,6 +1918,7 @@ EXPECTED_CONTEXTS = {
 
 
 @pytest.mark.skipif("coverage.version_info < (5, 0)")
+@pytest.mark.skipif("coverage.version_info > (6, 4)")
 @xdist_params
 def test_contexts(pytester, testdir, opts):
     with open(os.path.join(os.path.dirname(__file__), "contextful.py")) as f:
