@@ -6,6 +6,69 @@ build-backend = "setuptools.build_meta"
 dynamic = ["version"]
 name = "pytest-cov"
 
+[metadata]
+name = pytest-cov
+version = 4.0.0
+author = Marc Schlaich
+author_email = marc.schlaich@gmail.com
+license = MIT
+description = Pytest plugin for measuring coverage.
+keywords =
+    cover
+    coverage
+    pytest
+    py.test
+    distributed
+    parallel
+url = https://github.com/pytest-dev/pytest-cov
+long_description = file: README.rst, CHANGELOG.rst
+classifiers =
+    Development Status :: 5 - Production/Stable
+    Framework :: Pytest
+    Intended Audience :: Developers
+    License :: OSI Approved :: MIT License
+    Operating System :: Microsoft :: Windows
+    Operating System :: POSIX
+    Operating System :: Unix
+    Programming Language :: Python
+    Programming Language :: Python :: 3
+    Programming Language :: Python :: 3 :: Only
+    Programming Language :: Python :: 3.7
+    Programming Language :: Python :: 3.8
+    Programming Language :: Python :: 3.9
+    Programming Language :: Python :: 3.10
+    Programming Language :: Python :: 3.11
+    Programming Language :: Python :: Implementation :: CPython
+    Programming Language :: Python :: Implementation :: PyPy
+    Topic :: Software Development :: Testing
+    Topic :: Utilities
+project_urls =
+    Documentation = https://pytest-cov.readthedocs.io/
+    Changelog = https://pytest-cov.readthedocs.io/en/latest/changelog.html
+    Issue Tracker = https://github.com/pytest-dev/pytest-cov/issues
+
+[options]
+package_dir =
+     = src
+py_modules =
+packages = find:
+zip_safe = False
+install_requires = pytest>=4.6; coverage[toml]>=5.2.1
+include_package_data = True
+python_requires = >=3.7
+
+[options.entry_points]
+pytest11 = pytest_cov = pytest_cov.plugin
+
+[options.extras_require]
+testing =
+    fields
+    hunter
+    process-tests
+    six
+    pytest-xdist
+    virtualenv
+
 [tool.isort]
 force_single_line = "True"
 line_length = "120"
