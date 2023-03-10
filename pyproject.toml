@@ -1,0 +1,26 @@
+[build-system]
+requires = ["setuptools>=61.2"]
+build-backend = "setuptools.build_meta"
+
+[project]
+dynamic = ["version"]
+name = "pytest-cov"
+
+[tool.isort]
+force_single_line = "True"
+line_length = "120"
+known_first_party = "pytest_cov"
+default_section = "THIRDPARTY"
+forced_separate = "test_pytest_cov"
+skip = ".tox,.eggs,ci/templates,build,dist"
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+python_files = ["test_*.py"]
+addopts = """
+-ra
+--strict
+-p pytester"""
+
+[tool.setuptools]
+include-package-data = false
