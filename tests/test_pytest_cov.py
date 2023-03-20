@@ -1945,7 +1945,7 @@ def test_contexts(pytester, testdir, opts):
 
     line_data = find_labels(contextful_tests, r"[crst]\d+(?:-\d+)?")
     for context, label in EXPECTED_CONTEXTS.items():
-        if context == '':
+        if context == '':  # noqa: PLC1901
             continue
         data.set_query_context(context)
         actual = set(data.lines(test_context_path))
