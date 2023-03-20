@@ -39,7 +39,7 @@ class OldStyleTests(unittest.TestCase):
         assert self.items[0] == "hello"             # r4
 
 
-@pytest.fixture
+@pytest.fixture()
 def some_data():
     return [1, 2, 3]                                # s5 s6
 
@@ -48,7 +48,7 @@ def test_05(some_data):
     assert len(some_data) == 3                      # r5
 
 
-@pytest.fixture
+@pytest.fixture()
 def more_data(some_data):
     return [2*x for x in some_data]                 # s6
 
@@ -83,7 +83,7 @@ def test_10():
     assert 1 == 1                                   # r10
 
 
-@pytest.mark.parametrize("x, ans", [
+@pytest.mark.parametrize(("x", "ans"), [
     (1, 101),
     (2, 202),
 ])
@@ -91,7 +91,7 @@ def test_11(x, ans):
     assert 100 * x + x == ans                       # r11-1 r11-2
 
 
-@pytest.mark.parametrize("x, ans", [
+@pytest.mark.parametrize(("x", "ans"), [
     (1, 101),
     (2, 202),
 ], ids=['one', 'two'])

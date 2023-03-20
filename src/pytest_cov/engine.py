@@ -412,5 +412,3 @@ class DistWorker(CovController):
 
     def summary(self, stream):
         """Only the master reports so do nothing."""
-
-        pass

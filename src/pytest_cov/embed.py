@@ -38,10 +38,7 @@ def init():
         import coverage
 
         # Determine all source roots.
-        if cov_source in os.pathsep:
-            cov_source = None
-        else:
-            cov_source = cov_source.split(os.pathsep)
+        cov_source = None if cov_source in os.pathsep else cov_source.split(os.pathsep)
         if cov_config == os.pathsep:
             cov_config = True
 
@@ -108,7 +105,7 @@ def _signal_cleanup_handler(signum, frame):
     elif signum == signal.SIGTERM:
         os._exit(128 + signum)
     elif signum == signal.SIGINT:
-        raise KeyboardInterrupt()
+        raise KeyboardInterrupt
 
 
 def cleanup_on_signal(signum):

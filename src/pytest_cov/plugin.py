@@ -35,7 +35,7 @@ def validate_report(arg):
     all_choices = term_choices + file_choices
     values = arg.split(":", 1)
     report_type = values[0]
-    if report_type not in all_choices + ['']:
+    if report_type not in [*all_choices, '']:
         msg = f'invalid choice: "{arg}" (choose from "{all_choices}")'
         raise argparse.ArgumentTypeError(msg)
 
@@ -247,7 +247,7 @@ class CovPlugin:
         self.pid = os.getpid()
         if self._is_worker(session):
             nodeid = (
-                session.config.workerinput.get('workerid', getattr(session, 'nodeid'))
+                session.config.workerinput.get('workerid', session.nodeid)
             )
             self.start(engine.DistWorker, session.config, nodeid)
         elif not self._started:
@@ -389,13 +389,12 @@ class TestContextPlugin:
         os.environ['COV_CORE_CONTEXT'] = context
 
 
-@pytest.fixture
+@pytest.fixture()
 def no_cover():
     """A pytest fixture to disable coverage."""
-    pass
 
 
-@pytest.fixture
+@pytest.fixture()
 def cov(request):
     """A pytest fixture to provide access to the underlying coverage object."""
 

@@ -6,16 +6,33 @@ exclude = [
     "ci/templates",
     "dist",
 ]
-line-length = 140
-select = [
-    "E",
-    "F",
-    "I",
-    "PLC",
-    "PLE",
-    "UP",
-    "W",
+ignore = [
+    "ANN", # flake8-annotations
+    "ARG", # flake8-unused-arguments
+    "BLE", # flake8-blind-except
+    "COM", # flake8-comma
+    "D", # pydocstyle
+    "EM", # flake8-errmsg
+    "FBT", # flake8-boolean-trap
+    "INP", # flake8-no-pep420
+    "PLR0133",  # Pylint Refactor
+    "PLR2004",  # Pylint Refactor
+    "PLW", # Pylint Warning
+    "PTH", # flake8-use-pathlib
+    "Q", # flake8-quotes
+    "RET", # flake8-return
+    "RUF100", # Ruff-internal
+    "S101", # flake8-bandit assert
+    "S102", # flake8-bandit exec
+    "S110", # flake8-bandit try-except-pass
+    "SIM102", # flake8-simplify collapsible-if
+    "SIM105", # flake8-simplify use-contextlib-suppress
+    "SLF", # flake8-self
+    "T20", # flake8-print
+    "TRY", # tryceratops
 ]
+line-length = 140
+select = ["ALL"]
 target-version = "py37"
 
 # [tool.ruff.isort]  # <- TODO Uncomment when migrating to pyproject.toml
@@ -24,3 +41,17 @@ target-version = "py37"
 force-single-line = true
 forced-separate = ["test_pytest_cov"]
 known-first-party = ["pytest_cov"]
+
+[mccabe]
+max-complexity = 12
+
+[per-file-ignores]
+"ci/bootstrap.py" = ["S701"]
+"docs/conf.py" = ["A001"]
+"src/pytest_cov/plugin.py" = ["B904", "PT004"]
+"setup.py" = ["SIM117"]
+"tests/test_pytest_cov.py" = ["N801", "PT004", "RSE102", "SIM117"]
+
+[pylint]
+max-args = 8
+max-branches = 13
