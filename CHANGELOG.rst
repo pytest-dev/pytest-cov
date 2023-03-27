@@ -2,6 +2,13 @@ Changelog
 =========
 
 
+4.0.1 (2023-03-27)
+------------------
+
+* Skip generating the in-memory coverage report when it will not be used. For example,
+  when ``--cov-report=''`` is used without ``--cov-fail-under``.
+
+
 4.0.0 (2022-09-28)
 ------------------
 
