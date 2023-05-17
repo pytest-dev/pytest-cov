@@ -1,4 +1,5 @@
 import os
+from datetime import date
 
 import sphinx_py3doc_enhanced_theme
 
@@ -20,7 +21,7 @@ if os.getenv('SPELLCHECK'):
 source_suffix = '.rst'
 master_doc = 'index'
 project = 'pytest-cov'
-year = '2016'
+year = date.today().year
 author = 'pytest-cov contributors'
 copyright = f'{year}, {author}'
 version = release = '4.0.0'
