@@ -7,25 +7,25 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        python-version: ["pypy-3.7", "3.9"]
+        python-version: ["pypy-3.9", "3.11"]
         target: [
             "src-layout",
             "adhoc-layout",
         ]
         include:
           # Add new helper variables to existing jobs
-          - {python-version: "pypy-3.7", tox-python-version: "pypy3"}
-          - {python-version: "3.9", tox-python-version: "py39"}
+          - {python-version: "pypy-3.9", tox-python-version: "pypy3"}
+          - {python-version: "3.11", tox-python-version: "py311"}
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
 
       - name: Set up Python ${{ matrix.python-version }}
-        uses: actions/setup-python@v2
+        uses: actions/setup-python@v4
         with:
           python-version: ${{ matrix.python-version }}
 
       - name: Cache
-        uses: actions/cache@v2
+        uses: actions/cache@v3
         with:
           path: ~/.cache/pip
           key:
@@ -35,8 +35,8 @@ jobs:
 
       - name: Install dependencies
         run: |
-          python -m pip install -U pip
-          python -m pip install -U wheel
+          python -m pip install --upgrade pip
+          python -m pip install --upgrade wheel
           python -m pip install --progress-bar=off tox -rci/requirements.txt
 
       - name: Examples
@@ -54,13 +54,13 @@ jobs:
       matrix:
         include:
           - name: 'check'
-            python: '3.9'
-            toxpython: 'python3.9'
+            python: '3.11'
+            toxpython: 'python3.11'
             tox_env: 'check'
             os: 'ubuntu-latest'
           - name: 'docs'
-            python: '3.9'
-            toxpython: 'python3.9'
+            python: '3.11'
+            toxpython: 'python3.11'
             tox_env: 'docs'
             os: 'ubuntu-latest'
 {% for env in tox_environments %}
@@ -88,10 +88,10 @@ jobs:
 {% endfor %}
 {% endfor %}
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v3
       with:
         fetch-depth: 0
-    - uses: actions/setup-python@v2
+    - uses: actions/setup-python@v4
       with:
         python-version: {{ '${{ matrix.python }}' }}
         architecture: {{ '${{ matrix.python_arch }}' }}
