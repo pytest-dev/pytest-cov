@@ -39,9 +39,9 @@ Overview
 .. |conda-forge| image:: https://img.shields.io/conda/vn/conda-forge/pytest-cov.svg
     :target: https://anaconda.org/conda-forge/pytest-cov
 
-.. |commits-since| image:: https://img.shields.io/github/commits-since/pytest-dev/pytest-cov/v4.0.0.svg
+.. |commits-since| image:: https://img.shields.io/github/commits-since/pytest-dev/pytest-cov/v4.1.0.svg
     :alt: Commits since latest release
-    :target: https://github.com/pytest-dev/pytest-cov/compare/v4.0.0...master
+    :target: https://github.com/pytest-dev/pytest-cov/compare/v4.1.0...master
 
 .. |wheel| image:: https://img.shields.io/pypi/wheel/pytest-cov.svg
     :alt: PyPI Wheel

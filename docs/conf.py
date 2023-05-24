@@ -23,7 +23,7 @@ project = 'pytest-cov'
 year = '2016'
 author = 'pytest-cov contributors'
 copyright = f'{year}, {author}'
-version = release = '4.0.0'
+version = release = '4.1.0'
 
 pygments_style = 'trac'
 templates_path = ['.']
