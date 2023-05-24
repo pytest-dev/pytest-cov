@@ -57,4 +57,5 @@ Authors
 * Colin O'Dell - https://github.com/colinodell
 * Ronny Pfannschmidt - https://github.com/RonnyPfannschmidt
 * Christian Fetzer - https://github.com/fetzerch
-* Jonathan Stewmon = https://github.com/jstewmon
+* Jonathan Stewmon - https://github.com/jstewmon
+* Matthew Gamble - https://github.com/mwgamble

@@ -1,12 +1,21 @@
 Changelog
 =========
 
-
-4.0.1 (2023-03-27)
+4.1.0 (2023-05-24)
 ------------------
 
-* Skip generating the in-memory coverage report when it will not be used. For example,
-  when ``--cov-report=''`` is used without ``--cov-fail-under``.
+* Updated CI with new Pythons and dependencies.
+* Removed rsyncdir support. This makes pytest-cov compatible with xdist 3.0.
+  Contributed by Sorin Sbarnea in `#558 <https://github.com/pytest-dev/pytest-cov/pull/558>`_.
+* Optimized summary generation to not be performed if no reporting is active (for example,
+  when ``--cov-report=''`` is used without ``--cov-fail-under``).
+  Contributed by Jonathan Stewmon in `#589 <https://github.com/pytest-dev/pytest-cov/pull/589>`_.
+* Added support for JSON reporting.
+  Contributed by Matthew Gamble in `#582 <https://github.com/pytest-dev/pytest-cov/pull/582>`_.
+* Refactored code to use f-strings.
+  Contributed by Mark Mayo in `#572 <https://github.com/pytest-dev/pytest-cov/pull/572>`_.
+* Fixed a skip in the test suite for some old xdist.
+  Contributed by a bunch of people in `#565 <https://github.com/pytest-dev/pytest-cov/pull/565>`_.
 
 
 4.0.0 (2022-09-28)
