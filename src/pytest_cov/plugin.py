@@ -341,7 +341,7 @@ class CovPlugin:
             markup = {'red': True, 'bold': True} if failed else {'green': True}
             message = (
                 '{fail}Required test coverage of {required}% {reached}. '
-                'Total coverage: {actual:.2f}%\n'
+                'Total coverage: {actual}%\n'
                 .format(
                     required=self.options.cov_fail_under,
                     actual=self.cov_total,
