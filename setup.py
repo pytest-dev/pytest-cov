@@ -138,7 +138,6 @@ setup(
             'fields',
             'hunter',
             'process-tests',
-            'six',
             'pytest-xdist',
             'virtualenv',
         ]
