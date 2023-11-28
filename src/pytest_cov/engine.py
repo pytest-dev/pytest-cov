@@ -265,12 +265,6 @@ class DistMaster(CovController):
     def start(self):
         cleanup()
 
-        # Ensure coverage rc file rsynced if appropriate.
-        if self.cov_config and os.path.exists(self.cov_config):
-            # rsyncdir is going away in pytest-xdist 4.0, already deprecated
-            if hasattr(self.config.option, 'rsyncdir'):
-                self.config.option.rsyncdir.append(self.cov_config)
-
         self.cov = coverage.Coverage(source=self.cov_source,
                                      branch=self.cov_branch,
                                      data_suffix=True,
