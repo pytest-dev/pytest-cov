@@ -32,11 +32,18 @@ For full details refer to the `coverage config file`_ documentation.
 
     If you use the ``--cov-branch`` option then coverage's ``branch`` option will also get overridden.
 
-If you wish to always add pytest-cov with pytest, you can use ``addopts`` under ``pytest`` or ``tool:pytest`` section.
-For example: ::
+If you wish to always add pytest-cov with pytest, you can use ``addopts`` under the ``pytest`` or ``tool:pytest`` section of
+your ``setup.cfg``, or the ``tool.pytest.ini_options`` section of your ``pyproject.toml`` file.
+
+For example, in ``setup.cfg``: ::
 
     [tool:pytest]
     addopts = --cov=<project-name> --cov-report html
+
+Or for ``pyproject.toml``: ::
+
+    [tool.pytest.ini_options]
+    addopts = "--cov=<project-name> --cov-report html"
 
 Caveats
 =======
