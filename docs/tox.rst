@@ -2,7 +2,7 @@
 Tox
 ===
 
-When using `tox <https://tox.readthedocs.io/>`_ you can have ultra-compact configuration - you can have all of it in
+When using `tox <https://tox.wiki/en/stable/>`_ you can have ultra-compact configuration - you can have all of it in
 ``tox.ini``::
 
     [tox]
