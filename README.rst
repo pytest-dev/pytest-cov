@@ -10,27 +10,16 @@ Overview
     * - docs
       - |docs|
     * - tests
-      - | |github-actions| |requires|
-        |
+      - |github-actions|
     * - package
-      - | |version| |conda-forge| |wheel| |supported-versions| |supported-implementations|
-        | |commits-since|
-
+      - |version| |conda-forge| |wheel| |supported-versions| |supported-implementations| |commits-since|
 .. |docs| image:: https://readthedocs.org/projects/pytest-cov/badge/?style=flat
-    :target: https://readthedocs.org/projects/pytest-cov
+    :target: https://readthedocs.org/projects/pytest-cov/
     :alt: Documentation Status
 
 .. |github-actions| image:: https://github.com/pytest-dev/pytest-cov/actions/workflows/test.yml/badge.svg
     :alt: GitHub Actions Status
     :target: https://github.com/pytest-dev/pytest-cov/actions
-
-.. |appveyor| image:: https://ci.appveyor.com/api/projects/status/github/pytest-dev/pytest-cov?branch=master&svg=true
-    :alt: AppVeyor Build Status
-    :target: https://ci.appveyor.com/project/pytestbot/pytest-cov
-
-.. |requires| image:: https://requires.io/github/pytest-dev/pytest-cov/requirements.svg?branch=master
-    :alt: Requirements Status
-    :target: https://requires.io/github/pytest-dev/pytest-cov/requirements/?branch=master
 
 .. |version| image:: https://img.shields.io/pypi/v/pytest-cov.svg
     :alt: PyPI Package latest release
@@ -38,11 +27,6 @@ Overview
 
 .. |conda-forge| image:: https://img.shields.io/conda/vn/conda-forge/pytest-cov.svg
     :target: https://anaconda.org/conda-forge/pytest-cov
-
-.. |commits-since| image:: https://img.shields.io/github/commits-since/pytest-dev/pytest-cov/v4.1.0.svg
-    :alt: Commits since latest release
-    :target: https://github.com/pytest-dev/pytest-cov/compare/v4.1.0...master
-
 .. |wheel| image:: https://img.shields.io/pypi/wheel/pytest-cov.svg
     :alt: PyPI Wheel
     :target: https://pypi.org/project/pytest-cov
@@ -54,6 +38,10 @@ Overview
 .. |supported-implementations| image:: https://img.shields.io/pypi/implementation/pytest-cov.svg
     :alt: Supported implementations
     :target: https://pypi.org/project/pytest-cov
+
+.. |commits-since| image:: https://img.shields.io/github/commits-since/pytest-dev/pytest-cov/v4.1.0.svg
+    :alt: Commits since latest release
+    :target: https://github.com/pytest-dev/pytest-cov/compare/v4.1.0...master
 
 .. end-badges
 

@@ -15,14 +15,15 @@ include .bumpversion.cfg
 include .cookiecutterrc
 include .coveragerc
 include .editorconfig
-include tox.ini
-include .readthedocs.yml
 include .pre-commit-config.yaml
+include .readthedocs.yml
+include pytest.ini
+include tox.ini
+
 include AUTHORS.rst
 include CHANGELOG.rst
 include CONTRIBUTING.rst
 include LICENSE
 include README.rst
-
 
 global-exclude *.py[cod] __pycache__/* *.so *.dylib

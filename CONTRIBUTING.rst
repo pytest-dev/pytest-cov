@@ -49,7 +49,7 @@ To set up `pytest-cov` for local development:
 
    Now you can make your changes locally.
 
-4. When you're done making changes run all the checks and docs builder with `tox <https://tox.readthedocs.io/en/latest/install.html>`_ one command::
+4. When you're done making changes run all the checks and docs builder with one command::
 
     tox
 
@@ -68,16 +68,10 @@ If you need some code review or feedback while you're developing the code just m
 
 For merging, you should:
 
-1. Include passing tests (run ``tox``) [1]_.
+1. Include passing tests (run ``tox``).
 2. Update documentation when there's new API, functionality etc.
 3. Add a note to ``CHANGELOG.rst`` about the changes.
 4. Add yourself to ``AUTHORS.rst``.
-
-.. [1] If you don't have all the necessary Python versions available locally you can rely on GitHub Actions - it will
-       `run the tests <https://github.com/pytest-dev/pytest-cov/actions>`_
-       for each change you add in the pull request.
-
-       It will be slower though ...
 
 Tips
 ----
