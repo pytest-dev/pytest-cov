@@ -1,4 +1,5 @@
 """Coverage controllers for use by pytest-cov and nose-cov."""
+
 import contextlib
 import copy
 import functools
@@ -6,11 +7,12 @@ import os
 import random
 import socket
 import sys
+from io import StringIO
+from pathlib import Path
 
 import coverage
 from coverage.data import CoverageData
 
-from .compat import StringIO
 from .embed import cleanup
 
 
@@ -34,7 +36,7 @@ def _ensure_topdir(meth):
     @functools.wraps(meth)
     def ensure_topdir_wrapper(self, *args, **kwargs):
         try:
-            original_cwd = os.getcwd()
+            original_cwd = Path.cwd()
         except OSError:
             # Looks like it's gone, this is non-ideal because a side-effect will
             # be introduced in the tests here but we can't do anything about it.
@@ -67,12 +69,12 @@ class CovController:
         self.data_file = None
         self.node_descs = set()
         self.failed_workers = []
-        self.topdir = os.getcwd()
+        self.topdir = str(Path.cwd())
         self.is_collocated = None
 
     @contextlib.contextmanager
     def ensure_topdir(self):
-        original_cwd = os.getcwd()
+        original_cwd = Path.cwd()
         os.chdir(self.topdir)
         yield
         os.chdir(original_cwd)
@@ -94,12 +96,12 @@ class CovController:
             os.environ['COV_CORE_SOURCE'] = os.pathsep
         else:
             os.environ['COV_CORE_SOURCE'] = os.pathsep.join(self.cov_source)
-        config_file = os.path.abspath(self.cov_config)
-        if os.path.exists(config_file):
-            os.environ['COV_CORE_CONFIG'] = config_file
+        config_file = Path(self.cov_config).resolve()
+        if config_file.exists():
+            os.environ['COV_CORE_CONFIG'] = str(config_file)
         else:
             os.environ['COV_CORE_CONFIG'] = os.pathsep
-        os.environ['COV_CORE_DATAFILE'] = os.path.abspath(self.cov.config.data_file)
+        os.environ['COV_CORE_DATAFILE'] = str(Path(self.cov.config.data_file).resolve())
         if self.cov_branch:
             os.environ['COV_CORE_BRANCH'] = 'enabled'
 
@@ -116,7 +118,7 @@ class CovController:
     def get_node_desc(platform, version_info):
         """Return a description of this node."""
 
-        return 'platform {}, python {}'.format(platform, '%s.%s.%s-%s-%s' % version_info[:5])
+        return 'platform {}, python {}'.format(platform, '{}.{}.{}-{}-{}'.format(*version_info[:5]))
 
     @staticmethod
     def sep(stream, s, txt):
@@ -135,7 +137,7 @@ class CovController:
         total = None
 
         if not self.cov_report:
-            with _backup(self.cov, "config"):
+            with _backup(self.cov, 'config'):
                 return self.cov.report(show_missing=True, ignore_errors=True, file=_NullFile)
 
         # Output coverage section header.
@@ -149,8 +151,7 @@ class CovController:
         # Report on any failed workers.
         if self.failed_workers:
             self.sep(stream, '-', 'coverage: failed workers')
-            stream.write('The following workers failed to return coverage data, '
-                         'ensure that pytest-cov is installed on these workers.\n')
+            stream.write('The following workers failed to return coverage data, ensure that pytest-cov is installed on these workers.\n')
             for node in self.failed_workers:
                 stream.write(f'{node.gateway.id}\n')
 
@@ -163,19 +164,19 @@ class CovController:
             }
             skip_covered = isinstance(self.cov_report, dict) and 'skip-covered' in self.cov_report.values()
             options.update({'skip_covered': skip_covered or None})
-            with _backup(self.cov, "config"):
+            with _backup(self.cov, 'config'):
                 total = self.cov.report(**options)
 
         # Produce annotated source code report if wanted.
         if 'annotate' in self.cov_report:
             annotate_dir = self.cov_report['annotate']
 
-            with _backup(self.cov, "config"):
+            with _backup(self.cov, 'config'):
                 self.cov.annotate(ignore_errors=True, directory=annotate_dir)
             # We need to call Coverage.report here, just to get the total
             # Coverage.annotate don't return any total and we need it for --cov-fail-under.
 
-            with _backup(self.cov, "config"):
+            with _backup(self.cov, 'config'):
                 total = self.cov.report(ignore_errors=True, file=_NullFile)
             if annotate_dir:
                 stream.write(f'Coverage annotated source written to dir {annotate_dir}\n')
@@ -185,28 +186,28 @@ class CovController:
         # Produce html report if wanted.
         if 'html' in self.cov_report:
             output = self.cov_report['html']
-            with _backup(self.cov, "config"):
+            with _backup(self.cov, 'config'):
                 total = self.cov.html_report(ignore_errors=True, directory=output)
             stream.write(f'Coverage HTML written to dir {self.cov.config.html_dir if output is None else output}\n')
 
         # Produce xml report if wanted.
         if 'xml' in self.cov_report:
             output = self.cov_report['xml']
-            with _backup(self.cov, "config"):
+            with _backup(self.cov, 'config'):
                 total = self.cov.xml_report(ignore_errors=True, outfile=output)
             stream.write(f'Coverage XML written to file {self.cov.config.xml_output if output is None else output}\n')
 
         # Produce json report if wanted
         if 'json' in self.cov_report:
             output = self.cov_report['json']
-            with _backup(self.cov, "config"):
+            with _backup(self.cov, 'config'):
                 total = self.cov.json_report(ignore_errors=True, outfile=output)
             stream.write('Coverage JSON written to file %s\n' % (self.cov.config.json_output if output is None else output))
 
         # Produce lcov report if wanted.
         if 'lcov' in self.cov_report:
             output = self.cov_report['lcov']
-            with _backup(self.cov, "config"):
+            with _backup(self.cov, 'config'):
                 self.cov.lcov_report(ignore_errors=True, outfile=output)
 
                 # We need to call Coverage.report here, just to get the total
@@ -225,15 +226,19 @@ class Central(CovController):
     def start(self):
         cleanup()
 
-        self.cov = coverage.Coverage(source=self.cov_source,
-                                     branch=self.cov_branch,
-                                     data_suffix=True,
-                                     config_file=self.cov_config)
-        self.combining_cov = coverage.Coverage(source=self.cov_source,
-                                               branch=self.cov_branch,
-                                               data_suffix=True,
-                                               data_file=os.path.abspath(self.cov.config.data_file),
-                                               config_file=self.cov_config)
+        self.cov = coverage.Coverage(
+            source=self.cov_source,
+            branch=self.cov_branch,
+            data_suffix=True,
+            config_file=self.cov_config,
+        )
+        self.combining_cov = coverage.Coverage(
+            source=self.cov_source,
+            branch=self.cov_branch,
+            data_suffix=True,
+            data_file=str(Path(self.cov.config.data_file).resolve()),
+            config_file=self.cov_config,
+        )
 
         # Erase or load any previous coverage data and start coverage.
         if not self.cov_append:
@@ -266,23 +271,27 @@ class DistMaster(CovController):
         cleanup()
 
         # Ensure coverage rc file rsynced if appropriate.
-        if self.cov_config and os.path.exists(self.cov_config):
+        if self.cov_config and Path(self.cov_config).exists():
             # rsyncdir is going away in pytest-xdist 4.0, already deprecated
             if hasattr(self.config.option, 'rsyncdir'):
                 self.config.option.rsyncdir.append(self.cov_config)
 
-        self.cov = coverage.Coverage(source=self.cov_source,
-                                     branch=self.cov_branch,
-                                     data_suffix=True,
-                                     config_file=self.cov_config)
+        self.cov = coverage.Coverage(
+            source=self.cov_source,
+            branch=self.cov_branch,
+            data_suffix=True,
+            config_file=self.cov_config,
+        )
         self.cov._warn_no_data = False
         self.cov._warn_unimported_source = False
         self.cov._warn_preimported_source = False
-        self.combining_cov = coverage.Coverage(source=self.cov_source,
-                                               branch=self.cov_branch,
-                                               data_suffix=True,
-                                               data_file=os.path.abspath(self.cov.config.data_file),
-                                               config_file=self.cov_config)
+        self.combining_cov = coverage.Coverage(
+            source=self.cov_source,
+            branch=self.cov_branch,
+            data_suffix=True,
+            data_file=str(Path(self.cov.config.data_file).resolve()),
+            config_file=self.cov_config,
+        )
         if not self.cov_append:
             self.cov.erase()
         self.cov.start()
@@ -291,11 +300,13 @@ class DistMaster(CovController):
     def configure_node(self, node):
         """Workers need to know if they are collocated and what files have moved."""
 
-        node.workerinput.update({
-            'cov_master_host': socket.gethostname(),
-            'cov_master_topdir': self.topdir,
-            'cov_master_rsync_roots': [str(root) for root in node.nodemanager.roots],
-        })
+        node.workerinput.update(
+            {
+                'cov_master_host': socket.gethostname(),
+                'cov_master_topdir': self.topdir,
+                'cov_master_rsync_roots': [str(root) for root in node.nodemanager.roots],
+            }
+        )
 
     def testnodedown(self, node, error):
         """Collect data file name from worker."""
@@ -311,15 +322,13 @@ class DistMaster(CovController):
         # that it returns to us.
         if 'cov_worker_data' in output:
             data_suffix = '%s.%s.%06d.%s' % (
-                socket.gethostname(), os.getpid(),
-                random.randint(0, 999999),
-                output['cov_worker_node_id']
+                socket.gethostname(),
+                os.getpid(),
+                random.randint(0, 999999),  # noqa: S311
+                output['cov_worker_node_id'],
             )
 
-            cov = coverage.Coverage(source=self.cov_source,
-                                    branch=self.cov_branch,
-                                    data_suffix=data_suffix,
-                                    config_file=self.cov_config)
+            cov = coverage.Coverage(source=self.cov_source, branch=self.cov_branch, data_suffix=data_suffix, config_file=self.cov_config)
             cov.start()
             if coverage.version_info < (5, 0):
                 data = CoverageData()
@@ -361,23 +370,26 @@ class DistWorker(CovController):
         cleanup()
 
         # Determine whether we are collocated with master.
-        self.is_collocated = (socket.gethostname() == self.config.workerinput['cov_master_host'] and
-                              self.topdir == self.config.workerinput['cov_master_topdir'])
+        self.is_collocated = (
+            socket.gethostname() == self.config.workerinput['cov_master_host']
+            and self.topdir == self.config.workerinput['cov_master_topdir']
+        )
 
         # If we are not collocated then rewrite master paths to worker paths.
         if not self.is_collocated:
             master_topdir = self.config.workerinput['cov_master_topdir']
             worker_topdir = self.topdir
             if self.cov_source is not None:
-                self.cov_source = [source.replace(master_topdir, worker_topdir)
-                                   for source in self.cov_source]
+                self.cov_source = [source.replace(master_topdir, worker_topdir) for source in self.cov_source]
             self.cov_config = self.cov_config.replace(master_topdir, worker_topdir)
 
         # Erase any previous data and start coverage.
-        self.cov = coverage.Coverage(source=self.cov_source,
-                                     branch=self.cov_branch,
-                                     data_suffix=True,
-                                     config_file=self.cov_config)
+        self.cov = coverage.Coverage(
+            source=self.cov_source,
+            branch=self.cov_branch,
+            data_suffix=True,
+            config_file=self.cov_config,
+        )
         self.cov.start()
         self.set_env()
 
@@ -411,13 +423,13 @@ class DistWorker(CovController):
             else:
                 data = self.cov.get_data().dumps()
 
-            self.config.workeroutput.update({
-                'cov_worker_path': self.topdir,
-                'cov_worker_node_id': self.nodeid,
-                'cov_worker_data': data,
-            })
+            self.config.workeroutput.update(
+                {
+                    'cov_worker_path': self.topdir,
+                    'cov_worker_node_id': self.nodeid,
+                    'cov_worker_data': data,
+                }
+            )
 
     def summary(self, stream):
         """Only the master reports so do nothing."""
-
-        pass

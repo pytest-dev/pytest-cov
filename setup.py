@@ -1,13 +1,8 @@
 #!/usr/bin/env python
 
 import re
-from pathlib import Path
-from glob import glob
 from itertools import chain
-from os.path import basename
-from os.path import dirname
-from os.path import join
-from os.path import splitext
+from pathlib import Path
 
 from setuptools import Command
 from setuptools import find_packages
@@ -32,24 +27,24 @@ def read(*names, **kwargs):
 class BuildWithPTH(build):
     def run(self, *args, **kwargs):
         super().run(*args, **kwargs)
-        path = join(dirname(__file__), 'src', 'pytest-cov.pth')
-        dest = join(self.build_lib, basename(path))
+        path = str(Path(__file__).parent / 'src' / 'pytest-cov.pth')
+        dest = str(Path(self.build_lib) / Path(path).name)
         self.copy_file(path, dest)
 
 
 class EasyInstallWithPTH(easy_install):
     def run(self, *args, **kwargs):
         super().run(*args, **kwargs)
-        path = join(dirname(__file__), 'src', 'pytest-cov.pth')
-        dest = join(self.install_dir, basename(path))
+        path = str(Path(__file__).parent / 'src' / 'pytest-cov.pth')
+        dest = str(Path(self.install_dir) / Path(path).name)
         self.copy_file(path, dest)
 
 
 class InstallLibWithPTH(install_lib):
     def run(self, *args, **kwargs):
         super().run(*args, **kwargs)
-        path = join(dirname(__file__), 'src', 'pytest-cov.pth')
-        dest = join(self.install_dir, basename(path))
+        path = str(Path(__file__).parent / 'src' / 'pytest-cov.pth')
+        dest = str(Path(self.install_dir) / Path(path).name)
         self.copy_file(path, dest)
         self.outputs = [dest]
 
@@ -60,13 +55,13 @@ class InstallLibWithPTH(install_lib):
 class DevelopWithPTH(develop):
     def run(self, *args, **kwargs):
         super().run(*args, **kwargs)
-        path = join(dirname(__file__), 'src', 'pytest-cov.pth')
-        dest = join(self.install_dir, basename(path))
+        path = str(Path(__file__).parent / 'src' / 'pytest-cov.pth')
+        dest = str(Path(self.install_dir) / Path(path).name)
         self.copy_file(path, dest)
 
 
 class GeneratePTH(Command):
-    user_options = []
+    user_options = ()
 
     def initialize_options(self):
         pass
@@ -75,11 +70,9 @@ class GeneratePTH(Command):
         pass
 
     def run(self):
-        with open(join(dirname(__file__), 'src', 'pytest-cov.pth'), 'w') as fh:
-            with open(join(dirname(__file__), 'src', 'pytest-cov.embed')) as sh:
-                fh.write(
-                    f"import os, sys;exec({sh.read().replace('    ', ' ')!r})"
-                )
+        with Path(__file__).parent.joinpath('src', 'pytest-cov.pth').open('w') as fh:
+            with Path(__file__).parent.joinpath('src', 'pytest-cov.embed').open() as sh:
+                fh.write(f"import os, sys;exec({sh.read().replace('    ', ' ')!r})")
 
 
 setup(
@@ -124,19 +117,23 @@ setup(
         'Issue Tracker': 'https://github.com/pytest-dev/pytest-cov/issues',
     },
     keywords=[
-        'cover', 'coverage', 'pytest', 'py.test', 'distributed', 'parallel',
+        'cover',
+        'coverage',
+        'pytest',
+        'py.test',
+        'distributed',
+        'parallel',
     ],
     python_requires='>=3.8',
     install_requires=[
         'pytest>=4.6',
-        'coverage[toml]>=5.2.1'
+        'coverage[toml]>=5.2.1',
     ],
     extras_require={
         'testing': [
             'fields',
             'hunter',
             'process-tests',
-            'six',
             'pytest-xdist',
             'virtualenv',
         ]

@@ -1,7 +1,10 @@
 """Coverage plugin for pytest."""
+
 import argparse
 import os
 import warnings
+from io import StringIO
+from pathlib import Path
 
 import coverage
 import pytest
@@ -33,9 +36,9 @@ def validate_report(arg):
     term_choices = ['term', 'term-missing']
     term_modifier_choices = ['skip-covered']
     all_choices = term_choices + file_choices
-    values = arg.split(":", 1)
+    values = arg.split(':', 1)
     report_type = values[0]
-    if report_type not in all_choices + ['']:
+    if report_type not in [*all_choices, '']:
         msg = f'invalid choice: "{arg}" (choose from "{all_choices}")'
         raise argparse.ArgumentTypeError(msg)
 
@@ -50,8 +53,7 @@ def validate_report(arg):
         return report_type, report_modifier
 
     if report_type not in file_choices:
-        msg = 'output specifier not supported for: "{}" (choose from "{}")'.format(arg,
-                                                                                   file_choices)
+        msg = f'output specifier not supported for: "{arg}" (choose from "{file_choices}")'
         raise argparse.ArgumentTypeError(msg)
 
     return values
@@ -64,17 +66,19 @@ def validate_fail_under(num_str):
         try:
             value = float(num_str)
         except ValueError:
-            raise argparse.ArgumentTypeError('An integer or float value is required.')
+            raise argparse.ArgumentTypeError('An integer or float value is required.') from None
     if value > 100:
-        raise argparse.ArgumentTypeError('Your desire for over-achievement is admirable but misplaced. '
-                                         'The maximum value is 100. Perhaps write more integration tests?')
+        raise argparse.ArgumentTypeError(
+            'Your desire for over-achievement is admirable but misplaced. '
+            'The maximum value is 100. Perhaps write more integration tests?'
+        )
     return value
 
 
 def validate_context(arg):
     if coverage.version_info <= (5, 0):
         raise argparse.ArgumentTypeError('Contexts are only supported with coverage.py >= 5.x')
-    if arg != "test":
+    if arg != 'test':
         raise argparse.ArgumentTypeError('The only supported value is "test".')
     return arg
 
@@ -88,42 +92,83 @@ class StoreReport(argparse.Action):
 def pytest_addoption(parser):
     """Add options to control coverage."""
 
-    group = parser.getgroup(
-        'cov', 'coverage reporting with distributed testing support')
-    group.addoption('--cov', action='append', default=[], metavar='SOURCE',
-                    nargs='?', const=True, dest='cov_source',
-                    help='Path or package name to measure during execution (multi-allowed). '
-                         'Use --cov= to not do any source filtering and record everything.')
-    group.addoption('--cov-reset', action='store_const', const=[], dest='cov_source',
-                    help='Reset cov sources accumulated in options so far. ')
-    group.addoption('--cov-report', action=StoreReport, default={},
-                    metavar='TYPE', type=validate_report,
-                    help='Type of report to generate: term, term-missing, '
-                         'annotate, html, xml, json, lcov (multi-allowed). '
-                         'term, term-missing may be followed by ":skip-covered". '
-                         'annotate, html, xml, json and lcov may be followed by ":DEST" '
-                         'where DEST specifies the output location. '
-                         'Use --cov-report= to not generate any output.')
-    group.addoption('--cov-config', action='store', default='.coveragerc',
-                    metavar='PATH',
-                    help='Config file for coverage. Default: .coveragerc')
-    group.addoption('--no-cov-on-fail', action='store_true', default=False,
-                    help='Do not report coverage if test run fails. '
-                         'Default: False')
-    group.addoption('--no-cov', action='store_true', default=False,
-                    help='Disable coverage report completely (useful for debuggers). '
-                         'Default: False')
-    group.addoption('--cov-fail-under', action='store', metavar='MIN',
-                    type=validate_fail_under,
-                    help='Fail if the total coverage is less than MIN.')
-    group.addoption('--cov-append', action='store_true', default=False,
-                    help='Do not delete coverage but append to current. '
-                         'Default: False')
-    group.addoption('--cov-branch', action='store_true', default=None,
-                    help='Enable branch coverage.')
-    group.addoption('--cov-context', action='store', metavar='CONTEXT',
-                    type=validate_context,
-                    help='Dynamic contexts to use. "test" for now.')
+    group = parser.getgroup('cov', 'coverage reporting with distributed testing support')
+    group.addoption(
+        '--cov',
+        action='append',
+        default=[],
+        metavar='SOURCE',
+        nargs='?',
+        const=True,
+        dest='cov_source',
+        help='Path or package name to measure during execution (multi-allowed). '
+        'Use --cov= to not do any source filtering and record everything.',
+    )
+    group.addoption(
+        '--cov-reset',
+        action='store_const',
+        const=[],
+        dest='cov_source',
+        help='Reset cov sources accumulated in options so far. ',
+    )
+    group.addoption(
+        '--cov-report',
+        action=StoreReport,
+        default={},
+        metavar='TYPE',
+        type=validate_report,
+        help='Type of report to generate: term, term-missing, '
+        'annotate, html, xml, json, lcov (multi-allowed). '
+        'term, term-missing may be followed by ":skip-covered". '
+        'annotate, html, xml, json and lcov may be followed by ":DEST" '
+        'where DEST specifies the output location. '
+        'Use --cov-report= to not generate any output.',
+    )
+    group.addoption(
+        '--cov-config',
+        action='store',
+        default='.coveragerc',
+        metavar='PATH',
+        help='Config file for coverage. Default: .coveragerc',
+    )
+    group.addoption(
+        '--no-cov-on-fail',
+        action='store_true',
+        default=False,
+        help='Do not report coverage if test run fails. Default: False',
+    )
+    group.addoption(
+        '--no-cov',
+        action='store_true',
+        default=False,
+        help='Disable coverage report completely (useful for debuggers). Default: False',
+    )
+    group.addoption(
+        '--cov-fail-under',
+        action='store',
+        metavar='MIN',
+        type=validate_fail_under,
+        help='Fail if the total coverage is less than MIN.',
+    )
+    group.addoption(
+        '--cov-append',
+        action='store_true',
+        default=False,
+        help='Do not delete coverage but append to current. Default: False',
+    )
+    group.addoption(
+        '--cov-branch',
+        action='store_true',
+        default=None,
+        help='Enable branch coverage.',
+    )
+    group.addoption(
+        '--cov-context',
+        action='store',
+        metavar='CONTEXT',
+        type=validate_context,
+        help='Dynamic contexts to use. "test" for now.',
+    )
 
 
 def _prepare_cov_source(cov_source):
@@ -172,7 +217,7 @@ class CovPlugin:
         # Our implementation is unknown at this time.
         self.pid = None
         self.cov_controller = None
-        self.cov_report = compat.StringIO()
+        self.cov_report = StringIO()
         self.cov_total = None
         self.failed = False
         self._started = False
@@ -180,9 +225,7 @@ class CovPlugin:
         self._disabled = False
         self.options = options
 
-        is_dist = (getattr(options, 'numprocesses', False) or
-                   getattr(options, 'distload', False) or
-                   getattr(options, 'dist', 'no') != 'no')
+        is_dist = getattr(options, 'numprocesses', False) or getattr(options, 'distload', False) or getattr(options, 'dist', 'no') != 'no'
         if getattr(options, 'no_cov', False):
             self._disabled = True
             return
@@ -220,11 +263,11 @@ class CovPlugin:
             self.options.cov_append,
             self.options.cov_branch,
             config,
-            nodeid
+            nodeid,
         )
         self.cov_controller.start()
         self._started = True
-        self._start_path = os.getcwd()
+        self._start_path = Path.cwd()
         cov_config = self.cov_controller.cov.config
         if self.options.cov_fail_under is None and hasattr(cov_config, 'fail_under'):
             self.options.cov_fail_under = cov_config.fail_under
@@ -246,9 +289,7 @@ class CovPlugin:
 
         self.pid = os.getpid()
         if self._is_worker(session):
-            nodeid = (
-                session.config.workerinput.get('workerid', getattr(session, 'nodeid'))
-            )
+            nodeid = session.config.workerinput.get('workerid', session.nodeid)
             self.start(engine.DistWorker, session.config, nodeid)
         elif not self._started:
             self.start(engine.Central)
@@ -307,9 +348,8 @@ class CovPlugin:
                 self.cov_total = self.cov_controller.summary(self.cov_report)
             except CoverageException as exc:
                 message = f'Failed to generate report: {exc}\n'
-                session.config.pluginmanager.getplugin("terminalreporter").write(
-                    f'WARNING: {message}\n', red=True, bold=True)
-                warnings.warn(CovReportWarning(message))
+                session.config.pluginmanager.getplugin('terminalreporter').write(f'WARNING: {message}\n', red=True, bold=True)
+                warnings.warn(CovReportWarning(message), stacklevel=1)
                 self.cov_total = 0
             assert self.cov_total is not None, 'Test coverage should never be `None`'
             if self._failed_cov_total() and not self.options.collectonly:
@@ -321,7 +361,7 @@ class CovPlugin:
             if self.options.no_cov_should_warn:
                 message = 'Coverage disabled via --no-cov switch!'
                 terminalreporter.write(f'WARNING: {message}\n', red=True, bold=True)
-                warnings.warn(CovDisabledWarning(message))
+                warnings.warn(CovDisabledWarning(message), stacklevel=1)
             return
         if self.cov_controller is None:
             return
@@ -339,15 +379,11 @@ class CovPlugin:
         if self.options.cov_fail_under is not None and self.options.cov_fail_under > 0:
             failed = self.cov_total < self.options.cov_fail_under
             markup = {'red': True, 'bold': True} if failed else {'green': True}
-            message = (
-                '{fail}Required test coverage of {required}% {reached}. '
-                'Total coverage: {actual:.2f}%\n'
-                .format(
-                    required=self.options.cov_fail_under,
-                    actual=self.cov_total,
-                    fail="FAIL " if failed else "",
-                    reached="not reached" if failed else "reached"
-                )
+            message = '{fail}Required test coverage of {required}% {reached}. ' 'Total coverage: {actual:.2f}%\n'.format(
+                required=self.options.cov_fail_under,
+                actual=self.cov_total,
+                fail='FAIL ' if failed else '',
+                reached='not reached' if failed else 'reached',
             )
             terminalreporter.write(message, **markup)
 
@@ -362,8 +398,7 @@ class CovPlugin:
 
     @pytest.hookimpl(hookwrapper=True)
     def pytest_runtest_call(self, item):
-        if (item.get_closest_marker('no_cover')
-                or 'no_cover' in getattr(item, 'fixturenames', ())):
+        if item.get_closest_marker('no_cover') or 'no_cover' in getattr(item, 'fixturenames', ()):
             self.cov_controller.pause()
             yield
             self.cov_controller.resume()
@@ -385,15 +420,14 @@ class TestContextPlugin:
         self.switch_context(item, 'run')
 
     def switch_context(self, item, when):
-        context = f"{item.nodeid}|{when}"
+        context = f'{item.nodeid}|{when}'
         self.cov.switch_context(context)
         os.environ['COV_CORE_CONTEXT'] = context
 
 
 @pytest.fixture
-def no_cover():
+def no_cover():  # noqa: PT004
     """A pytest fixture to disable coverage."""
-    pass
 
 
 @pytest.fixture
@@ -409,4 +443,4 @@ def cov(request):
 
 
 def pytest_configure(config):
-    config.addinivalue_line("markers", "no_cover: disable coverage for this test.")
+    config.addinivalue_line('markers', 'no_cover: disable coverage for this test.')

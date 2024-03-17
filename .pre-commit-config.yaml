@@ -9,7 +9,7 @@ repos:
     rev: v0.3.3
     hooks:
       - id: ruff
-        args: [--fix, --exit-non-zero-on-fix, --show-fixes]
+        args: [--fix, --exit-non-zero-on-fix, --show-fixes, --unsafe-fixes]
   - repo: https://github.com/psf/black
     rev: 24.3.0
     hooks:

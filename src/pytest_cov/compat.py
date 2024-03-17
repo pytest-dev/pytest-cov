@@ -1,12 +1,3 @@
-try:
-    from StringIO import StringIO
-except ImportError:
-    from io import StringIO
-
-
-StringIO  # pyflakes, this is for re-export
-
-
 class SessionWrapper:
     def __init__(self, session):
         self._session = session

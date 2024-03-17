@@ -13,6 +13,7 @@ For python startup when an ancestor process has set the env indicating
 that code coverage is being collected we activate coverage based on
 info passed via env vars.
 """
+
 import atexit
 import os
 import signal
@@ -52,7 +53,7 @@ def init():
             data_suffix=True,
             config_file=cov_config,
             auto_data=True,
-            data_file=cov_datafile
+            data_file=cov_datafile,
         )
         cov.load()
         cov.start()
@@ -70,7 +71,7 @@ def _cleanup(cov):
         cov._auto_save = False  # prevent autosaving from cov._atexit in case the interpreter lacks atexit.unregister
         try:
             atexit.unregister(cov._atexit)
-        except Exception:
+        except Exception:  # noqa: S110
             pass
 
 
@@ -108,7 +109,7 @@ def _signal_cleanup_handler(signum, frame):
     elif signum == signal.SIGTERM:
         os._exit(128 + signum)
     elif signum == signal.SIGINT:
-        raise KeyboardInterrupt()
+        raise KeyboardInterrupt
 
 
 def cleanup_on_signal(signum):
