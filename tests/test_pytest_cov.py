@@ -6,6 +6,7 @@ import platform
 import re
 import subprocess
 import sys
+from io import StringIO
 from itertools import chain
 
 import coverage
@@ -19,8 +20,6 @@ from process_tests import dump_on_error
 from process_tests import wait_for_strings
 
 import pytest_cov.plugin
-
-from io import StringIO
 
 coverage, platform  # required for skipif mark on test_cov_min_from_coveragerc
 
