@@ -20,10 +20,7 @@ from process_tests import wait_for_strings
 
 import pytest_cov.plugin
 
-try:
-    from StringIO import StringIO
-except ImportError:
-    from io import StringIO
+from io import StringIO
 
 coverage, platform  # required for skipif mark on test_cov_min_from_coveragerc
 
@@ -1240,8 +1237,7 @@ def test_run():
     stdout, stderr = proc.communicate()
     assert not stderr
     assert stdout == b""
-    # it appears signal handling is buggy on python 2?
-    if sys.version_info == 3: assert proc.returncode in [128 + signal.SIGTERM, -signal.SIGTERM]
+    assert proc.returncode in [128 + signal.SIGTERM, -signal.SIGTERM]
 
 if __name__ == "__main__":
     signal.signal(signal.SIGINT, signal.SIG_IGN)
@@ -1258,7 +1254,7 @@ if __name__ == "__main__":
 
     result = testdir.runpytest('-vv', '--assert=plain', f'--cov={script.dirpath()}', '--cov-report=term-missing', script)
 
-    result.stdout.fnmatch_lines(['*- coverage: platform *, python * -*', 'test_cleanup_on_sigterm* 89%   23-24', '*1 passed*'])
+    result.stdout.fnmatch_lines(['*- coverage: platform *, python * -*', 'test_cleanup_on_sigterm* 89%   22-23', '*1 passed*'])
     assert result.ret == 0
 
 
@@ -1480,7 +1476,7 @@ def test_dist_boxed(testdir):
 
 
 @pytest.mark.skipif('sys.platform == "win32"')
-@pytest.mark.skipif('sys.version_info[0] > 2 and platform.python_implementation() == "PyPy"', reason='strange optimization on PyPy3')
+@pytest.mark.skipif('platform.python_implementation() == "PyPy"', reason='strange optimization on PyPy3')
 def test_dist_bare_cov(testdir):
     script = testdir.makepyfile(SCRIPT_SIMPLE)
 
