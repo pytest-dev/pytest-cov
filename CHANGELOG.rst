@@ -52,7 +52,7 @@ Changelog
   Contributed by Andre Brisco in `#543 <https://github.com/pytest-dev/pytest-cov/pull/543>`_
   and Colin O'Dell in `#525 <https://github.com/pytest-dev/pytest-cov/pull/525>`_.
 * Added support for LCOV output format via `--cov-report=lcov`. Only works with coverage 6.3+.
-  Contributed by Christian Fetzer in `#536 <https://github.com/pytest-dev/pytest-cov/issues/536>`_.
+  Contributed by Christian Fetzer in `#536 <https://github.com/pytest-dev/pytest-cov/pull/536>`_.
 * Modernized pytest hook implementation.
   Contributed by Bruno Oliveira in `#549 <https://github.com/pytest-dev/pytest-cov/pull/549>`_
   and Ronny Pfannschmidt in `#550 <https://github.com/pytest-dev/pytest-cov/pull/550>`_.
@@ -152,7 +152,7 @@ Changelog
 * Made pytest startup faster when plugin not active by lazy-importing.
   Contributed by Anders Hovmöller in `#339 <https://github.com/pytest-dev/pytest-cov/pull/339>`_.
 * Various CI improvements.
-  Contributed by Daniel Hahler in `#363 <https://github.com/pytest-dev/pytest-cov/pull/>`_ and
+  Contributed by Daniel Hahler in `#363 <https://github.com/pytest-dev/pytest-cov/pull/363>`_ and
   `#364 <https://github.com/pytest-dev/pytest-cov/pull/364>`_.
 * Various Python support updates (drop EOL 3.4, test against 3.8 final).
   Contributed by Hugo van Kemenade in
