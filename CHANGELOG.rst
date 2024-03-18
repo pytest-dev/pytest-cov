@@ -2,6 +2,13 @@
 Changelog
 =========
 
+5.0.0 (2024-03-18)
+------------------
+
+* Removed support for xdist rsync (now deprecated).
+  Contributed by Matthias Reichenbach in `#623 <https://github.com/pytest-dev/pytest-cov/pull/623>`_.
+* Switched docs theme to Furo.
+
 4.1.0 (2023-05-24)
 ------------------
 
