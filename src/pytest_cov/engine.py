@@ -69,7 +69,7 @@ class CovController:
         self.data_file = None
         self.node_descs = set()
         self.failed_workers = []
-        self.topdir = str(Path.cwd())
+        self.topdir = os.fspath(Path.cwd())
         self.is_collocated = None
 
     @contextlib.contextmanager
@@ -96,12 +96,13 @@ class CovController:
             os.environ['COV_CORE_SOURCE'] = os.pathsep
         else:
             os.environ['COV_CORE_SOURCE'] = os.pathsep.join(self.cov_source)
-        config_file = Path(self.cov_config).resolve()
+        config_file = Path(self.cov_config)
         if config_file.exists():
-            os.environ['COV_CORE_CONFIG'] = str(config_file)
+            os.environ['COV_CORE_CONFIG'] = os.fspath(config_file.resolve())
         else:
             os.environ['COV_CORE_CONFIG'] = os.pathsep
-        os.environ['COV_CORE_DATAFILE'] = str(Path(self.cov.config.data_file).resolve())
+        # this still uses the old abspath cause apparently Python 3.9 on Windows has a buggy Path.resolve()
+        os.environ['COV_CORE_DATAFILE'] = os.path.abspath(self.cov.config.data_file)  # noqa: PTH100
         if self.cov_branch:
             os.environ['COV_CORE_BRANCH'] = 'enabled'
 
@@ -236,7 +237,7 @@ class Central(CovController):
             source=self.cov_source,
             branch=self.cov_branch,
             data_suffix=True,
-            data_file=str(Path(self.cov.config.data_file).resolve()),
+            data_file=os.path.abspath(self.cov.config.data_file),  # noqa: PTH100
             config_file=self.cov_config,
         )
 
@@ -283,7 +284,7 @@ class DistMaster(CovController):
             source=self.cov_source,
             branch=self.cov_branch,
             data_suffix=True,
-            data_file=str(Path(self.cov.config.data_file).resolve()),
+            data_file=os.path.abspath(self.cov.config.data_file),  # noqa: PTH100
             config_file=self.cov_config,
         )
         if not self.cov_append:
