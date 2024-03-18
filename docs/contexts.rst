@@ -6,7 +6,7 @@ Coverage.py 5.0 can record separate coverage data for `different contexts`_ duri
 one run of a test suite.  Pytest-cov can use this feature to record coverage
 data for each test individually, with the ``--cov-context=test`` option.
 
-.. _different contexts: https://coverage.readthedocs.io/en/stable/contexts.html
+.. _different contexts: https://coverage.readthedocs.io/en/latest/contexts.html
 
 The context name recorded in the coverage.py database is the pytest test id,
 and the phase of execution, one of "setup", "run", or "teardown".  These two

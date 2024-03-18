@@ -116,7 +116,7 @@ Changelog
 * Removed the empty `console_scripts` entrypoint that confused some Gentoo build script.
   I didn't ask why it was so broken cause I didn't want to ruin my day.
   Contributed by Michał Górny in `#434 <https://github.com/pytest-dev/pytest-cov/pull/434>`_.
-* Fixed the missing `coverage context <https://coverage.readthedocs.io/en/stable/contexts.html>`_
+* Fixed the missing `coverage context <https://coverage.readthedocs.io/en/latest/contexts.html>`_
   when using subprocesses.
   Contributed by Bernát Gábor in `#443 <https://github.com/pytest-dev/pytest-cov/pull/443>`_.
 * Updated the config section in the docs.
