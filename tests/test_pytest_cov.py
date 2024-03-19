@@ -1365,6 +1365,13 @@ COVERAGERC = """
 exclude_lines =
     raise NotImplementedError
 """
+PYPROJECTTOML = """
+[tool.coverage.report]
+# Regexes for lines to exclude from consideration
+exclude_lines = [
+    'raise NotImplementedError',
+]
+"""
 
 EXCLUDED_TEST = """
 
@@ -1386,6 +1393,14 @@ def test_coveragerc(testdir):
     result = testdir.runpytest('-v', '--cov-config=coveragerc', f'--cov={script.dirpath()}', '--cov-report=term-missing', script)
     assert result.ret == 0
     result.stdout.fnmatch_lines([f'test_coveragerc* {EXCLUDED_RESULT}'])
+
+
+def test_pyproject_toml(testdir):
+    testdir.makefile('.toml', pyproject=PYPROJECTTOML)
+    script = testdir.makepyfile(EXCLUDED_TEST)
+    result = testdir.runpytest('-v', f'--cov={script.dirpath()}', '--cov-report=term-missing', script)
+    assert result.ret == 0
+    result.stdout.fnmatch_lines([f'test_pyproject_toml* {EXCLUDED_RESULT}'])
 
 
 @pytest.mark.skipif('sys.platform == "win32" and platform.python_implementation() == "PyPy"')
