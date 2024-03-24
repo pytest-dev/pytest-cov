@@ -60,3 +60,5 @@ Authors
 * Christian Fetzer - https://github.com/fetzerch
 * Jonathan Stewmon - https://github.com/jstewmon
 * Matthew Gamble - https://github.com/mwgamble
+* Christian Clauss - https://github.com/cclauss
+* Dawn James - https://github.com/dawngerpony

@@ -2,12 +2,22 @@
 Changelog
 =========
 
-5.0.0 (2024-03-18)
+5.0.0 (2024-03-24)
 ------------------
 
 * Removed support for xdist rsync (now deprecated).
   Contributed by Matthias Reichenbach in `#623 <https://github.com/pytest-dev/pytest-cov/pull/623>`_.
 * Switched docs theme to Furo.
+* Various legacy Python cleanup and CI improvements.
+  Contributed by Christian Clauss and Hugo van Kemenade in
+  `#630 <https://github.com/pytest-dev/pytest-cov/pull/630>`_,
+  `#631 <https://github.com/pytest-dev/pytest-cov/pull/631>`_,
+  `#632 <https://github.com/pytest-dev/pytest-cov/pull/632>`_ and
+  `#633 <https://github.com/pytest-dev/pytest-cov/pull/633>`_.
+* Added a ``pyproject.toml`` example in the docs.
+  Contributed by Dawn James in `#626 <https://github.com/pytest-dev/pytest-cov/pull/626>`_.
+* Modernized project's pre-commit hooks to use ruff. Initial POC contributed by
+  Christian Clauss in `#584 <https://github.com/pytest-dev/pytest-cov/pull/584>`_.
 
 4.1.0 (2023-05-24)
 ------------------
