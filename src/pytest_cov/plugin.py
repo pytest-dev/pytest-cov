@@ -248,7 +248,6 @@ class CovPlugin:
         # worker is started in pytest hook
 
     def start(self, controller_cls, config=None, nodeid=None):
-
         if config is None:
             # fake config option for engine
             class Config:
@@ -339,7 +338,6 @@ class CovPlugin:
             self.cov_controller.finish()
 
         if not self._is_worker(session) and self._should_report():
-
             # import coverage lazily here to avoid importing
             # it for unit tests that don't need it
             from coverage.misc import CoverageException

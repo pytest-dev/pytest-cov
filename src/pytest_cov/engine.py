@@ -361,7 +361,6 @@ class DistWorker(CovController):
 
     @_ensure_topdir
     def start(self):
-
         cleanup()
 
         # Determine whether we are collocated with master.

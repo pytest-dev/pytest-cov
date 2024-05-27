@@ -52,7 +52,5 @@ inline-quotes = "single"
 forced-separate = ["conftest"]
 force-single-line = true
 
-[tool.black]
-line-length = 140
-target-version = ["py38"]
-skip-string-normalization = true
+[tool.ruff.format]
+quote-style = "preserve"
