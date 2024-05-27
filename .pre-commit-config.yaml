@@ -6,14 +6,11 @@ exclude: '^(\.tox|ci/templates|\.bumpversion\.cfg)(/|$)'
 # Note the order is intentional to avoid multiple passes of the hooks
 repos:
   - repo: https://github.com/astral-sh/ruff-pre-commit
-    rev: v0.3.3
+    rev: v0.4.5
     hooks:
       - id: ruff
         args: [--fix, --exit-non-zero-on-fix, --show-fixes, --unsafe-fixes]
-  - repo: https://github.com/psf/black
-    rev: 24.3.0
-    hooks:
-      - id: black
+      - id: ruff-format
   - repo: https://github.com/pre-commit/pre-commit-hooks
     rev: v4.5.0
     hooks:
