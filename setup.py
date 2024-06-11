@@ -129,15 +129,6 @@ setup(
         'pytest>=4.6',
         'coverage[toml]>=5.2.1',
     ],
-    extras_require={
-        'testing': [
-            'fields',
-            'hunter',
-            'process-tests',
-            'pytest-xdist',
-            'virtualenv',
-        ]
-    },
     entry_points={
         'pytest11': [
             'pytest_cov = pytest_cov.plugin',
