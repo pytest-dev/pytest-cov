@@ -292,7 +292,11 @@ def test_term_report_does_not_interact_with_html_output(testdir):
     )
     dest_dir = testdir.tmpdir.join(DEST_DIR)
     assert dest_dir.check(dir=True)
-    assert sorted(dest_dir.visit('**/*.html')) == [dest_dir.join('index.html'), dest_dir.join('test_funcarg_py.html')]
+    expected = [dest_dir.join('index.html'), dest_dir.join('test_funcarg_py.html')]
+    if coverage.version_info >= (7, 5):
+        expected.insert(0, dest_dir.join('function_index.html'))
+        expected.insert(0, dest_dir.join('class_index.html'))
+    assert sorted(dest_dir.visit('**/*.html')) == expected
     assert dest_dir.join('index.html').check()
     assert result.ret == 0
 
