@@ -128,15 +128,21 @@ examine it.
 Limitations
 ===========
 
-For distributed testing the workers must have the pytest-cov package installed.  This is needed since
+For distributed testing the workers must have the pytest-cov package installed. This is needed since
 the plugin must be registered through setuptools for pytest to start the plugin on the
 worker.
 
 For subprocess measurement environment variables must make it from the main process to the
-subprocess.  The python used by the subprocess must have pytest-cov installed.  The subprocess must
+subprocess. The python used by the subprocess must have pytest-cov installed. The subprocess must
 do normal site initialisation so that the environment variables can be detected and coverage
-started.
+started. See the `subprocess support docs <https://pytest-cov.readthedocs.io/en/latest/subprocess-support.html>`_
+for more details of how this works.
 
+Security
+========
+
+To report a security vulnerability please use the `Tidelift security contact <https://tidelift.com/security>`_.
+Tidelift will coordinate the fix and disclosure.
 
 Acknowledgements
 ================
