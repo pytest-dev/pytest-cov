@@ -51,10 +51,11 @@ Caveats
 A unfortunate consequence of coverage.py's history is that ``.coveragerc`` is a magic name: it's the default file but it also
 means "try to also lookup coverage configuration in ``tox.ini`` or ``setup.cfg``".
 
-In practical terms this means that if you have your coverage configuration in ``tox.ini`` or ``setup.cfg`` it is paramount
-that you also use ``--cov-config=tox.ini`` or ``--cov-config=setup.cfg``.
+In practical terms this means that if you have multiple configuration files around (``tox.ini``, ``pyproject.toml`` or ``setup.cfg``) you
+might need to use ``--cov-config`` to make coverage use the correct configuration file.
 
-You might not be affected but it's unlikely that you won't ever use ``chdir`` in a test.
+Also, if you change the working directory and also use subprocesses in a test you might also need to use ``--cov-config`` to make pytest-cov
+will use the expected configuration file in the subprocess.
 
 Reference
 =========
