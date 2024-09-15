@@ -6,19 +6,72 @@ Normally coverage writes the data via a pretty standard atexit handler. However,
 own then the atexit handler might not run. Why that happens is best left to the adventurous to discover by waddling
 through the Python bug tracker.
 
-pytest-cov supports subprocesses and multiprocessing, and works around these atexit limitations. However, there are a
-few pitfalls that need to be explained.
+pytest-cov supports subprocesses, and works around these atexit limitations. However, there are a few pitfalls that need to be explained.
 
-If you use ``multiprocessing.Pool``
-===================================
+But first, how does pytest-cov's subprocess support works?
 
-**pytest-cov** automatically registers a multiprocessing finalizer. The finalizer will only run reliably if the pool is
-closed. Closing the pool basically signals the workers that there will be no more work, and they will eventually exit.
-Thus one also needs to call `join` on the pool.
+pytest-cov packaging injects a pytest-cov.pth into the installation. This file effectively runs this at *every* python startup:
 
-If you use ``multiprocessing.Pool.terminate`` or the context manager API (``__exit__``
-will just call ``terminate``) then the workers can get SIGTERM and then the finalizers won't run or complete in time.
-Thus you need to make sure your ``multiprocessing.Pool`` gets a nice and clean exit:
+.. code-block:: python
+
+    if 'COV_CORE_SOURCE' in os.environ:
+        try:
+            from pytest_cov.embed import init
+            init()
+        except Exception as exc:
+            sys.stderr.write(
+                "pytest-cov: Failed to setup subprocess coverage. "
+                "Environ: {0!r} "
+                "Exception: {1!r}\n".format(
+                    dict((k, v) for k, v in os.environ.items() if k.startswith('COV_CORE')),
+                    exc
+                )
+            )
+
+The pytest plugin will set this ``COV_CORE_SOURCE`` environment variable thus any subprocess that inherits the environment variables
+(the default behavior) will run ``pytest_cov.embed.init`` which in turn sets up coverage according to these variables:
+
+* ``COV_CORE_SOURCE``
+* ``COV_CORE_CONFIG``
+* ``COV_CORE_DATAFILE``
+* ``COV_CORE_BRANCH``
+* ``COV_CORE_CONTEXT``
+
+Why does it have the ``COV_CORE`` you wonder? Well, it's mostly historical reasons: long time ago pytest-cov depended on a cov-core package
+that implemented common functionality for pytest-cov, nose-cov and nose2-cov. The dependency is gone but the convention is kept. It could
+be changed but it would break all projects that manually set these intended-to-be-internal-but-sadly-not-in-reality environment variables.
+
+Coverage's subprocess support
+=============================
+
+Now that you understand how pytest-cov works you can easily figure out that using
+`coverage's recommended <https://coverage.readthedocs.io/en/latest/subprocess.html>`_ way of dealing with subprocesses,
+by either having this in a ``.pth`` file or ``sitecustomize.py`` will break everything:
+
+.. code-block::
+
+    import coverage; coverage.process_startup()  # this will break pytest-cov
+
+Do not do that as that will restart coverage with the wrong options.
+
+If you use ``multiprocessing``
+==============================
+
+Builtin support for multiprocessing was dropped in pytest-cov 4.0.
+This support was mostly working but very broken in certain scenarios (see `issue 82408 <https://github.com/python/cpython/issues/82408>`_)
+and made the test suite very flaky and slow.
+
+However, there is `builtin multiprocessing support in coverage <https://coverage.readthedocs.io/en/latest/config.html#run-concurrency>`_
+and you can migrate to that. All you need is this in your preferred configuration file (example: ``.coveragerc``):
+
+.. code-block:: ini
+
+    [run]
+    concurrency = multiprocessing
+    parallel = true
+    sigterm = true
+
+Now as a side-note, it's a good idea in general to properly close your Pool by using ``Pool.join()``:
 
 .. code-block:: python
 
@@ -36,62 +89,25 @@ Thus you need to make sure your ``multiprocessing.Pool`` gets a nice and clean e
             p.join()   # Waits for workers to exit.
 
 
-If you must use the context manager API (e.g.: the pool is managed in third party code you can't change) then you can
-register a cleaning SIGTERM handler like so:
-
-.. warning::
-
-    **This technique cannot be used on Python 3.8** (registering signal handlers will cause deadlocks in the pool,
-    see: https://bugs.python.org/issue38227).
-
-.. code-block:: python
-
-    from multiprocessing import Pool
-
-    def f(x):
-        return x*x
-
-    if __name__ == '__main__':
-        try:
-            from pytest_cov.embed import cleanup_on_sigterm
-        except ImportError:
-            pass
-        else:
-            cleanup_on_sigterm()
-
-        with Pool(5) as p:
-            print(p.map(f, [1, 2, 3]))
-
-If you use ``multiprocessing.Process``
-======================================
-
-There's similar issue when using the ``Process`` objects. Don't forget to use ``.join()``:
-
-.. code-block:: python
-
-    from multiprocessing import Process
-
-    def f(name):
-        print('hello', name)
-
-    if __name__ == '__main__':
-        try:
-            from pytest_cov.embed import cleanup_on_sigterm
-        except ImportError:
-            pass
-        else:
-            cleanup_on_sigterm()
-
-        p = Process(target=f, args=('bob',))
-        try:
-            p.start()
-        finally:
-            p.join()  # necessary so that the Process exists before the test suite exits (thus coverage is collected)
-
 .. _cleanup_on_sigterm:
 
+Signal handlers
+===============
+
+pytest-cov provides a signal handling routines, mostly for special situations where you'd have custom signal handling that doesn't
+allow atexit to properly run and the now-gone multiprocessing support:
+
+* ``pytest_cov.embed.cleanup_on_sigterm()``
+* ``pytest_cov.embed.cleanup_on_signal(signum)`` (e.g.: ``cleanup_on_signal(signal.SIGHUP)``)
+
+If you use multiprocessing
+--------------------------
+
+It is not recommanded to use these signal handlers with multiprocessing as registering signal handlers will cause deadlocks in the pool,
+see: https://bugs.python.org/issue38227).
+
 If you got custom signal handling
-=================================
+---------------------------------
 
 **pytest-cov 2.6** has a rudimentary ``pytest_cov.embed.cleanup_on_sigterm`` you can use to register a SIGTERM handler
 that flushes the coverage data.
@@ -140,7 +156,7 @@ Alternatively you can do this:
     signal.signal(signal.SIGHUP, restart_service)
 
 If you use Windows
-==================
+------------------
 
 On Windows you can register a handler for SIGTERM but it doesn't actually work. It will work if you
 `os.kill(os.getpid(), signal.SIGTERM)` (send SIGTERM to the current process) but for most intents and purposes that's
