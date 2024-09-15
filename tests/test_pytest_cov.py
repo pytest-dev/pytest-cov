@@ -1692,7 +1692,7 @@ def test_pth_failure(monkeypatch):
     monkeypatch.setattr(sys, 'stderr', buff)
     monkeypatch.setitem(os.environ, 'COV_CORE_SOURCE', 'foobar')
     exec(payload)
-    expected = "pytest-cov: Failed to setup subprocess coverage. " "Environ: {'COV_CORE_SOURCE': 'foobar'} Exception: SpecificError()\n"
+    expected = 'pytest-cov: Failed to setup subprocess coverage. ' "Environ: {'COV_CORE_SOURCE': 'foobar'} Exception: SpecificError()\n"
     assert buff.getvalue() == expected
 
 
