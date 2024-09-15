@@ -33,7 +33,6 @@ select = [
     "PLE", # pylint errors
     "PT", # flake8-pytest-style
     "PTH", # flake8-use-pathlib
-    "Q", # flake8-quotes
     "RSE", # flake8-raise
     "RUF", # ruff-specific rules
     "S", # flake8-bandit
@@ -45,12 +44,9 @@ select = [
 fixture-parentheses = false
 mark-parentheses = false
 
-[tool.ruff.lint.flake8-quotes]
-inline-quotes = "single"
-
 [tool.ruff.lint.isort]
 forced-separate = ["conftest"]
 force-single-line = true
 
 [tool.ruff.format]
-quote-style = "preserve"
+quote-style = "single"
