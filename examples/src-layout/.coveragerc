@@ -7,7 +7,7 @@ source =
 branch = true
 parallel = true
 source =
-    example
+    src/example
     tests
 
 [report]
