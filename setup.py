@@ -127,7 +127,7 @@ setup(
     python_requires='>=3.8',
     install_requires=[
         'pytest>=4.6',
-        'coverage[toml]>=5.2.1',
+        'coverage[toml]>=7.5',
     ],
     extras_require={
         'testing': [

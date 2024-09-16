@@ -454,7 +454,10 @@ def test_cov_min_float_value(testdir):
 
 def test_cov_min_float_value_not_reached(testdir):
     script = testdir.makepyfile(SCRIPT)
-
+    testdir.tmpdir.join('.coveragerc').write("""
+[report]
+precision = 3
+""")
     result = testdir.runpytest('-v', f'--cov={script.dirpath()}', '--cov-report=term-missing', '--cov-fail-under=88.89', script)
     assert result.ret == 1
     result.stdout.fnmatch_lines(['FAIL Required test coverage of 88.89% not reached. Total coverage: 88.89%'])

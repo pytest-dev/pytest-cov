@@ -8,6 +8,8 @@ from pathlib import Path
 
 import coverage
 import pytest
+from coverage.results import display_covered
+from coverage.results import should_fail_under
 
 from . import compat
 from . import embed
@@ -28,6 +30,10 @@ class CovDisabledWarning(PytestCovWarning):
 
 
 class CovReportWarning(PytestCovWarning):
+    """Indicates that we failed to generate a report"""
+
+
+class CovFailUnderWarning(PytestCovWarning):
     """Indicates that we failed to generate a report"""
 
 
@@ -270,6 +276,7 @@ class CovPlugin:
         cov_config = self.cov_controller.cov.config
         if self.options.cov_fail_under is None and hasattr(cov_config, 'fail_under'):
             self.options.cov_fail_under = cov_config.fail_under
+        self.options.cov_precision = getattr(cov_config, 'precision', 0)
 
     def _is_worker(self, session):
         return getattr(session.config, 'workerinput', None) is not None
@@ -318,10 +325,6 @@ class CovPlugin:
         needed = self.options.cov_report or self.options.cov_fail_under
         return needed and not (self.failed and self.options.no_cov_on_fail)
 
-    def _failed_cov_total(self):
-        cov_fail_under = self.options.cov_fail_under
-        return cov_fail_under is not None and self.cov_total < cov_fail_under
-
     # we need to wrap pytest_runtestloop. by the time pytest_sessionfinish
     # runs, it's too late to set testsfailed
     @pytest.hookimpl(hookwrapper=True)
@@ -346,11 +349,22 @@ class CovPlugin:
                 self.cov_total = self.cov_controller.summary(self.cov_report)
             except CoverageException as exc:
                 message = f'Failed to generate report: {exc}\n'
-                session.config.pluginmanager.getplugin('terminalreporter').write(f'WARNING: {message}\n', red=True, bold=True)
+                session.config.pluginmanager.getplugin('terminalreporter').write(f'\nWARNING: {message}\n', red=True, bold=True)
                 warnings.warn(CovReportWarning(message), stacklevel=1)
                 self.cov_total = 0
             assert self.cov_total is not None, 'Test coverage should never be `None`'
-            if self._failed_cov_total() and not self.options.collectonly:
+            cov_fail_under = self.options.cov_fail_under
+            cov_precision = self.options.cov_precision
+            if cov_fail_under is None or self.options.collectonly:
+                return
+            if should_fail_under(self.cov_total, cov_fail_under, cov_precision):
+                message = 'Coverage failure: total of {total} is less than fail-under={fail_under:.{p}f}'.format(
+                    total=display_covered(self.cov_total, cov_precision),
+                    fail_under=cov_fail_under,
+                    p=cov_precision,
+                )
+                session.config.pluginmanager.getplugin('terminalreporter').write(f'\nERROR: {message}\n', red=True, bold=True)
+                warnings.warn(CovFailUnderWarning(message), stacklevel=1)
                 # make sure we get the EXIT_TESTSFAILED exit code
                 compat_session.testsfailed += 1
 
