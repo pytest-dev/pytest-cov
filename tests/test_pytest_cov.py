@@ -48,7 +48,6 @@ def test_bar():
 
 """
 
-
 COVERAGERC_SOURCE = """\
 [run]
 source = .
@@ -153,8 +152,13 @@ LCOV_REPORT_NAME = 'cov.info'
 
 xdist_params = pytest.mark.parametrize(
     'opts',
-    ['', pytest.param('-n 1', marks=pytest.mark.skipif('sys.platform == "win32" and platform.python_implementation() == "PyPy"'))],
-    ids=['nodist', 'xdist'],
+    [
+        '',
+        pytest.param('-n 1', marks=pytest.mark.skipif('sys.platform == "win32" and platform.python_implementation() == "PyPy"')),
+        pytest.param('-n 2', marks=pytest.mark.skipif('sys.platform == "win32" and platform.python_implementation() == "PyPy"')),
+        pytest.param('-n 3', marks=pytest.mark.skipif('sys.platform == "win32" and platform.python_implementation() == "PyPy"')),
+    ],
+    ids=['nodist', '1xdist', '2xdist', '3xdist'],
 )
 
 
@@ -1627,6 +1631,67 @@ def test_append_coverage(pytester, testdir, opts, prop):
         [
             f'test_1* {prop.result}*',
             f'test_2* {prop.result2}*',
+        ]
+    )
+
+
+@xdist_params
+def test_coverage_plugin(pytester, testdir, opts, prop):
+    script = testdir.makepyfile(test_1=prop.code)
+    testdir.makepyfile(
+        coverageplugin="""
+import coverage
+
+class ExamplePlugin(coverage.CoveragePlugin):
+    pass
+
+def coverage_init(reg, options):
+    reg.add_file_tracer(ExamplePlugin())
+"""
+    )
+    testdir.makepyprojecttoml(f"""
+[tool.coverage.run]
+plugins = ["coverageplugin"]
+concurrency = ["thread", "multiprocessing"]
+{prop.conf}
+""")
+    result = testdir.runpytest('-v', f'--cov={script.dirpath()}', script, *opts.split() + prop.args)
+    result.stdout.fnmatch_lines(
+        [
+            f'test_1* {prop.result}*',
+        ]
+    )
+
+
+@xdist_params
+def test_dynamic_context(pytester, testdir, opts, prop):
+    script = testdir.makepyfile(test_1=prop.code)
+    testdir.makepyprojecttoml(f"""
+[tool.coverage.run]
+dynamic_context = "test_function"
+parallel = true
+{prop.conf}
+""")
+    result = testdir.runpytest('-v', f'--cov={script.dirpath()}', script, *opts.split() + prop.args)
+    result.stdout.fnmatch_lines(
+        [
+            f'test_1* {prop.result}*',
+        ]
+    )
+
+
+@xdist_params
+def test_simple(pytester, testdir, opts, prop):
+    script = testdir.makepyfile(test_1=prop.code)
+    testdir.makepyprojecttoml(f"""
+[tool.coverage.run]
+parallel = true
+{prop.conf}
+""")
+    result = testdir.runpytest('-v', f'--cov={script.dirpath()}', script, *opts.split() + prop.args)
+    result.stdout.fnmatch_lines(
+        [
+            f'test_1* {prop.result}*',
         ]
     )
 
