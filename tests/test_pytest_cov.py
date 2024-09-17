@@ -1632,6 +1632,34 @@ def test_append_coverage(pytester, testdir, opts, prop):
 
 
 @xdist_params
+def test_coverage_plugin(pytester, testdir, opts, prop):
+    script = testdir.makepyfile(test_1=prop.code)
+    testdir.makepyfile(
+        coverageplugin="""
+import coverage
+
+class ExamplePlugin(coverage.CoveragePlugin):
+    pass
+
+def coverage_init(reg, options):
+    reg.add_file_tracer(ExamplePlugin())
+"""
+    )
+    testdir.makepyprojecttoml(f"""
+[tool.coverage.run]
+plugins = ["coverageplugin"]
+concurrency = ["thread", "multiprocessing"]
+{prop.conf}
+""")
+    result = testdir.runpytest('-v', f'--cov={script.dirpath()}', script, *opts.split() + prop.args)
+    result.stdout.fnmatch_lines(
+        [
+            f'test_1* {prop.result}*',
+        ]
+    )
+
+
+@xdist_params
 def test_do_not_append_coverage(pytester, testdir, opts, prop):
     script = testdir.makepyfile(test_1=prop.code)
     testdir.tmpdir.join('.coveragerc').write(prop.fullconf)
