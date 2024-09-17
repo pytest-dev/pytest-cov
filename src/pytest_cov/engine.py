@@ -12,6 +12,7 @@ from pathlib import Path
 
 import coverage
 from coverage.data import CoverageData
+from coverage.sqldata import filename_suffix
 
 from .embed import cleanup
 
@@ -49,6 +50,10 @@ def _ensure_topdir(meth):
                 os.chdir(original_cwd)
 
     return ensure_topdir_wrapper
+
+
+def _data_suffix(name):
+    return f'{filename_suffix(True)}.{name}'
 
 
 class CovController:
@@ -230,13 +235,13 @@ class Central(CovController):
         self.cov = coverage.Coverage(
             source=self.cov_source,
             branch=self.cov_branch,
-            data_suffix=True,
+            data_suffix=_data_suffix('c'),
             config_file=self.cov_config,
         )
         self.combining_cov = coverage.Coverage(
             source=self.cov_source,
             branch=self.cov_branch,
-            data_suffix=True,
+            data_suffix=_data_suffix('cc'),
             data_file=os.path.abspath(self.cov.config.data_file),  # noqa: PTH100
             config_file=self.cov_config,
         )
@@ -274,7 +279,7 @@ class DistMaster(CovController):
         self.cov = coverage.Coverage(
             source=self.cov_source,
             branch=self.cov_branch,
-            data_suffix=True,
+            data_suffix=_data_suffix('m'),
             config_file=self.cov_config,
         )
         self.cov._warn_no_data = False
@@ -283,7 +288,7 @@ class DistMaster(CovController):
         self.combining_cov = coverage.Coverage(
             source=self.cov_source,
             branch=self.cov_branch,
-            data_suffix=True,
+            data_suffix=_data_suffix('mc'),
             data_file=os.path.abspath(self.cov.config.data_file),  # noqa: PTH100
             config_file=self.cov_config,
         )
@@ -330,7 +335,7 @@ class DistMaster(CovController):
                 data.read_fileobj(StringIO(output['cov_worker_data']))
                 cov.data.update(data)
             else:
-                data = CoverageData(no_disk=True)
+                data = CoverageData(no_disk=True, suffix='should-not-exist')
                 data.loads(output['cov_worker_data'])
                 cov.get_data().update(data)
             cov.stop()
@@ -381,7 +386,7 @@ class DistWorker(CovController):
         self.cov = coverage.Coverage(
             source=self.cov_source,
             branch=self.cov_branch,
-            data_suffix=True,
+            data_suffix=_data_suffix(f'w{self.nodeid}'),
             config_file=self.cov_config,
         )
         self.cov.start()
