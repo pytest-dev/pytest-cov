@@ -2,7 +2,7 @@
 Authors
 =======
 
-* Marc Schlaich - \http://www.schlamar.org
+* Marc Schlaich - https://github.com/schlamar (\http://www.schlamar.org)
 * Rick van Hattem - http://wol.ph
 * Buck Evan - https://github.com/bukzor
 * Eric Larson - http://larsoner.com
@@ -19,7 +19,7 @@ Authors
 * Michael Elovskikh - https://github.com/wronglink
 * Saurabh Kumar - https://github.com/theskumar
 * Michael Elovskikh - https://github.com/wronglink
-* Daniel Hahler - https://daniel.hahler.de
+* Daniel Hahler - https://github.com/blueyed (\https://daniel.hahler.de)
 * Florian Bruhin - http://www.the-compiler.org
 * Zoltan Kozma - https://github.com/kozmaz87
 * Francis Niu - https://flniu.github.io
