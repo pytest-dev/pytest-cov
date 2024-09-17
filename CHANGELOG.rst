@@ -2,6 +2,13 @@
 Changelog
 =========
 
+5.1.0 (2024-09-??)
+------------------
+
+* Updated various documentation inaccuracies, especially on subprocess handling.
+* Changed fail under checks to use the precision set in the coverage configuration.
+  Now it will perform the check just like ``coverage report`` would.
+
 5.0.0 (2024-03-24)
 ------------------
 
