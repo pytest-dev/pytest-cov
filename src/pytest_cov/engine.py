@@ -7,6 +7,7 @@ import os
 import random
 import socket
 import sys
+import warnings
 from io import StringIO
 from pathlib import Path
 
@@ -15,6 +16,11 @@ from coverage.data import CoverageData
 from coverage.sqldata import filename_suffix
 
 from .embed import cleanup
+from .plugin import PytestCovWarning
+
+
+class BrokenCovConfigError(Exception):
+    pass
 
 
 class _NullFile:
@@ -225,6 +231,10 @@ class CovController:
         return total
 
 
+class CentralCovContextWarning(PytestCovWarning):
+    pass
+
+
 class Central(CovController):
     """Implementation for centralised operation."""
 
@@ -238,6 +248,13 @@ class Central(CovController):
             data_suffix=_data_suffix('c'),
             config_file=self.cov_config,
         )
+        if self.cov.config.dynamic_context == 'test_function':
+            message = (
+                'Detected dynamic_context=test_function in coverage configuration. '
+                'This is unnecessary as this plugin provides the more complete --cov-context option.'
+            )
+            warnings.warn(CentralCovContextWarning(message), stacklevel=1)
+
         self.combining_cov = coverage.Coverage(
             source=self.cov_source,
             branch=self.cov_branch,
@@ -269,6 +286,10 @@ class Central(CovController):
         self.node_descs.add(node_desc)
 
 
+class DistCovError(Exception):
+    pass
+
+
 class DistMaster(CovController):
     """Implementation for distributed master."""
 
@@ -282,6 +303,12 @@ class DistMaster(CovController):
             data_suffix=_data_suffix('m'),
             config_file=self.cov_config,
         )
+        if self.cov.config.dynamic_context == 'test_function':
+            raise DistCovError(
+                'Detected dynamic_context=test_function in coverage configuration. '
+                'This is known to cause issues when using xdist, see: https://github.com/pytest-dev/pytest-cov/issues/604\n'
+                'It is recommended to use --cov-context instead.'
+            )
         self.cov._warn_no_data = False
         self.cov._warn_unimported_source = False
         self.cov._warn_preimported_source = False
