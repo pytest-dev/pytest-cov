@@ -1674,7 +1674,7 @@ parallel = true
 """)
     result = testdir.runpytest('-v', f'--cov={script.dirpath()}', script, *opts.split() + prop.args)
     if opts:
-        result.stderr.fnmatch_lines(['pytest_cov.engine.DistCovError: Detected dynamic_context=test_function*'])
+        result.stderr.fnmatch_lines(['pytest_cov.DistCovError: Detected dynamic_context=test_function*'])
     else:
         result.stdout.fnmatch_lines(
             [

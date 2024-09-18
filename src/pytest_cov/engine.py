@@ -15,8 +15,9 @@ import coverage
 from coverage.data import CoverageData
 from coverage.sqldata import filename_suffix
 
+from . import CentralCovContextWarning
+from . import DistCovError
 from .embed import cleanup
-from .plugin import PytestCovWarning
 
 
 class BrokenCovConfigError(Exception):
@@ -231,10 +232,6 @@ class CovController:
         return total
 
 
-class CentralCovContextWarning(PytestCovWarning):
-    pass
-
-
 class Central(CovController):
     """Implementation for centralised operation."""
 
@@ -284,10 +281,6 @@ class Central(CovController):
 
         node_desc = self.get_node_desc(sys.platform, sys.version_info)
         self.node_descs.add(node_desc)
-
-
-class DistCovError(Exception):
-    pass
 
 
 class DistMaster(CovController):

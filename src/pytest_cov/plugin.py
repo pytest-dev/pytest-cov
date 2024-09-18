@@ -11,30 +11,11 @@ import pytest
 from coverage.results import display_covered
 from coverage.results import should_fail_under
 
+from . import CovDisabledWarning
+from . import CovFailUnderWarning
+from . import CovReportWarning
 from . import compat
 from . import embed
-
-
-class CoverageError(Exception):
-    """Indicates that our coverage is too low"""
-
-
-class PytestCovWarning(pytest.PytestWarning):
-    """
-    The base for all pytest-cov warnings, never raised directly
-    """
-
-
-class CovDisabledWarning(PytestCovWarning):
-    """Indicates that Coverage was manually disabled"""
-
-
-class CovReportWarning(PytestCovWarning):
-    """Indicates that we failed to generate a report"""
-
-
-class CovFailUnderWarning(PytestCovWarning):
-    """Indicates that we failed to generate a report"""
 
 
 def validate_report(arg):
