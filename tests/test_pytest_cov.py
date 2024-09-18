@@ -1673,11 +1673,15 @@ parallel = true
 {prop.conf}
 """)
     result = testdir.runpytest('-v', f'--cov={script.dirpath()}', script, *opts.split() + prop.args)
-    result.stdout.fnmatch_lines(
-        [
-            f'test_1* {prop.result}*',
-        ]
-    )
+    if opts:
+        result.stderr.fnmatch_lines(['pytest_cov.engine.DistCovError: Detected dynamic_context=test_function*'])
+    else:
+        result.stdout.fnmatch_lines(
+            [
+                '* CentralCovContextWarning: Detected dynamic_context=test_function*',
+                f'test_1* {prop.result}*',
+            ]
+        )
 
 
 @xdist_params
