@@ -2,13 +2,14 @@
 Changelog
 =========
 
-5.1.0 (2024-10-29)
+6.0.0 (2024-10-29)
 ------------------
 
 * Updated various documentation inaccuracies, especially on subprocess handling.
 * Changed fail under checks to use the precision set in the coverage configuration.
   Now it will perform the check just like ``coverage report`` would.
 * Added a ``--cov-precision`` cli option that can override the value set in your coverage configuration.
+* Dropped support for now EOL Python 3.8.
 
 5.0.0 (2024-03-24)
 ------------------
