@@ -150,6 +150,12 @@ def pytest_addoption(parser):
         help='Enable branch coverage.',
     )
     group.addoption(
+        '--cov-precision',
+        type=int,
+        default=None,
+        help='Override the reporting precision.',
+    )
+    group.addoption(
         '--cov-context',
         action='store',
         metavar='CONTEXT',
@@ -257,7 +263,8 @@ class CovPlugin:
         cov_config = self.cov_controller.cov.config
         if self.options.cov_fail_under is None and hasattr(cov_config, 'fail_under'):
             self.options.cov_fail_under = cov_config.fail_under
-        self.options.cov_precision = getattr(cov_config, 'precision', 0)
+        if self.options.cov_precision is None:
+            self.options.cov_precision = getattr(cov_config, 'precision', 0)
 
     def _is_worker(self, session):
         return getattr(session.config, 'workerinput', None) is not None

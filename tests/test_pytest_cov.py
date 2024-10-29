@@ -467,6 +467,15 @@ precision = 3
     result.stdout.fnmatch_lines(['FAIL Required test coverage of 88.89% not reached. Total coverage: 88.89%'])
 
 
+def test_cov_min_float_value_not_reached_cli(testdir):
+    script = testdir.makepyfile(SCRIPT)
+    result = testdir.runpytest(
+        '-v', f'--cov={script.dirpath()}', '--cov-report=term-missing', '--cov-precision=3', '--cov-fail-under=88.89', script
+    )
+    assert result.ret == 1
+    result.stdout.fnmatch_lines(['FAIL Required test coverage of 88.89% not reached. Total coverage: 88.89%'])
+
+
 def test_cov_min_no_report(testdir):
     script = testdir.makepyfile(SCRIPT)
 
