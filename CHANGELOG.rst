@@ -27,6 +27,7 @@ Changelog
   Contributed by Dawn James in `#626 <https://github.com/pytest-dev/pytest-cov/pull/626>`_.
 * Modernized project's pre-commit hooks to use ruff. Initial POC contributed by
   Christian Clauss in `#584 <https://github.com/pytest-dev/pytest-cov/pull/584>`_.
+* Dropped support for Python 3.7.
 
 4.1.0 (2023-05-24)
 ------------------
@@ -43,6 +44,7 @@ Changelog
   Contributed by Mark Mayo in `#572 <https://github.com/pytest-dev/pytest-cov/pull/572>`_.
 * Fixed a skip in the test suite for some old xdist.
   Contributed by a bunch of people in `#565 <https://github.com/pytest-dev/pytest-cov/pull/565>`_.
+* Dropped support for Python 3.6.
 
 
 4.0.0 (2022-09-28)
