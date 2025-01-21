@@ -55,7 +55,7 @@ In practical terms this means that if you have multiple configuration files arou
 might need to use ``--cov-config`` to make coverage use the correct configuration file.
 
 Also, if you change the working directory and also use subprocesses in a test you might also need to use ``--cov-config`` to make pytest-cov
- use the expected configuration file in the subprocess.
+use the expected configuration file in the subprocess.
 
 Reference
 =========
