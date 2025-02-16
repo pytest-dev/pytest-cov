@@ -207,7 +207,7 @@ def test_central(pytester, testdir, prop):
 
     result = testdir.runpytest('-v', f'--cov={script.dirpath()}', '--cov-report=term-missing', script, *prop.args)
 
-    result.stdout.fnmatch_lines(['*- coverage: platform *, python * -*', f'test_central* {prop.result} *', '*10 passed*'])
+    result.stdout.fnmatch_lines(['*_ coverage: platform *, python * _*', f'test_central* {prop.result} *', '*10 passed*'])
     assert result.ret == 0
 
 
@@ -218,7 +218,7 @@ def test_annotate(testdir):
 
     result.stdout.fnmatch_lines(
         [
-            '*- coverage: platform *, python * -*',
+            '*_ coverage: platform *, python * _*',
             'Coverage annotated source written next to source',
             '*10 passed*',
         ]
@@ -233,7 +233,7 @@ def test_annotate_output_dir(testdir):
 
     result.stdout.fnmatch_lines(
         [
-            '*- coverage: platform *, python * -*',
+            '*_ coverage: platform *, python * _*',
             'Coverage annotated source written to dir ' + DEST_DIR,
             '*10 passed*',
         ]
@@ -251,7 +251,7 @@ def test_html(testdir):
 
     result.stdout.fnmatch_lines(
         [
-            '*- coverage: platform *, python * -*',
+            '*_ coverage: platform *, python * _*',
             'Coverage HTML written to dir htmlcov',
             '*10 passed*',
         ]
@@ -269,7 +269,7 @@ def test_html_output_dir(testdir):
 
     result.stdout.fnmatch_lines(
         [
-            '*- coverage: platform *, python * -*',
+            '*_ coverage: platform *, python * _*',
             'Coverage HTML written to dir ' + DEST_DIR,
             '*10 passed*',
         ]
@@ -289,7 +289,7 @@ def test_term_report_does_not_interact_with_html_output(testdir):
 
     result.stdout.fnmatch_lines(
         [
-            '*- coverage: platform *, python * -*',
+            '*_ coverage: platform *, python * _*',
             'Coverage HTML written to dir ' + DEST_DIR,
             '*1 passed*',
         ]
@@ -317,7 +317,7 @@ directory = somewhere
 
     result.stdout.fnmatch_lines(
         [
-            '*- coverage: platform *, python * -*',
+            '*_ coverage: platform *, python * _*',
             'Coverage HTML written to dir somewhere',
             '*10 passed*',
         ]
@@ -335,7 +335,7 @@ def test_xml_output_dir(testdir):
 
     result.stdout.fnmatch_lines(
         [
-            '*- coverage: platform *, python * -*',
+            '*_ coverage: platform *, python * _*',
             'Coverage XML written to file ' + XML_REPORT_NAME,
             '*10 passed*',
         ]
@@ -351,7 +351,7 @@ def test_json_output_dir(testdir):
 
     result.stdout.fnmatch_lines(
         [
-            '*- coverage: platform *, python * -*',
+            '*_ coverage: platform *, python * _*',
             'Coverage JSON written to file ' + JSON_REPORT_NAME,
             '*10 passed*',
         ]
@@ -368,7 +368,7 @@ def test_lcov_output_dir(testdir):
 
     result.stdout.fnmatch_lines(
         [
-            '*- coverage: platform *, python * -*',
+            '*_ coverage: platform *, python * _*',
             'Coverage LCOV written to file ' + LCOV_REPORT_NAME,
             '*10 passed*',
         ]
@@ -490,7 +490,7 @@ def test_central_nonspecific(pytester, testdir, prop):
     testdir.tmpdir.join('.coveragerc').write(prop.fullconf)
     result = testdir.runpytest('-v', '--cov', '--cov-report=term-missing', script, *prop.args)
 
-    result.stdout.fnmatch_lines(['*- coverage: platform *, python * -*', f'test_central_nonspecific* {prop.result} *', '*10 passed*'])
+    result.stdout.fnmatch_lines(['*_ coverage: platform *, python * _*', f'test_central_nonspecific* {prop.result} *', '*10 passed*'])
 
     # multi-module coverage report
     assert any(line.startswith('TOTAL ') for line in result.stdout.lines)
@@ -520,7 +520,7 @@ def test_central_coveragerc(pytester, testdir, prop):
 
     result.stdout.fnmatch_lines(
         [
-            '*- coverage: platform *, python * -*',
+            '*_ coverage: platform *, python * _*',
             f'test_central_coveragerc* {prop.result} *',
             '*10 passed*',
         ]
@@ -557,7 +557,7 @@ parallel = true
 
     result.stdout.fnmatch_lines(
         [
-            '*- coverage: platform *, python * -*',
+            '*_ coverage: platform *, python * _*',
             f'src[\\/]mod* {prop.result} *',
             '*10 passed*',
         ]
@@ -599,7 +599,7 @@ def test_foobar(bad):
 
     result.stdout.fnmatch_lines(
         [
-            '*- coverage: platform *, python * -*',
+            '*_ coverage: platform *, python * _*',
             '*mod* 100%',
             '*1 passed*',
         ]
@@ -636,7 +636,7 @@ parallel = true
 
     result.stdout.fnmatch_lines(
         [
-            '*- coverage: platform *, python * -*',
+            '*_ coverage: platform *, python * _*',
             f'src[\\/]child_script* {CHILD_SCRIPT_RESULT}*',
             f'src[\\/]parent_script* {PARENT_SCRIPT_RESULT}*',
         ]
@@ -661,7 +661,7 @@ show_missing = true
 
     result.stdout.fnmatch_lines(
         [
-            '*- coverage: platform *, python * -*',
+            '*_ coverage: platform *, python * _*',
             'Name * Stmts * Miss * Cover * Missing',
             f'test_show_missing_coveragerc* {prop.result} * 11*',
             '*10 passed*',
@@ -767,7 +767,7 @@ def test_dist_collocated(pytester, testdir, prop):
         *prop.args,
     )
 
-    result.stdout.fnmatch_lines(['*- coverage: platform *, python * -*', f'test_dist_collocated* {prop.result} *', '*10 passed*'])
+    result.stdout.fnmatch_lines(['*_ coverage: platform *, python * _*', f'test_dist_collocated* {prop.result} *', '*10 passed*'])
     assert result.ret == 0
 
 
@@ -802,7 +802,7 @@ source =
         *prop.args,
     )
 
-    result.stdout.fnmatch_lines(['*- coverage: platform *, python * -*', f'test_dist_not_collocated* {prop.result} *', '*10 passed*'])
+    result.stdout.fnmatch_lines(['*_ coverage: platform *, python * _*', f'test_dist_not_collocated* {prop.result} *', '*10 passed*'])
     assert result.ret == 0
 
 
@@ -838,7 +838,7 @@ source =
         *prop.args,
     )
 
-    result.stdout.fnmatch_lines(['*- coverage: platform *, python * -*', f'test_dist_not_collocated* {prop.result} *', '*10 passed*'])
+    result.stdout.fnmatch_lines(['*_ coverage: platform *, python * _*', f'test_dist_not_collocated* {prop.result} *', '*10 passed*'])
     assert result.ret == 0
 
 
@@ -850,7 +850,7 @@ def test_central_subprocess(testdir):
 
     result.stdout.fnmatch_lines(
         [
-            '*- coverage: platform *, python * -*',
+            '*_ coverage: platform *, python * _*',
             f'child_script* {CHILD_SCRIPT_RESULT}*',
             f'parent_script* {PARENT_SCRIPT_RESULT}*',
         ]
@@ -876,7 +876,7 @@ parallel = true
 
     result.stdout.fnmatch_lines(
         [
-            '*- coverage: platform *, python * -*',
+            '*_ coverage: platform *, python * _*',
             f'*child_script* {CHILD_SCRIPT_RESULT}*',
             '*parent_script* 100%*',
         ]
@@ -904,7 +904,7 @@ parallel = true
 
     result.stdout.fnmatch_lines(
         [
-            '*- coverage: platform *, python * -*',
+            '*_ coverage: platform *, python * _*',
             f'*child_script* {CHILD_SCRIPT_RESULT}*',
         ]
     )
@@ -930,7 +930,7 @@ parallel = true
     result = testdir.runpytest('-v', '--cov-config=coveragerc', f'--cov={script.dirpath()}', '--cov-branch', script)
     result.stdout.fnmatch_lines(
         [
-            '*- coverage: platform *, python * -*',
+            '*_ coverage: platform *, python * _*',
             'test_central_subprocess_no_subscript* * 3 * 0 * 100%*',
         ]
     )
@@ -948,7 +948,7 @@ def test_dist_subprocess_collocated(testdir):
 
     result.stdout.fnmatch_lines(
         [
-            '*- coverage: platform *, python * -*',
+            '*_ coverage: platform *, python * _*',
             f'child_script* {CHILD_SCRIPT_RESULT}*',
             f'parent_script* {PARENT_SCRIPT_RESULT}*',
         ]
@@ -988,7 +988,7 @@ source =
 
     result.stdout.fnmatch_lines(
         [
-            '*- coverage: platform *, python * -*',
+            '*_ coverage: platform *, python * _*',
             f'child_script* {CHILD_SCRIPT_RESULT}*',
             f'parent_script* {PARENT_SCRIPT_RESULT}*',
         ]
@@ -1061,7 +1061,7 @@ def test_funcarg(testdir):
 
     result = testdir.runpytest('-v', f'--cov={script.dirpath()}', '--cov-report=term-missing', script)
 
-    result.stdout.fnmatch_lines(['*- coverage: platform *, python * -*', 'test_funcarg* 3 * 100%*', '*1 passed*'])
+    result.stdout.fnmatch_lines(['*_ coverage: platform *, python * _*', 'test_funcarg* 3 * 100%*', '*1 passed*'])
     assert result.ret == 0
 
 
@@ -1111,7 +1111,7 @@ if __name__ == "__main__":
 
     result = testdir.runpytest('-vv', f'--cov={script.dirpath()}', '--cov-report=term-missing', script)
 
-    result.stdout.fnmatch_lines(['*- coverage: platform *, python * -*', 'test_cleanup_on_sigterm* 26-27', '*1 passed*'])
+    result.stdout.fnmatch_lines(['*_ coverage: platform *, python * _*', 'test_cleanup_on_sigterm* 26-27', '*1 passed*'])
     assert result.ret == 0
 
 
@@ -1157,7 +1157,7 @@ if __name__ == "__main__":
 
     result = testdir.runpytest('-vv', f'--cov={script.dirpath()}', '--cov-report=term-missing', script)
 
-    result.stdout.fnmatch_lines(['*- coverage: platform *, python * -*', f'test_cleanup_on_sigterm* {setup[1]}', '*1 passed*'])
+    result.stdout.fnmatch_lines(['*_ coverage: platform *, python * _*', f'test_cleanup_on_sigterm* {setup[1]}', '*1 passed*'])
     assert result.ret == 0
 
 
@@ -1201,7 +1201,7 @@ if __name__ == "__main__":
 
     result = testdir.runpytest('-vv', '--assert=plain', f'--cov={script.dirpath()}', '--cov-report=term-missing', script)
 
-    result.stdout.fnmatch_lines(['*- coverage: platform *, python * -*', f'test_cleanup_on_sigterm* {setup[1]}', '*1 passed*'])
+    result.stdout.fnmatch_lines(['*_ coverage: platform *, python * _*', f'test_cleanup_on_sigterm* {setup[1]}', '*1 passed*'])
     assert result.ret == 0
 
 
@@ -1236,7 +1236,7 @@ if __name__ == "__main__":
 
     result = testdir.runpytest('-vv', '--assert=plain', f'--cov={script.dirpath()}', '--cov-report=term-missing', script)
 
-    result.stdout.fnmatch_lines(['*- coverage: platform *, python * -*', 'test_cleanup_on_sigterm* 88%   19-20', '*1 passed*'])
+    result.stdout.fnmatch_lines(['*_ coverage: platform *, python * _*', 'test_cleanup_on_sigterm* 88%   19-20', '*1 passed*'])
     assert result.ret == 0
 
 
@@ -1273,7 +1273,7 @@ if __name__ == "__main__":
 
     result = testdir.runpytest('-vv', '--assert=plain', f'--cov={script.dirpath()}', '--cov-report=term-missing', script)
 
-    result.stdout.fnmatch_lines(['*- coverage: platform *, python * -*', 'test_cleanup_on_sigterm* 89%   22-23', '*1 passed*'])
+    result.stdout.fnmatch_lines(['*_ coverage: platform *, python * _*', 'test_cleanup_on_sigterm* 89%   22-23', '*1 passed*'])
     assert result.ret == 0
 
 
@@ -1505,7 +1505,7 @@ def test_dist_boxed(testdir):
 
     result = testdir.runpytest('-v', '--assert=plain', f'--cov={script.dirpath()}', '--boxed', script)
 
-    result.stdout.fnmatch_lines(['*- coverage: platform *, python * -*', f'test_dist_boxed* {SCRIPT_SIMPLE_RESULT}*', '*1 passed*'])
+    result.stdout.fnmatch_lines(['*_ coverage: platform *, python * _*', f'test_dist_boxed* {SCRIPT_SIMPLE_RESULT}*', '*1 passed*'])
     assert result.ret == 0
 
 
@@ -1516,7 +1516,7 @@ def test_dist_bare_cov(testdir):
 
     result = testdir.runpytest('-v', '--cov', '-n', '1', script)
 
-    result.stdout.fnmatch_lines(['*- coverage: platform *, python * -*', f'test_dist_bare_cov* {SCRIPT_SIMPLE_RESULT}*', '*1 passed*'])
+    result.stdout.fnmatch_lines(['*_ coverage: platform *, python * _*', f'test_dist_bare_cov* {SCRIPT_SIMPLE_RESULT}*', '*1 passed*'])
     assert result.ret == 0
 
 
@@ -1747,7 +1747,7 @@ def test_append_coverage_subprocess(testdir):
 
     result.stdout.fnmatch_lines(
         [
-            '*- coverage: platform *, python * -*',
+            '*_ coverage: platform *, python * _*',
             f'child_script* {CHILD_SCRIPT_RESULT}*',
             f'parent_script* {PARENT_SCRIPT_RESULT}*',
         ]
@@ -1781,7 +1781,7 @@ def test_double_cov(testdir):
     script = testdir.makepyfile(SCRIPT_SIMPLE)
     result = testdir.runpytest('-v', '--assert=plain', '--cov', f'--cov={script.dirpath()}', script)
 
-    result.stdout.fnmatch_lines(['*- coverage: platform *, python * -*', f'test_double_cov* {SCRIPT_SIMPLE_RESULT}*', '*1 passed*'])
+    result.stdout.fnmatch_lines(['*_ coverage: platform *, python * _*', f'test_double_cov* {SCRIPT_SIMPLE_RESULT}*', '*1 passed*'])
     assert result.ret == 0
 
 
@@ -1789,7 +1789,7 @@ def test_double_cov2(testdir):
     script = testdir.makepyfile(SCRIPT_SIMPLE)
     result = testdir.runpytest('-v', '--assert=plain', '--cov', '--cov', script)
 
-    result.stdout.fnmatch_lines(['*- coverage: platform *, python * -*', f'test_double_cov2* {SCRIPT_SIMPLE_RESULT}*', '*1 passed*'])
+    result.stdout.fnmatch_lines(['*_ coverage: platform *, python * _*', f'test_double_cov2* {SCRIPT_SIMPLE_RESULT}*', '*1 passed*'])
     assert result.ret == 0
 
 
@@ -1804,7 +1804,7 @@ def test_cov_reset_then_set(testdir):
     script = testdir.makepyfile(SCRIPT_SIMPLE)
     result = testdir.runpytest('-v', '--assert=plain', f'--cov={script.dirpath()}', '--cov-reset', f'--cov={script.dirpath()}', script)
 
-    result.stdout.fnmatch_lines(['*- coverage: platform *, python * -*', f'test_cov_reset_then_set* {SCRIPT_SIMPLE_RESULT}*', '*1 passed*'])
+    result.stdout.fnmatch_lines(['*_ coverage: platform *, python * _*', f'test_cov_reset_then_set* {SCRIPT_SIMPLE_RESULT}*', '*1 passed*'])
 
 
 @pytest.mark.skipif('sys.platform == "win32" and platform.python_implementation() == "PyPy"')
