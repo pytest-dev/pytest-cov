@@ -155,15 +155,15 @@ class CovController:
 
         # Output coverage section header.
         if len(self.node_descs) == 1:
-            self.sep(stream, '-', f"coverage: {''.join(self.node_descs)}")
+            self.sep(stream, '_', f"coverage: {''.join(self.node_descs)}")
         else:
-            self.sep(stream, '-', 'coverage')
+            self.sep(stream, '_', 'coverage')
             for node_desc in sorted(self.node_descs):
                 self.sep(stream, ' ', f'{node_desc}')
 
         # Report on any failed workers.
         if self.failed_workers:
-            self.sep(stream, '-', 'coverage: failed workers')
+            self.sep(stream, '_', 'coverage: failed workers')
             stream.write('The following workers failed to return coverage data, ensure that pytest-cov is installed on these workers.\n')
             for node in self.failed_workers:
                 stream.write(f'{node.gateway.id}\n')
