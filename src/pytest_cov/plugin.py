@@ -333,6 +333,7 @@ class CovPlugin:
             # it for unit tests that don't need it
             from coverage.misc import CoverageException
 
+            self.cov_controller.sep(self.cov_report, '=', 'coverage report')
             try:
                 self.cov_total = self.cov_controller.summary(self.cov_report)
             except CoverageException as exc:
