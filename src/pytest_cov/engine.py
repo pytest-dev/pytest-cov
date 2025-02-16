@@ -5,6 +5,7 @@ import copy
 import functools
 import os
 import random
+import shutil
 import socket
 import sys
 import warnings
@@ -134,15 +135,36 @@ class CovController:
         return 'platform {}, python {}'.format(platform, '{}.{}.{}-{}-{}'.format(*version_info[:5]))
 
     @staticmethod
-    def sep(stream, s, txt):
+    def get_width():
+        width, _ = shutil.get_terminal_size(fallback=(80, 24))
+        # The Windows get_terminal_size may be bogus, let's sanify a bit.
+        if width < 40:
+            width = 80
+        # The goal is to have the line be as long as possible
+        # under the condition that len(line) <= fullwidth.
+        if sys.platform == 'win32':
+            # If we print in the last column on windows we are on a
+            # new line but there is no way to verify/neutralize this
+            # (we may not know the exact line width).
+            # So let's be defensive to avoid empty lines in the output.
+            width -= 1
+        return width
+
+    def sep(self, stream, s, txt):
         if hasattr(stream, 'sep'):
             stream.sep(s, txt)
         else:
-            sep_total = max((70 - 2 - len(txt)), 2)
-            sep_len = sep_total // 2
-            sep_extra = sep_total % 2
-            out = f'{s * sep_len} {txt} {s * (sep_len + sep_extra)}\n'
-            stream.write(out)
+            fullwidth = self.get_width()
+            N = max((fullwidth - len(txt) - 2) // (2 * len(s)), 1)
+            fill = s * N
+            line = f'{fill} {txt} {fill}'
+            # In some situations there is room for an extra sepchar at the right,
+            # in particular if we consider that with a sepchar like "_ " the
+            # trailing space is not important at the end of the line.
+            if len(line) + len(s.rstrip()) <= fullwidth:
+                line += s.rstrip()
+            line += '\n'
+            stream.write(line)
 
     @_ensure_topdir
     def summary(self, stream):
