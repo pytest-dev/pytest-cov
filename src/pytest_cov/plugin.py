@@ -11,11 +11,6 @@ import pytest
 from coverage.results import display_covered
 from coverage.results import should_fail_under
 
-try:
-    from pytest import TerminalReporter  # noqa: PT013
-except ImportError:
-    from _pytest.terminal import TerminalReporter
-
 from . import CovDisabledWarning
 from . import CovFailUnderWarning
 from . import CovReportWarning
@@ -222,6 +217,7 @@ class CovPlugin:
         self._start_path = None
         self._disabled = False
         self.options = options
+        self.wrote_heading = False
 
         is_dist = getattr(options, 'numprocesses', False) or getattr(options, 'distload', False) or getattr(options, 'dist', 'no') != 'no'
         if getattr(options, 'no_cov', False):
@@ -338,8 +334,6 @@ class CovPlugin:
             # it for unit tests that don't need it
             from coverage.misc import CoverageException
 
-            tr = TerminalReporter(session.config, self.cov_report)
-            tr.write_sep('=', 'coverage report')
             try:
                 self.cov_total = self.cov_controller.summary(self.cov_report)
             except CoverageException as exc:
@@ -363,9 +357,15 @@ class CovPlugin:
                 # make sure we get the EXIT_TESTSFAILED exit code
                 compat_session.testsfailed += 1
 
+    def write_heading(self, terminalreporter):
+        if not self.wrote_heading:
+            terminalreporter.write_sep('=', 'tests coverage')
+            self.wrote_heading = True
+
     def pytest_terminal_summary(self, terminalreporter):
         if self._disabled:
             if self.options.no_cov_should_warn:
+                self.write_heading(terminalreporter)
                 message = 'Coverage disabled via --no-cov switch!'
                 terminalreporter.write(f'WARNING: {message}\n', red=True, bold=True)
                 warnings.warn(CovDisabledWarning(message), stacklevel=1)
@@ -381,9 +381,11 @@ class CovPlugin:
 
         # Avoid undesirable new lines when output is disabled with "--cov-report=".
         if report:
+            self.write_heading(terminalreporter)
             terminalreporter.write('\n' + report + '\n')
 
         if self.options.cov_fail_under is not None and self.options.cov_fail_under > 0:
+            self.write_heading(terminalreporter)
             failed = self.cov_total < self.options.cov_fail_under
             markup = {'red': True, 'bold': True} if failed else {'green': True}
             message = '{fail}Required test coverage of {required}% {reached}. ' 'Total coverage: {actual:.2f}%\n'.format(
