@@ -163,7 +163,7 @@ class CovController:
             # trailing space is not important at the end of the line.
             if len(line) + len(s.rstrip()) <= fullwidth:
                 line += s.rstrip()
-            line += '\n'
+            line += '\n\n'
             stream.write(line)
 
     @_ensure_topdir
