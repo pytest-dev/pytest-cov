@@ -379,10 +379,9 @@ class CovPlugin:
 
         report = self.cov_report.getvalue()
 
-        # Avoid undesirable new lines when output is disabled with "--cov-report=".
         if report:
             self.write_heading(terminalreporter)
-            terminalreporter.write('\n' + report + '\n')
+            terminalreporter.write(report)
 
         if self.options.cov_fail_under is not None and self.options.cov_fail_under > 0:
             self.write_heading(terminalreporter)
