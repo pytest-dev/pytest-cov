@@ -140,14 +140,6 @@ class CovController:
         # The Windows get_terminal_size may be bogus, let's sanify a bit.
         if width < 40:
             width = 80
-        # The goal is to have the line be as long as possible
-        # under the condition that len(line) <= fullwidth.
-        if sys.platform == 'win32':
-            # If we print in the last column on windows we are on a
-            # new line but there is no way to verify/neutralize this
-            # (we may not know the exact line width).
-            # So let's be defensive to avoid empty lines in the output.
-            width -= 1
         return width
 
     def sep(self, stream, s, txt):
@@ -155,6 +147,14 @@ class CovController:
             stream.sep(s, txt)
         else:
             fullwidth = self.get_width()
+            # The goal is to have the line be as long as possible
+            # under the condition that len(line) <= fullwidth.
+            if sys.platform == 'win32':
+                # If we print in the last column on windows we are on a
+                # new line but there is no way to verify/neutralize this
+                # (we may not know the exact line width).
+                # So let's be defensive to avoid empty lines in the output.
+                fullwidth -= 1
             N = max((fullwidth - len(txt) - 2) // (2 * len(s)), 1)
             fill = s * N
             line = f'{fill} {txt} {fill}'
