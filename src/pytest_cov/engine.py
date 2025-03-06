@@ -136,6 +136,7 @@ class CovController:
 
     @staticmethod
     def get_width():
+        # taken from https://github.com/pytest-dev/pytest/blob/33c7b05a/src/_pytest/_io/terminalwriter.py#L26
         width, _ = shutil.get_terminal_size(fallback=(80, 24))
         # The Windows get_terminal_size may be bogus, let's sanify a bit.
         if width < 40:
@@ -147,6 +148,7 @@ class CovController:
             stream.sep(s, txt)
         else:
             fullwidth = self.get_width()
+            # taken from https://github.com/pytest-dev/pytest/blob/33c7b05a/src/_pytest/_io/terminalwriter.py#L126
             # The goal is to have the line be as long as possible
             # under the condition that len(line) <= fullwidth.
             if sys.platform == 'win32':
@@ -163,6 +165,7 @@ class CovController:
             # trailing space is not important at the end of the line.
             if len(line) + len(s.rstrip()) <= fullwidth:
                 line += s.rstrip()
+            # (end of terminalwriter borrowed code)
             line += '\n\n'
             stream.write(line)
 
