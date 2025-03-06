@@ -217,7 +217,7 @@ class CovPlugin:
         self._start_path = None
         self._disabled = False
         self.options = options
-        self.wrote_heading = False
+        self._wrote_heading = False
 
         is_dist = getattr(options, 'numprocesses', False) or getattr(options, 'distload', False) or getattr(options, 'dist', 'no') != 'no'
         if getattr(options, 'no_cov', False):
@@ -358,9 +358,9 @@ class CovPlugin:
                 compat_session.testsfailed += 1
 
     def write_heading(self, terminalreporter):
-        if not self.wrote_heading:
+        if not self._wrote_heading:
             terminalreporter.write_sep('=', 'tests coverage')
-            self.wrote_heading = True
+            self._wrote_heading = True
 
     def pytest_terminal_summary(self, terminalreporter):
         if self._disabled:
