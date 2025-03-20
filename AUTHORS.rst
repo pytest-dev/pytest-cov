@@ -9,7 +9,7 @@ Authors
 * Marc Abramowitz - \http://marc-abramowitz.com
 * Thomas Kluyver - https://github.com/takluyver
 * Guillaume Ayoub - http://www.yabz.fr
-* Federico Ceratto - http://firelet.net
+* Federico Ceratto - \http://firelet.net
 * Josh Kalderimis - \http://blog.cookiestack.com
 * Ionel Cristian Mărieș - https://blog.ionelmc.ro
 * Christian Ledermann - https://github.com/cleder
