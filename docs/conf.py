@@ -39,6 +39,8 @@ html_last_updated_fmt = '%b %d, %Y'
 html_split_index = False
 html_short_title = f'{project}-{version}'
 
+linkcheck_anchors_ignore = ['^issuecomment-']
+
 napoleon_use_ivar = True
 napoleon_use_rtype = False
 napoleon_use_param = False
