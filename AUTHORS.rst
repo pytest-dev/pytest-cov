@@ -62,3 +62,4 @@ Authors
 * Matthew Gamble - https://github.com/mwgamble
 * Christian Clauss - https://github.com/cclauss
 * Dawn James - https://github.com/dawngerpony
+* Tsvika Shapira - https://github.com/tsvikas

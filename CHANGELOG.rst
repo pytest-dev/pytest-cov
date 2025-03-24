@@ -2,6 +2,12 @@
 Changelog
 =========
 
+6.1.0 (2025-03-2?)
+------------------
+
+* Change terminal output to use full width lines for the coverage header.
+  Contributed by Tsvika Shapira in `#678 <https://github.com/pytest-dev/pytest-cov/pull/678>`_.
+
 6.0.0 (2024-10-29)
 ------------------
 
