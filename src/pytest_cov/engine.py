@@ -180,7 +180,7 @@ class CovController:
 
         # Output coverage section header.
         if len(self.node_descs) == 1:
-            self.sep(stream, '_', f"coverage: {''.join(self.node_descs)}")
+            self.sep(stream, '_', f'coverage: {"".join(self.node_descs)}')
         else:
             self.sep(stream, '_', 'coverage')
             for node_desc in sorted(self.node_descs):
@@ -366,7 +366,7 @@ class DistMaster(CovController):
         # If worker is not collocated then we must save the data file
         # that it returns to us.
         if 'cov_worker_data' in output:
-            data_suffix = '%s.%s.%06d.%s' % (
+            data_suffix = '%s.%s.%06d.%s' % (  # noqa: UP031
                 socket.gethostname(),
                 os.getpid(),
                 random.randint(0, 999999),  # noqa: S311

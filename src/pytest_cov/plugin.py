@@ -56,8 +56,7 @@ def validate_fail_under(num_str):
             raise argparse.ArgumentTypeError('An integer or float value is required.') from None
     if value > 100:
         raise argparse.ArgumentTypeError(
-            'Your desire for over-achievement is admirable but misplaced. '
-            'The maximum value is 100. Perhaps write more integration tests?'
+            'Your desire for over-achievement is admirable but misplaced. The maximum value is 100. Perhaps write more integration tests?'
         )
     return value
 
@@ -387,7 +386,7 @@ class CovPlugin:
             self.write_heading(terminalreporter)
             failed = self.cov_total < self.options.cov_fail_under
             markup = {'red': True, 'bold': True} if failed else {'green': True}
-            message = '{fail}Required test coverage of {required}% {reached}. ' 'Total coverage: {actual:.2f}%\n'.format(
+            message = '{fail}Required test coverage of {required}% {reached}. Total coverage: {actual:.2f}%\n'.format(
                 required=self.options.cov_fail_under,
                 actual=self.cov_total,
                 fail='FAIL ' if failed else '',
@@ -434,7 +433,7 @@ class TestContextPlugin:
 
 
 @pytest.fixture
-def no_cover():  # noqa: PT004
+def no_cover():
     """A pytest fixture to disable coverage."""
 
 
