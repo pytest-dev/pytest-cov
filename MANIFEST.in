@@ -15,6 +15,7 @@ include .bumpversion.cfg
 include .cookiecutterrc
 include .coveragerc
 include .editorconfig
+include .git-blame-ignore-revs
 include .pre-commit-config.yaml
 include .readthedocs.yml
 include pytest.ini
