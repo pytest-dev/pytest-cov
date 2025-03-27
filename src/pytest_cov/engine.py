@@ -108,7 +108,17 @@ class CovController:
         if self.cov_source is None:
             os.environ['COV_CORE_SOURCE'] = os.pathsep
         else:
-            os.environ['COV_CORE_SOURCE'] = os.pathsep.join(self.cov_source)
+            os.environ['COV_CORE_SOURCE'] = os.pathsep.join(
+                # We must make the paths absolute to ensure that subprocesses started in different
+                # directories still find the same sources: https://github.com/nedbat/coveragepy/issues/1942.
+                # Unfortunately, coverage.py doesn't provide a mechanism
+                # for unambiguously specifying source_dirs, so we have to detect if a source is
+                # a directory or a package by looking in the filesystem: https://github.com/nedbat/coveragepy/issues/1942.
+                os.path.abspath(source)  # noqa: PTH100 #  see note below for why we're using `os.path.abspath`
+                if Path(source).is_dir()
+                else source
+                for source in self.cov_source
+            )
         config_file = Path(self.cov_config)
         if config_file.exists():
             os.environ['COV_CORE_CONFIG'] = os.fspath(config_file.resolve())
