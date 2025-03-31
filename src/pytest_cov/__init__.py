@@ -27,12 +27,6 @@ class CovReportWarning(PytestCovWarning):
     """
 
 
-class CovFailUnderWarning(PytestCovWarning):
-    """
-    Indicates that we failed to generate a report.
-    """
-
-
 class CentralCovContextWarning(PytestCovWarning):
     """
     Indicates that dynamic_context was set to test_function instead of using the builtin --cov-context.
