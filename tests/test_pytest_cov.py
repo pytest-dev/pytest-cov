@@ -476,6 +476,39 @@ def test_cov_min_float_value_not_reached_cli(testdir):
     result.stdout.fnmatch_lines(['FAIL Required test coverage of 88.89% not reached. Total coverage: 88.89%'])
 
 
+def test_cov_precision(testdir):
+    script = testdir.makepyfile(SCRIPT)
+    result = testdir.runpytest('-v', f'--cov={script.dirpath()}', '--cov-report=term-missing', '--cov-precision=6', script)
+    assert result.ret == 0
+    result.stdout.fnmatch_lines(
+        [
+            'Name                    Stmts   Miss       Cover   Missing',
+            '----------------------------------------------------------',
+            'test_cov_precision.py       9      1  88.888889%   11',
+            '----------------------------------------------------------',
+            'TOTAL                       9      1  88.888889%',
+        ]
+    )
+
+
+def test_cov_precision_from_config(testdir):
+    script = testdir.makepyfile(SCRIPT)
+    testdir.tmpdir.join('pyproject.toml').write("""
+[tool.coverage.report]
+precision = 6""")
+    result = testdir.runpytest('-v', f'--cov={script.dirpath()}', '--cov-report=term-missing', script)
+    assert result.ret == 0
+    result.stdout.fnmatch_lines(
+        [
+            'Name                                Stmts   Miss       Cover   Missing',
+            '----------------------------------------------------------------------',
+            'test_cov_precision_from_config.py       9      1  88.888889%   11',
+            '----------------------------------------------------------------------',
+            'TOTAL                                   9      1  88.888889%',
+        ]
+    )
+
+
 def test_cov_min_no_report(testdir):
     script = testdir.makepyfile(SCRIPT)
 

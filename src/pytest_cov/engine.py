@@ -67,13 +67,16 @@ def _data_suffix(name):
 class CovController:
     """Base class for different plugin implementations."""
 
-    def __init__(self, cov_source, cov_report, cov_config, cov_append, cov_branch, config=None, nodeid=None):
+    cov: coverage.Coverage | None
+
+    def __init__(self, cov_source, cov_report, cov_config, cov_append, cov_branch, cov_precision, config=None, nodeid=None):
         """Get some common config used by multiple derived classes."""
         self.cov_source = cov_source
         self.cov_report = cov_report
         self.cov_config = cov_config
         self.cov_append = cov_append
         self.cov_branch = cov_branch
+        self.cov_precision = cov_precision
         self.config = config
         self.nodeid = nodeid
 
@@ -199,6 +202,7 @@ class CovController:
                 'show_missing': ('term-missing' in self.cov_report) or None,
                 'ignore_errors': True,
                 'file': stream,
+                'precision': self.cov_precision,
             }
             skip_covered = isinstance(self.cov_report, dict) and 'skip-covered' in self.cov_report.values()
             options.update({'skip_covered': skip_covered or None})

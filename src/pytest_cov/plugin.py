@@ -5,6 +5,7 @@ import os
 import warnings
 from io import StringIO
 from pathlib import Path
+from typing import TYPE_CHECKING
 
 import coverage
 import pytest
@@ -15,6 +16,9 @@ from . import CovDisabledWarning
 from . import CovReportWarning
 from . import compat
 from . import embed
+
+if TYPE_CHECKING:
+    from .engine import CovController
 
 
 def validate_report(arg):
@@ -239,7 +243,7 @@ class CovPlugin:
 
         # worker is started in pytest hook
 
-    def start(self, controller_cls, config=None, nodeid=None):
+    def start(self, controller_cls: 'CovController', config=None, nodeid=None):
         if config is None:
             # fake config option for engine
             class Config:
@@ -253,6 +257,7 @@ class CovPlugin:
             self.options.cov_config,
             self.options.cov_append,
             self.options.cov_branch,
+            self.options.cov_precision,
             config,
             nodeid,
         )
