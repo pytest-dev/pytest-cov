@@ -12,7 +12,6 @@ from coverage.results import display_covered
 from coverage.results import should_fail_under
 
 from . import CovDisabledWarning
-from . import CovFailUnderWarning
 from . import CovReportWarning
 from . import compat
 from . import embed
@@ -352,7 +351,6 @@ class CovPlugin:
                     p=cov_precision,
                 )
                 session.config.pluginmanager.getplugin('terminalreporter').write(f'\nERROR: {message}\n', red=True, bold=True)
-                warnings.warn(CovFailUnderWarning(message), stacklevel=1)
                 # make sure we get the EXIT_TESTSFAILED exit code
                 compat_session.testsfailed += 1
 
