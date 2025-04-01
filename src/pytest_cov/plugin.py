@@ -201,7 +201,7 @@ class CovPlugin:
     distributed worker.
     """
 
-    def __init__(self, options, pluginmanager, start=True, no_cov_should_warn=False):
+    def __init__(self, options: argparse.Namespace, pluginmanager, start=True, no_cov_should_warn=False):
         """Creates a coverage pytest plugin.
 
         We read the rc file that coverage uses to get the data file
@@ -243,7 +243,7 @@ class CovPlugin:
 
         # worker is started in pytest hook
 
-    def start(self, controller_cls: 'CovController', config=None, nodeid=None):
+    def start(self, controller_cls: type['CovController'], config=None, nodeid=None):
         if config is None:
             # fake config option for engine
             class Config:
@@ -251,16 +251,7 @@ class CovPlugin:
 
             config = Config()
 
-        self.cov_controller = controller_cls(
-            self.options.cov_source,
-            self.options.cov_report,
-            self.options.cov_config,
-            self.options.cov_append,
-            self.options.cov_branch,
-            self.options.cov_precision,
-            config,
-            nodeid,
-        )
+        self.cov_controller = controller_cls(self.options, config, nodeid)
         self.cov_controller.start()
         self._started = True
         self._start_path = Path.cwd()

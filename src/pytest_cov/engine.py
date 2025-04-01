@@ -1,5 +1,6 @@
 """Coverage controllers for use by pytest-cov and nose-cov."""
 
+import argparse
 import contextlib
 import copy
 import functools
@@ -11,6 +12,7 @@ import sys
 import warnings
 from io import StringIO
 from pathlib import Path
+from typing import Union
 
 import coverage
 from coverage.data import CoverageData
@@ -67,16 +69,14 @@ def _data_suffix(name):
 class CovController:
     """Base class for different plugin implementations."""
 
-    cov: coverage.Coverage | None
-
-    def __init__(self, cov_source, cov_report, cov_config, cov_append, cov_branch, cov_precision, config=None, nodeid=None):
+    def __init__(self, options: argparse.Namespace, config: Union[None, object], nodeid: Union[None, str]):
         """Get some common config used by multiple derived classes."""
-        self.cov_source = cov_source
-        self.cov_report = cov_report
-        self.cov_config = cov_config
-        self.cov_append = cov_append
-        self.cov_branch = cov_branch
-        self.cov_precision = cov_precision
+        self.cov_source = options.cov_source
+        self.cov_report = options.cov_report
+        self.cov_config = options.cov_config
+        self.cov_append = options.cov_append
+        self.cov_branch = options.cov_branch
+        self.cov_precision = options.cov_precision
         self.config = config
         self.nodeid = nodeid
 
