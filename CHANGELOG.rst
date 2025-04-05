@@ -2,6 +2,11 @@
 Changelog
 =========
 
+6.1.1 (2025-04-05)
+------------------
+
+* Fixed breakage that occurs when ``--cov-context`` and the ``no_cover`` marker are used together.
+
 6.1.0 (2025-04-01)
 ------------------
 
