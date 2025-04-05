@@ -105,6 +105,11 @@ Would produce a report like::
     ----------------------------------------
     TOTAL                  353     20    94%
 
+Where, 
+* `Stmts` refers to the number of statements in your code.
+* `Miss` refers to the number of statements that have not been run.
+* `Cover` is test coverage, or `(Stmts - Miss) / (Stmts) * 100`.
+
 Documentation
 =============
 
