@@ -1942,6 +1942,36 @@ def test_contexts_not_supported(testdir):
     assert result.ret != 0
 
 
+def test_contexts_no_cover(testdir):
+    script = testdir.makepyfile("""
+import pytest
+
+def foobar():
+    return 1
+
+def test_with_coverage():
+    foobar()
+
+@pytest.mark.no_cover()
+def test_without_coverage():
+    foobar()
+""")
+    result = testdir.runpytest(
+        '-v',
+        '--cov-context=test',
+        '--cov=test_contexts_no_cover',
+        script,
+    )
+    result.stdout.fnmatch_lines(
+        [
+            'test_contexts_no_cover.py       8      1    88%',
+            'TOTAL                           8      1    88%',
+        ]
+    )
+    assert result.stderr.lines == []
+    assert result.ret == 0
+
+
 def test_issue_417(testdir):
     # https://github.com/pytest-dev/pytest-cov/issues/417
     whatever = testdir.maketxtfile(whatever='')
