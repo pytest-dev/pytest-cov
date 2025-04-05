@@ -87,6 +87,7 @@ class CovController:
         self.failed_workers = []
         self.topdir = os.fspath(Path.cwd())
         self.is_collocated = None
+        self.started = False
 
     @contextlib.contextmanager
     def ensure_topdir(self):
@@ -97,6 +98,7 @@ class CovController:
 
     @_ensure_topdir
     def pause(self):
+        self.started = False
         self.cov.stop()
         self.unset_env()
 
@@ -104,6 +106,13 @@ class CovController:
     def resume(self):
         self.cov.start()
         self.set_env()
+        self.started = True
+
+    def start(self):
+        self.started = True
+
+    def finish(self):
+        self.started = False
 
     @_ensure_topdir
     def set_env(self):
@@ -295,9 +304,12 @@ class Central(CovController):
         self.cov.start()
         self.set_env()
 
+        super().start()
+
     @_ensure_topdir
     def finish(self):
         """Stop coverage, save data to file and set the list of coverage objects to report on."""
+        super().finish()
 
         self.unset_env()
         self.cov.stop()
@@ -440,10 +452,13 @@ class DistWorker(CovController):
         )
         self.cov.start()
         self.set_env()
+        super().start()
 
     @_ensure_topdir
     def finish(self):
         """Stop coverage and send relevant info back to the master."""
+        super().finish()
+
         self.unset_env()
         self.cov.stop()
 

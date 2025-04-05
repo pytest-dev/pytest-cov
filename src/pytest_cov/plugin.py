@@ -284,7 +284,7 @@ class CovPlugin:
             self.start(engine.Central)
 
         if self.options.cov_context == 'test':
-            session.config.pluginmanager.register(TestContextPlugin(self.cov_controller.cov), '_cov_contexts')
+            session.config.pluginmanager.register(TestContextPlugin(self.cov_controller), '_cov_contexts')
 
     @pytest.hookimpl(optionalhook=True)
     def pytest_configure_node(self, node):
@@ -408,8 +408,10 @@ class CovPlugin:
 
 
 class TestContextPlugin:
-    def __init__(self, cov):
-        self.cov = cov
+    cov_controller: 'CovController'
+
+    def __init__(self, cov_controller):
+        self.cov_controller = cov_controller
 
     def pytest_runtest_setup(self, item):
         self.switch_context(item, 'setup')
@@ -421,9 +423,10 @@ class TestContextPlugin:
         self.switch_context(item, 'run')
 
     def switch_context(self, item, when):
-        context = f'{item.nodeid}|{when}'
-        self.cov.switch_context(context)
-        os.environ['COV_CORE_CONTEXT'] = context
+        if self.cov_controller.started:
+            context = f'{item.nodeid}|{when}'
+            self.cov_controller.cov.switch_context(context)
+            os.environ['COV_CORE_CONTEXT'] = context
 
 
 @pytest.fixture
