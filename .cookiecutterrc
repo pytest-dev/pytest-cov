@@ -40,7 +40,7 @@ default_context:
     sphinx_doctest: 'no'
     sphinx_theme: sphinx-py3doc-enhanced-theme
     test_matrix_separate_coverage: 'no'
-    version: 6.1.0
+    version: 6.1.1
     version_manager: bump2version
     website: http://blog.ionelmc.ro
     year_from: '2010'
