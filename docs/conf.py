@@ -31,7 +31,9 @@ extlinks = {
 }
 html_theme = 'furo'
 html_theme_options = {
-    'githuburl': 'https://github.com/pytest-dev/pytest-cov/',
+    'source_repository': 'https://github.com/pytest-dev/pytest-cov/',
+    'source_branch': 'master',
+    'source_directory': 'docs/',
 }
 
 html_use_smartypants = True
