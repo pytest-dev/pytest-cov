@@ -1343,6 +1343,30 @@ def test_cover_conftest(testdir):
     result.stdout.fnmatch_lines([CONF_RESULT])
 
 
+def test_filterwarnings_error(testdir):
+    testdir.makeini(r"""
+    [pytest]
+    filterwarnings =
+        error
+    # to make this pass add this:
+    #    once::coverage.exceptions.CoverageWarning
+    #    once::pytest_cov.CovReportWarning
+    """)
+    testdir.makepyfile(mod=MODULE)
+    testdir.makepyfile(plug=CONFTEST)
+    script = testdir.makepyfile(BASIC_TEST)
+    result = testdir.runpytest('-v', '--cov=mod', '--cov-report=term-missing', '-p', 'plug', script)
+    assert result.ret == 0
+    result.stdout.fnmatch_lines(['* 1 passed *'])
+    result.stderr.fnmatch_lines(
+        [
+            '* (module-not-measured)',
+            '* (no-data-collected)',
+            '* CovReportWarning: Failed to generate report: No data to report.',
+        ]
+    )
+
+
 @pytest.mark.skipif('sys.platform == "win32" and platform.python_implementation() == "PyPy"')
 def test_cover_looponfail(testdir, monkeypatch):
     testdir.makepyfile(mod=MODULE)
