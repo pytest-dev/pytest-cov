@@ -450,6 +450,7 @@ class DistWorker(CovController):
             data_suffix=_data_suffix(f'w{self.nodeid}'),
             config_file=self.cov_config,
         )
+        self.cov._warn_unimported_source = False
         self.cov.start()
         self.set_env()
         super().start()
