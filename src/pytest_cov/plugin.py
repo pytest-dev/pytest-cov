@@ -9,11 +9,13 @@ from typing import TYPE_CHECKING
 
 import coverage
 import pytest
+from coverage.exceptions import CoverageWarning
 from coverage.results import display_covered
 from coverage.results import should_fail_under
 
 from . import CovDisabledWarning
 from . import CovReportWarning
+from . import PytestCovWarning
 from . import compat
 from . import embed
 
@@ -312,6 +314,11 @@ class CovPlugin:
     # runs, it's too late to set testsfailed
     @pytest.hookimpl(hookwrapper=True)
     def pytest_runtestloop(self, session):
+        # override some warning configuration to prevent certain warnings to bubble up as errors due to rigid filterwarnings configuration
+        warnings.filterwarnings('default', 'unclosed database in <sqlite3.Connection object at', ResourceWarning)
+        warnings.simplefilter('once', PytestCovWarning)
+        warnings.simplefilter('once', CoverageWarning)
+
         yield
 
         if self._disabled:
