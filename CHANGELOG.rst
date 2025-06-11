@@ -13,6 +13,20 @@ Changelog
 
   This fixes most of the bad interactions that are occurring on pytest 8.4 with ``filterwarnings=error``.
 
+  The plugin will check if there already matching rules for the 3 categories
+  (``ResourceWarning``, ``PytestCovWarning``, ``CoverageWarning``) and message (``unclosed database in <sqlite3.Connection object at``) before adding the filters.
+
+  This means you can have this in your pytest configuration for complete oblivion (not recommended, if that is not clear)::
+
+    filterwarnings = [
+        "error",
+        "ignore:unclosed database in <sqlite3.Connection object at:ResourceWarning",
+        "ignore::PytestCovWarning",
+        "ignore::CoverageWarning",
+    ]
+
+
+
 6.1.1 (2025-04-05)
 ------------------
 
