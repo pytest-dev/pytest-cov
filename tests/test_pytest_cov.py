@@ -1348,8 +1348,6 @@ def test_filterwarnings_error(testdir):
     [pytest]
     filterwarnings =
         error
-        once::coverage.exceptions.CoverageWarning
-        once::pytest_cov.PytestCovWarning
     """)
     testdir.makepyfile(mod=MODULE)
     testdir.makepyfile(plug=CONFTEST)
