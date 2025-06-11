@@ -315,9 +315,12 @@ class CovPlugin:
 
     # we need to wrap pytest_runtestloop. by the time pytest_sessionfinish
     # runs, it's too late to set testsfailed
-    @pytest.hookimpl(hookwrapper=True)
+    @pytest.hookimpl(wrapper=True)
     def pytest_runtestloop(self, session):
-        # override some warning configuration to prevent certain warnings to bubble up as errors due to rigid filterwarnings configuration
+        if self._disabled:
+            return (yield)
+
+        # we add default warning configuration to prevent certain warnings to bubble up as errors due to rigid filterwarnings configuration
         for _, message, category, _, _ in warnings.filters:
             if category is ResourceWarning and message == COVERAGE_SQLITE_WARNING_RE:
                 break
@@ -334,10 +337,7 @@ class CovPlugin:
         else:
             warnings.simplefilter('once', CoverageWarning)
 
-        yield
-
-        if self._disabled:
-            return
+        result = yield
 
         compat_session = compat.SessionWrapper(session)
 
@@ -371,6 +371,8 @@ class CovPlugin:
                 session.config.pluginmanager.getplugin('terminalreporter').write(f'\nERROR: {message}\n', red=True, bold=True)
                 # make sure we get the EXIT_TESTSFAILED exit code
                 compat_session.testsfailed += 1
+
+        return result
 
     def write_heading(self, terminalreporter):
         if not self._wrote_heading:
