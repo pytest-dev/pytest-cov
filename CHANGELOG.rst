@@ -2,6 +2,17 @@
 Changelog
 =========
 
+6.2.0 (2025-06-11)
+------------------
+
+* The plugin now adds 3 rules in the filter warnings configuration to prevent common coverage warnings being raised as obscure errors::
+
+    default:unclosed database in <sqlite3.Connection object at:ResourceWarning
+    once::PytestCovWarning
+    once::CoverageWarning
+
+  This fixes most of the bad interactions that are occurring on pytest 8.4 with ``filterwarnings=error``.
+
 6.1.1 (2025-04-05)
 ------------------
 
