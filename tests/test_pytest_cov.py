@@ -1352,7 +1352,7 @@ def test_filterwarnings_error(testdir):
     testdir.makepyfile(mod=MODULE)
     testdir.makepyfile(plug=CONFTEST)
     script = testdir.makepyfile(BASIC_TEST)
-    result = testdir.runpytest('-v', '--cov=mod', '--cov-report=term-missing', '-p', 'plug', script)
+    result = testdir.runpytest('-v', '--cov=mod', '--cov-report=xml', '--cov-report=term-missing', '-p', 'plug', script)
     assert result.ret == 0
     result.stdout.fnmatch_lines(['* 1 passed *'])
     result.stderr.fnmatch_lines(
