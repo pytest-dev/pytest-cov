@@ -2,6 +2,7 @@
 
 import argparse
 import os
+import re
 import warnings
 from io import StringIO
 from pathlib import Path
@@ -21,6 +22,8 @@ from . import embed
 
 if TYPE_CHECKING:
     from .engine import CovController
+
+COVERAGE_SQLITE_WARNING_RE = re.compile('unclosed database in <sqlite3.Connection object at', re.I)
 
 
 def validate_report(arg):
@@ -315,9 +318,21 @@ class CovPlugin:
     @pytest.hookimpl(hookwrapper=True)
     def pytest_runtestloop(self, session):
         # override some warning configuration to prevent certain warnings to bubble up as errors due to rigid filterwarnings configuration
-        warnings.filterwarnings('default', 'unclosed database in <sqlite3.Connection object at', ResourceWarning)
-        warnings.simplefilter('once', PytestCovWarning)
-        warnings.simplefilter('once', CoverageWarning)
+        for _, message, category, _, _ in warnings.filters:
+            if category is ResourceWarning and message == COVERAGE_SQLITE_WARNING_RE:
+                break
+        else:
+            warnings.filterwarnings('default', 'unclosed database in <sqlite3.Connection object at', ResourceWarning)
+        for _, _, category, _, _ in warnings.filters:
+            if category is PytestCovWarning:
+                break
+        else:
+            warnings.simplefilter('once', PytestCovWarning)
+        for _, _, category, _, _ in warnings.filters:
+            if category is CoverageWarning:
+                break
+        else:
+            warnings.simplefilter('once', CoverageWarning)
 
         yield
 
