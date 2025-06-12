@@ -450,6 +450,7 @@ class DistWorker(CovController):
             data_suffix=_data_suffix(f'w{self.nodeid}'),
             config_file=self.cov_config,
         )
+        # Prevent workers from issuing module-not-measured type of warnings (expected for a workers to not have coverage in all the files).
         self.cov._warn_unimported_source = False
         self.cov.start()
         self.set_env()
