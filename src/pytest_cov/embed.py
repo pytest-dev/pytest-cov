@@ -61,6 +61,7 @@ def init():
             cov.switch_context(cov_context)
         cov._warn_no_data = False
         cov._warn_unimported_source = False
+        cov._warn_preimported_source = False
         return cov
 
 
