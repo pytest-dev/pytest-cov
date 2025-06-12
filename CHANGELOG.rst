@@ -8,6 +8,10 @@ Changelog
 
 * Added a version requirement for pytest's pluggy dependency (1.2.0, released 2023-06-21) that has the required new-style hookwrapper API.
 * Removed deprecated license classifier (packaging).
+* Disabled coverage warnings in two more situations where they have no value:
+
+  * "module-not-measured" in workers
+  * "already-imported" in subprocesses
 
 6.2.0 (2025-06-11)
 ------------------
