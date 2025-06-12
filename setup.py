@@ -124,8 +124,9 @@ setup(
     ],
     python_requires='>=3.9',
     install_requires=[
-        'pytest>=4.6',
+        'pytest>=6.2.5',
         'coverage[toml]>=7.5',
+        'pluggy>=1.2',
     ],
     extras_require={
         'testing': [
