@@ -49,7 +49,7 @@ The terminal report with skip covered::
 
 You can use ``skip-covered`` with ``term-missing`` as well. e.g. ``--cov-report term-missing:skip-covered``
 
-These four report options output to files without showing anything on the terminal::
+These report options output to files without showing anything on the terminal::
 
     pytest --cov-report html
             --cov-report xml
