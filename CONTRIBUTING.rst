@@ -10,9 +10,9 @@ Bug reports
 
 When `reporting a bug <https://github.com/pytest-dev/pytest-cov/issues>`_ please include:
 
-    * Your operating system name and version.
-    * Any details about your local setup that might be helpful in troubleshooting.
-    * Detailed steps to reproduce the bug.
+* Your operating system name and version.
+* Any details about your local setup that might be helpful in troubleshooting.
+* Detailed steps to reproduce the bug.
 
 Documentation improvements
 ==========================
