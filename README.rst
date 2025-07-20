@@ -108,7 +108,7 @@ Would produce a report like::
 Documentation
 =============
 
-    https://pytest-cov.readthedocs.io/en/latest/
+https://pytest-cov.readthedocs.io/en/latest/
 
 
 
