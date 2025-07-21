@@ -48,14 +48,14 @@ Or for ``pyproject.toml``: ::
 Caveats
 =======
 
-A unfortunate consequence of coverage.py's history is that ``.coveragerc`` is a magic name: it's the default file but it also
+An unfortunate consequence of coverage.py's history is that ``.coveragerc`` is a magic name: it's the default file but it also
 means "try to also lookup coverage configuration in ``tox.ini`` or ``setup.cfg``".
 
 In practical terms this means that if you have multiple configuration files around (``tox.ini``, ``pyproject.toml`` or ``setup.cfg``) you
 might need to use ``--cov-config`` to make coverage use the correct configuration file.
 
 Also, if you change the working directory and also use subprocesses in a test you might also need to use ``--cov-config`` to make pytest-cov
-will use the expected configuration file in the subprocess.
+use the expected configuration file in the subprocess.
 
 Reference
 =========
