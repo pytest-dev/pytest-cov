@@ -16,7 +16,7 @@ jobs:
           - {python-version: "pypy-3.9", tox-python-version: "pypy3"}
           - {python-version: "3.11", tox-python-version: "py311"}
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
 
       - name: Set up Python ${{ matrix.python-version }}
         uses: actions/setup-python@v5
@@ -565,7 +565,7 @@ jobs:
             tox_env: 'pypy310-pytest84-xdist37-coverage78'
             os: 'macos-latest'
     steps:
-    - uses: actions/checkout@v4
+    - uses: actions/checkout@v5
       with:
         fetch-depth: 0
     - uses: actions/setup-python@v5
