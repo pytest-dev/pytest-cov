@@ -28,7 +28,7 @@ COVERAGE_SQLITE_WARNING_RE = re.compile('unclosed database in <sqlite3.Connectio
 
 def validate_report(arg):
     file_choices = ['annotate', 'html', 'xml', 'json', 'lcov']
-    term_choices = ['term', 'term-missing']
+    term_choices = ['term', 'term-missing', 'markdown', 'markdown-missing']
     term_modifier_choices = ['skip-covered']
     all_choices = term_choices + file_choices
     values = arg.split(':', 1)
@@ -111,9 +111,9 @@ def pytest_addoption(parser):
         default={},
         metavar='TYPE',
         type=validate_report,
-        help='Type of report to generate: term, term-missing, '
+        help='Type of report to generate: term, term-missing, markdown, markdown-missing, '
         'annotate, html, xml, json, lcov (multi-allowed). '
-        'term, term-missing may be followed by ":skip-covered". '
+        'term, term-missing, markdown and markdown-missing may be followed by ":skip-covered". '
         'annotate, html, xml, json and lcov may be followed by ":DEST" '
         'where DEST specifies the output location. '
         'Use --cov-report= to not generate any output.',
