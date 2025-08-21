@@ -206,7 +206,7 @@ class CovController:
                 stream.write(f'{node.gateway.id}\n')
 
         # Produce terminal or markdown report if wanted.
-        if any(x in self.cov_report for x in ['term', 'term-missing']):
+        if any(x in self.cov_report for x in ['term', 'term-missing', 'markdown', 'markdown-missing']):
             show_missing = 'term-missing' in self.cov_report or 'markdown-missing' in self.cov_report or None
             output_format = 'markdown' if ('markdown' in self.cov_report or 'markdown-missing' in self.cov_report) else None
             options = {
