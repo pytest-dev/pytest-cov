@@ -255,6 +255,15 @@ class CovController:
                 total = self.cov.json_report(ignore_errors=True, outfile=output)
             stream.write('Coverage JSON written to file %s\n' % (self.cov.config.json_output if output is None else output))
 
+        # Produce markdown report if wanted
+        if 'markdown' in self.cov_report:
+            output = self.cov_report['markdown'] or 'coverage.md'
+            with _backup(self.cov, 'config'):
+                # TODO: open either in 'w' mode or 'a' mode depending of flags
+                with Path.open(output, 'w') as output_file:
+                    total = self.cov.report(ignore_errors=True, file=output_file, output_format='markdown')
+            stream.write(f'Coverage markdown written to file {output}\n')
+
         # Produce lcov report if wanted.
         if 'lcov' in self.cov_report:
             output = self.cov_report['lcov']
