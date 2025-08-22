@@ -3,7 +3,7 @@ Reporting
 
 It is possible to generate any combination of the reports for a single test run.
 
-The available reports are terminal (with or without missing line numbers shown), HTML, XML, JSON, LCOV and
+The available reports are terminal (with or without missing line numbers shown), HTML, XML, JSON, MARKDOWN (either in 'write' or 'append' mode to file), LCOV and
 annotated source code.
 
 The terminal report without line numbers (default)::
@@ -49,22 +49,26 @@ The terminal report with skip covered::
 
 You can use ``skip-covered`` with ``term-missing`` as well. e.g. ``--cov-report term-missing:skip-covered``
 
-These four report options output to files without showing anything on the terminal::
+These seven report options output to files without showing anything on the terminal::
 
     pytest --cov-report html
             --cov-report xml
             --cov-report json
+            --cov-report markdown
+            --cov-report markdown-append
             --cov-report lcov
             --cov-report annotate
             --cov=myproj tests/
 
-The output location for each of these reports can be specified. The output location for the XML, JSON and LCOV
+The output location for each of these reports can be specified. The output location for the XML, JSON, MARKDOWN and LCOV
 report is a file. Where as the output location for the HTML and annotated source code reports are
 directories::
 
     pytest --cov-report html:cov_html
             --cov-report xml:cov.xml
             --cov-report json:cov.json
+            --cov-report markdown:cov.md
+            --cov-report markdown-append:cov.md
             --cov-report lcov:cov.info
             --cov-report annotate:cov_annotate
             --cov=myproj tests/
