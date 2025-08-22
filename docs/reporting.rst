@@ -68,7 +68,7 @@ directories::
             --cov-report xml:cov.xml
             --cov-report json:cov.json
             --cov-report markdown:cov.md
-            --cov-report markdown-append:cov.md
+            --cov-report markdown-append:cov-append.md
             --cov-report lcov:cov.info
             --cov-report annotate:cov_annotate
             --cov=myproj tests/
