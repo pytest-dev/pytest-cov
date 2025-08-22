@@ -148,6 +148,8 @@ PARENT_SCRIPT_RESULT = '9 * 100%'
 DEST_DIR = 'cov_dest'
 XML_REPORT_NAME = 'cov.xml'
 JSON_REPORT_NAME = 'cov.json'
+MARKDOWN_REPORT_NAME = 'cov.md'
+MARKDOWN_APPEND_REPORT_NAME = 'cov-append.md'
 LCOV_REPORT_NAME = 'cov.info'
 
 xdist_params = pytest.mark.parametrize(
@@ -357,6 +359,61 @@ def test_json_output_dir(testdir):
         ]
     )
     assert testdir.tmpdir.join(JSON_REPORT_NAME).check()
+    assert result.ret == 0
+
+
+def test_markdown_output_dir(testdir):
+    script = testdir.makepyfile(SCRIPT)
+
+    result = testdir.runpytest('-v', '--cov=%s' % script.dirpath(), '--cov-report=markdown:' + MARKDOWN_REPORT_NAME, script)
+
+    result.stdout.fnmatch_lines(
+        [
+            '*_ coverage: platform *, python * _*',
+            'Coverage Markdown information written to file ' + MARKDOWN_REPORT_NAME,
+            '*10 passed*',
+        ]
+    )
+    assert testdir.tmpdir.join(MARKDOWN_REPORT_NAME).check()
+    assert result.ret == 0
+
+
+def test_markdown_append_output_dir(testdir):
+    script = testdir.makepyfile(SCRIPT)
+
+    result = testdir.runpytest('-v', '--cov=%s' % script.dirpath(), '--cov-report=markdown-append:' + MARKDOWN_APPEND_REPORT_NAME, script)
+
+    result.stdout.fnmatch_lines(
+        [
+            '*_ coverage: platform *, python * _*',
+            'Coverage Markdown information appended to file ' + MARKDOWN_APPEND_REPORT_NAME,
+            '*10 passed*',
+        ]
+    )
+    assert testdir.tmpdir.join(MARKDOWN_APPEND_REPORT_NAME).check()
+    assert result.ret == 0
+
+
+def test_markdown_and_markdown_append_work_together(testdir):
+    script = testdir.makepyfile(SCRIPT)
+
+    result = testdir.runpytest(
+        '-v',
+        '--cov=%s' % script.dirpath(),
+        '--cov-report=markdown:' + MARKDOWN_REPORT_NAME,
+        '--cov-report=markdown-append:' + MARKDOWN_APPEND_REPORT_NAME,
+        script,
+    )
+
+    result.stdout.fnmatch_lines(
+        [
+            '*_ coverage: platform *, python * _*',
+            'Coverage Markdown information written to file ' + MARKDOWN_REPORT_NAME,
+            'Coverage Markdown information appended to file ' + MARKDOWN_APPEND_REPORT_NAME,
+            '*10 passed*',
+        ]
+    )
+    assert testdir.tmpdir.join(MARKDOWN_APPEND_REPORT_NAME).check()
     assert result.ret == 0
 
 
