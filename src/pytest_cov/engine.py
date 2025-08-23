@@ -259,7 +259,7 @@ class CovController:
         if 'markdown' in self.cov_report:
             output = self.cov_report['markdown'] or 'coverage.md'
             with _backup(self.cov, 'config'):
-                with Path.open(output, 'w') as output_file:
+                with Path(output).open('w') as output_file:
                     total = self.cov.report(ignore_errors=True, file=output_file, output_format='markdown')
             stream.write(f'Coverage Markdown information written to file {output}\n')
 
@@ -267,7 +267,7 @@ class CovController:
         if 'markdown-append' in self.cov_report:
             output = self.cov_report['markdown-append'] or 'coverage-append.md'
             with _backup(self.cov, 'config'):
-                with Path.open(output, 'a') as output_file:
+                with Path(output).open('a') as output_file:
                     total = self.cov.report(ignore_errors=True, file=output_file, output_format='markdown')
             stream.write(f'Coverage Markdown information appended to file {output}\n')
 
