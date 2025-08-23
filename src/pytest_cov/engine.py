@@ -16,6 +16,7 @@ from typing import Union
 
 import coverage
 from coverage.data import CoverageData
+from coverage.misc import CoverageException
 from coverage.sqldata import filename_suffix
 
 from . import CentralCovContextWarning
@@ -255,6 +256,15 @@ class CovController:
                 total = self.cov.json_report(ignore_errors=True, outfile=output)
             stream.write('Coverage JSON written to file %s\n' % (self.cov.config.json_output if output is None else output))
 
+        # Check that markdown and markdown-append don't point to same file
+        if all(x in self.cov_report for x in ['markdown', 'markdown-append']):
+            markdown_file = self.cov_report['markdown'] or 'coverage.md'
+            markdown_append_file = self.cov_report['markdown-append'] or 'coverage.md'
+            if markdown_file == markdown_append_file:
+                error_message = f"markdown and markdown-append options cannot point to the same file: '{markdown_file}'."
+                error_message += ' Please redirect one of them using :DEST (e.g. --cov-report=markdown:dest_file.md)'
+                raise CoverageException(error_message)
+
         # Produce Markdown report if wanted.
         if 'markdown' in self.cov_report:
             output = self.cov_report['markdown'] or 'coverage.md'
@@ -265,7 +275,7 @@ class CovController:
 
         # Produce Markdown report if wanted, appending to output file
         if 'markdown-append' in self.cov_report:
-            output = self.cov_report['markdown-append'] or 'coverage-append.md'
+            output = self.cov_report['markdown-append'] or 'coverage.md'
             with _backup(self.cov, 'config'):
                 with Path(output).open('a') as output_file:
                     total = self.cov.report(ignore_errors=True, file=output_file, output_format='markdown')
