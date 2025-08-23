@@ -417,6 +417,21 @@ def test_markdown_and_markdown_append_work_together(testdir):
     assert result.ret == 0
 
 
+def test_markdown_and_markdown_append_pointing_to_same_file_throws_warning(testdir):
+    script = testdir.makepyfile(SCRIPT)
+
+    result = testdir.runpytest(
+        '-v',
+        '--cov=%s' % script.dirpath(),
+        '--cov-report=markdown:' + MARKDOWN_REPORT_NAME,
+        '--cov-report=markdown-append:' + MARKDOWN_REPORT_NAME,
+        script,
+    )
+
+    result.stdout.fnmatch_lines(['*WARNING: Failed to generate report: *', '*_ coverage: platform *, python * _*'])
+    assert result.ret == 0
+
+
 @pytest.mark.skipif('coverage.version_info < (6, 3)')
 def test_lcov_output_dir(testdir):
     script = testdir.makepyfile(SCRIPT)
