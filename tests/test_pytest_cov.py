@@ -417,7 +417,7 @@ def test_markdown_and_markdown_append_work_together(testdir):
     assert result.ret == 0
 
 
-def test_markdown_and_markdown_append_pointing_to_same_file_throws_warning(testdir):
+def test_markdown_and_markdown_append_pointing_to_same_file_throws_error(testdir):
     script = testdir.makepyfile(SCRIPT)
 
     result = testdir.runpytest(
@@ -428,8 +428,8 @@ def test_markdown_and_markdown_append_pointing_to_same_file_throws_warning(testd
         script,
     )
 
-    result.stdout.fnmatch_lines(['*WARNING: Failed to generate report: *', '*_ coverage: platform *, python * _*'])
-    assert result.ret == 0
+    result.stderr.fnmatch_lines(['* error: markdown and markdown-append options cannot point to the same file*'])
+    assert result.ret == 4
 
 
 @pytest.mark.skipif('coverage.version_info < (6, 3)')
