@@ -27,7 +27,7 @@ COVERAGE_SQLITE_WARNING_RE = re.compile('unclosed database in <sqlite3.Connectio
 
 
 def validate_report(arg):
-    file_choices = ['annotate', 'html', 'xml', 'json', 'lcov']
+    file_choices = ['annotate', 'html', 'xml', 'json', 'markdown', 'markdown-append', 'lcov']
     term_choices = ['term', 'term-missing']
     term_modifier_choices = ['skip-covered']
     all_choices = term_choices + file_choices
@@ -82,6 +82,20 @@ class StoreReport(argparse.Action):
         report_type, file = values
         namespace.cov_report[report_type] = file
 
+        # coverage.py doesn't set a default file for markdown output_format
+        if report_type in ['markdown', 'markdown-append'] and file is None:
+            namespace.cov_report[report_type] = 'coverage.md'
+        if all(x in namespace.cov_report for x in ['markdown', 'markdown-append']):
+            self._validate_markdown_dest_files(namespace.cov_report, parser)
+
+    def _validate_markdown_dest_files(self, cov_report_options, parser):
+        markdown_file = cov_report_options['markdown']
+        markdown_append_file = cov_report_options['markdown-append']
+        if markdown_file == markdown_append_file:
+            error_message = f"markdown and markdown-append options cannot point to the same file: '{markdown_file}'."
+            error_message += ' Please redirect one of them using :DEST (e.g. --cov-report=markdown:dest_file.md)'
+            parser.error(error_message)
+
 
 def pytest_addoption(parser):
     """Add options to control coverage."""
@@ -112,9 +126,9 @@ def pytest_addoption(parser):
         metavar='TYPE',
         type=validate_report,
         help='Type of report to generate: term, term-missing, '
-        'annotate, html, xml, json, lcov (multi-allowed). '
+        'annotate, html, xml, json, markdown, markdown-append, lcov (multi-allowed). '
         'term, term-missing may be followed by ":skip-covered". '
-        'annotate, html, xml, json and lcov may be followed by ":DEST" '
+        'annotate, html, xml, json, markdown, markdown-append and lcov may be followed by ":DEST" '
         'where DEST specifies the output location. '
         'Use --cov-report= to not generate any output.',
     )

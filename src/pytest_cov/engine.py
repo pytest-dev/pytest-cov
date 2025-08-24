@@ -255,6 +255,22 @@ class CovController:
                 total = self.cov.json_report(ignore_errors=True, outfile=output)
             stream.write('Coverage JSON written to file %s\n' % (self.cov.config.json_output if output is None else output))
 
+        # Produce Markdown report if wanted.
+        if 'markdown' in self.cov_report:
+            output = self.cov_report['markdown']
+            with _backup(self.cov, 'config'):
+                with Path(output).open('w') as output_file:
+                    total = self.cov.report(ignore_errors=True, file=output_file, output_format='markdown')
+            stream.write(f'Coverage Markdown information written to file {output}\n')
+
+        # Produce Markdown report if wanted, appending to output file
+        if 'markdown-append' in self.cov_report:
+            output = self.cov_report['markdown-append']
+            with _backup(self.cov, 'config'):
+                with Path(output).open('a') as output_file:
+                    total = self.cov.report(ignore_errors=True, file=output_file, output_format='markdown')
+            stream.write(f'Coverage Markdown information appended to file {output}\n')
+
         # Produce lcov report if wanted.
         if 'lcov' in self.cov_report:
             output = self.cov_report['lcov']

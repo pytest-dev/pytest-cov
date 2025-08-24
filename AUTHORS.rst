@@ -63,3 +63,4 @@ Authors
 * Christian Clauss - https://github.com/cclauss
 * Dawn James - https://github.com/dawngerpony
 * Tsvika Shapira - https://github.com/tsvikas
+* Marcos Boger - https://github.com/marcosboger
