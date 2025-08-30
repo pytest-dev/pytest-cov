@@ -55,13 +55,14 @@ The report options below output to files without showing anything on the termina
             --cov-report xml
             --cov-report json
             --cov-report markdown
-            --cov-report markdown-append
+            --cov-report markdown-append:cov-append.md
             --cov-report lcov
             --cov-report annotate
             --cov=myproj tests/
 
 The output location for each of these reports can be specified. The output location for the XML, JSON, Markdown and LCOV
-report is a file. Where as the output location for the HTML and annotated source code reports are
+report is a file. markdown-append option is specially useful for appending the report to an existing file. Example for GitHub Actions:
+--cov-report=markdown-append:${GITHUB_STEP_SUMMARY}. Where as the output location for the HTML and annotated source code reports are
 directories::
 
     pytest --cov-report html:cov_html
