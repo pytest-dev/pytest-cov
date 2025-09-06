@@ -2,6 +2,14 @@
 Changelog
 =========
 
+6.3.0 (2025-09-06)
+------------------
+
+* Added support for markdown reports.
+  Contributed by Marcos Boger in `#712 <https://github.com/pytest-dev/pytest-cov/pull/712>`_
+  and `#714 <https://github.com/pytest-dev/pytest-cov/pull/714>`_.
+* Fixed some formatting issues in docs.
+  Anonymous contribution in `#706 <https://github.com/pytest-dev/pytest-cov/pull/706>`_.
 
 6.2.1 (2025-06-12)
 ------------------
