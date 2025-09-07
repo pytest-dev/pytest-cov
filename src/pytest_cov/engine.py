@@ -10,7 +10,6 @@ import shutil
 import socket
 import sys
 import warnings
-from io import StringIO
 from pathlib import Path
 from typing import Union
 
@@ -20,7 +19,6 @@ from coverage.sqldata import filename_suffix
 
 from . import CentralCovContextWarning
 from . import DistCovError
-from .embed import cleanup
 
 
 class BrokenCovConfigError(Exception):
@@ -62,10 +60,6 @@ def _ensure_topdir(meth):
     return ensure_topdir_wrapper
 
 
-def _data_suffix(name):
-    return f'{filename_suffix(True)}.{name}'
-
-
 class CovController:
     """Base class for different plugin implementations."""
 
@@ -100,12 +94,10 @@ class CovController:
     def pause(self):
         self.started = False
         self.cov.stop()
-        self.unset_env()
 
     @_ensure_topdir
     def resume(self):
         self.cov.start()
-        self.set_env()
         self.started = True
 
     def start(self):
@@ -113,32 +105,6 @@ class CovController:
 
     def finish(self):
         self.started = False
-
-    @_ensure_topdir
-    def set_env(self):
-        """Put info about coverage into the env so that subprocesses can activate coverage."""
-        if self.cov_source is None:
-            os.environ['COV_CORE_SOURCE'] = os.pathsep
-        else:
-            os.environ['COV_CORE_SOURCE'] = os.pathsep.join(self.cov_source)
-        config_file = Path(self.cov_config)
-        if config_file.exists():
-            os.environ['COV_CORE_CONFIG'] = os.fspath(config_file.resolve())
-        else:
-            os.environ['COV_CORE_CONFIG'] = os.pathsep
-        # this still uses the old abspath cause apparently Python 3.9 on Windows has a buggy Path.resolve()
-        os.environ['COV_CORE_DATAFILE'] = os.path.abspath(self.cov.config.data_file)  # noqa: PTH100
-        if self.cov_branch:
-            os.environ['COV_CORE_BRANCH'] = 'enabled'
-
-    @staticmethod
-    def unset_env():
-        """Remove coverage info from env."""
-        os.environ.pop('COV_CORE_SOURCE', None)
-        os.environ.pop('COV_CORE_CONFIG', None)
-        os.environ.pop('COV_CORE_DATAFILE', None)
-        os.environ.pop('COV_CORE_BRANCH', None)
-        os.environ.pop('COV_CORE_CONTEXT', None)
 
     @staticmethod
     def get_node_desc(platform, version_info):
@@ -291,12 +257,10 @@ class Central(CovController):
 
     @_ensure_topdir
     def start(self):
-        cleanup()
-
         self.cov = coverage.Coverage(
             source=self.cov_source,
             branch=self.cov_branch,
-            data_suffix=_data_suffix('c'),
+            data_suffix=True,
             config_file=self.cov_config,
         )
         if self.cov.config.dynamic_context == 'test_function':
@@ -309,7 +273,7 @@ class Central(CovController):
         self.combining_cov = coverage.Coverage(
             source=self.cov_source,
             branch=self.cov_branch,
-            data_suffix=_data_suffix('cc'),
+            data_suffix=f'{filename_suffix(True)}.combine',
             data_file=os.path.abspath(self.cov.config.data_file),  # noqa: PTH100
             config_file=self.cov_config,
         )
@@ -318,7 +282,6 @@ class Central(CovController):
         if not self.cov_append:
             self.cov.erase()
         self.cov.start()
-        self.set_env()
 
         super().start()
 
@@ -327,7 +290,6 @@ class Central(CovController):
         """Stop coverage, save data to file and set the list of coverage objects to report on."""
         super().finish()
 
-        self.unset_env()
         self.cov.stop()
         self.cov.save()
 
@@ -345,12 +307,10 @@ class DistMaster(CovController):
 
     @_ensure_topdir
     def start(self):
-        cleanup()
-
         self.cov = coverage.Coverage(
             source=self.cov_source,
             branch=self.cov_branch,
-            data_suffix=_data_suffix('m'),
+            data_suffix=True,
             config_file=self.cov_config,
         )
         if self.cov.config.dynamic_context == 'test_function':
@@ -365,7 +325,7 @@ class DistMaster(CovController):
         self.combining_cov = coverage.Coverage(
             source=self.cov_source,
             branch=self.cov_branch,
-            data_suffix=_data_suffix('mc'),
+            data_suffix=f'{filename_suffix(True)}.combine',
             data_file=os.path.abspath(self.cov.config.data_file),  # noqa: PTH100
             config_file=self.cov_config,
         )
@@ -405,18 +365,10 @@ class DistMaster(CovController):
                 output['cov_worker_node_id'],
             )
 
-            cov = coverage.Coverage(source=self.cov_source, branch=self.cov_branch, data_suffix=data_suffix, config_file=self.cov_config)
-            cov.start()
-            if coverage.version_info < (5, 0):
-                data = CoverageData()
-                data.read_fileobj(StringIO(output['cov_worker_data']))
-                cov.data.update(data)
-            else:
-                data = CoverageData(no_disk=True, suffix='should-not-exist')
-                data.loads(output['cov_worker_data'])
-                cov.get_data().update(data)
-            cov.stop()
-            cov.save()
+            cov_data = CoverageData(
+                suffix=data_suffix,
+            )
+            cov_data.loads(output['cov_worker_data'])
             path = output['cov_worker_path']
             self.cov.config.paths['source'].append(path)
 
@@ -443,15 +395,13 @@ class DistWorker(CovController):
 
     @_ensure_topdir
     def start(self):
-        cleanup()
-
         # Determine whether we are collocated with master.
         self.is_collocated = (
             socket.gethostname() == self.config.workerinput['cov_master_host']
             and self.topdir == self.config.workerinput['cov_master_topdir']
         )
 
-        # If we are not collocated then rewrite master paths to worker paths.
+        # If we are not collocated, then rewrite master paths to worker paths.
         if not self.is_collocated:
             master_topdir = self.config.workerinput['cov_master_topdir']
             worker_topdir = self.topdir
@@ -463,13 +413,13 @@ class DistWorker(CovController):
         self.cov = coverage.Coverage(
             source=self.cov_source,
             branch=self.cov_branch,
-            data_suffix=_data_suffix(f'w{self.nodeid}'),
+            data_suffix=True,
             config_file=self.cov_config,
         )
         # Prevent workers from issuing module-not-measured type of warnings (expected for a workers to not have coverage in all the files).
         self.cov._warn_unimported_source = False
         self.cov.start()
-        self.set_env()
+
         super().start()
 
     @_ensure_topdir
@@ -477,7 +427,6 @@ class DistWorker(CovController):
         """Stop coverage and send relevant info back to the master."""
         super().finish()
 
-        self.unset_env()
         self.cov.stop()
 
         if self.is_collocated:
@@ -497,12 +446,7 @@ class DistWorker(CovController):
             # it on the master node.
 
             # Send all the data to the master over the channel.
-            if coverage.version_info < (5, 0):
-                buff = StringIO()
-                self.cov.data.write_fileobj(buff)
-                data = buff.getvalue()
-            else:
-                data = self.cov.get_data().dumps()
+            data = self.cov.get_data().dumps()
 
             self.config.workeroutput.update(
                 {

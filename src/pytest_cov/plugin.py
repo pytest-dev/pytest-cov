@@ -8,17 +8,11 @@ from io import StringIO
 from pathlib import Path
 from typing import TYPE_CHECKING
 
-import coverage
 import pytest
-from coverage.exceptions import CoverageWarning
-from coverage.results import display_covered
-from coverage.results import should_fail_under
 
 from . import CovDisabledWarning
 from . import CovReportWarning
 from . import PytestCovWarning
-from . import compat
-from . import embed
 
 if TYPE_CHECKING:
     from .engine import CovController
@@ -36,9 +30,6 @@ def validate_report(arg):
     if report_type not in [*all_choices, '']:
         msg = f'invalid choice: "{arg}" (choose from "{all_choices}")'
         raise argparse.ArgumentTypeError(msg)
-
-    if report_type == 'lcov' and coverage.version_info <= (6, 3):
-        raise argparse.ArgumentTypeError('LCOV output is only supported with coverage.py >= 6.3')
 
     if len(values) == 1:
         return report_type, None
@@ -70,8 +61,6 @@ def validate_fail_under(num_str):
 
 
 def validate_context(arg):
-    if coverage.version_info <= (5, 0):
-        raise argparse.ArgumentTypeError('Contexts are only supported with coverage.py >= 5.x')
     if arg != 'test':
         raise argparse.ArgumentTypeError('The only supported value is "test".')
     return arg
@@ -345,6 +334,8 @@ class CovPlugin:
                 break
         else:
             warnings.simplefilter('once', PytestCovWarning)
+        from coverage.exceptions import CoverageWarning
+
         for _, _, category, _, _ in warnings.filters:
             if category is CoverageWarning:
                 break
@@ -353,9 +344,7 @@ class CovPlugin:
 
         result = yield
 
-        compat_session = compat.SessionWrapper(session)
-
-        self.failed = bool(compat_session.testsfailed)
+        self.failed = bool(session.testsfailed)
         if self.cov_controller is not None:
             self.cov_controller.finish()
 
@@ -363,6 +352,8 @@ class CovPlugin:
             # import coverage lazily here to avoid importing
             # it for unit tests that don't need it
             from coverage.misc import CoverageException
+            from coverage.results import display_covered
+            from coverage.results import should_fail_under
 
             try:
                 self.cov_total = self.cov_controller.summary(self.cov_report)
@@ -384,7 +375,7 @@ class CovPlugin:
                 )
                 session.config.pluginmanager.getplugin('terminalreporter').write(f'\nERROR: {message}\n', red=True, bold=True)
                 # make sure we get the EXIT_TESTSFAILED exit code
-                compat_session.testsfailed += 1
+                session.testsfailed += 1
 
         return result
 
@@ -426,15 +417,6 @@ class CovPlugin:
             )
             terminalreporter.write(message, **markup)
 
-    def pytest_runtest_setup(self, item):
-        if os.getpid() != self.pid:
-            # test is run in another process than session, run
-            # coverage manually
-            embed.init()
-
-    def pytest_runtest_teardown(self, item):
-        embed.cleanup()
-
     @pytest.hookimpl(hookwrapper=True)
     def pytest_runtest_call(self, item):
         if item.get_closest_marker('no_cover') or 'no_cover' in getattr(item, 'fixturenames', ()):
@@ -462,9 +444,7 @@ class TestContextPlugin:
 
     def switch_context(self, item, when):
         if self.cov_controller.started:
-            context = f'{item.nodeid}|{when}'
-            self.cov_controller.cov.switch_context(context)
-            os.environ['COV_CORE_CONTEXT'] = context
+            self.cov_controller.cov.switch_context(f'{item.nodeid}|{when}')
 
 
 @pytest.fixture
