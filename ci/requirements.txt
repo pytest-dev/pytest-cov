@@ -1,5 +1,4 @@
-virtualenv>=16.6.0
-pip>=19.1.1
-setuptools>=18.0.1
-tox
-twine
+pip>=25
+setuptools>=80
+tox>=4
+virtualenv>=20.34
