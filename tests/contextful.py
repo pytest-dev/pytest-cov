@@ -58,7 +58,7 @@ def test_06(some_data, more_data):
     assert len(some_data) == len(more_data)  # r6
 
 
-@pytest.fixture(scope='session')
+@pytest.fixture
 def expensive_data():
     return list(range(10))  # s7
 
