@@ -693,6 +693,7 @@ def test_foobar(bad):
     assert result.ret == 0
 
 
+@pytest.mark.skipif('sys.platform == "win32"', reason='No redis server on Windows')
 def test_celery(pytester):
     pytester.makepyfile(
         small_celery="""
@@ -1259,16 +1260,25 @@ if __name__ == "__main__":
 @pytest.mark.parametrize(
     'setup',
     [
-        ('signal.signal(signal.SIGBREAK, signal.SIG_DFL); cleanup_on_signal(signal.SIGBREAK)', '87%   21-22'),
-        ('cleanup_on_signal(signal.SIGBREAK)', '87%   21-22'),
-        ('cleanup()', '73%   19-22'),
+        ('signal.signal(signal.SIGBREAK, signal.SIG_DFL)', '62%   4, 23-28'),
+        ('signal.signal(signal.SIGBREAK, cleanup)', '100%'),
+        ('', '67%   4, 25-28'),
     ],
 )
 def test_cleanup_on_sigterm_sig_break(pytester, testdir, setup):
     # worth a read: https://stefan.sofa-rockers.org/2013/08/15/handling-sub-process-hierarchies-python-linux-os-x/
+    testdir.makepyprojecttoml(
+        """
+[tool.coverage.run]
+patch = ["subprocess"]
+"""
+    )
     script = testdir.makepyfile(
         """
 import os, signal, subprocess, sys, time
+
+def cleanup(num, frame):
+    raise Exception()
 
 def test_run():
     proc = subprocess.Popen(
@@ -1280,7 +1290,11 @@ def test_run():
     proc.send_signal(signal.CTRL_BREAK_EVENT)
     stdout, stderr = proc.communicate()
     assert not stderr
-    assert stdout in [b"^C", b"", b"captured IOError(4, 'Interrupted function call')\\n"]
+    assert stdout in [
+        b"^C",
+        b"",
+        b"captured Exception()\\r\\n",
+        b"captured IOError(4, 'Interrupted function call')\\n"]
 
 if __name__ == "__main__":
     """
@@ -1618,17 +1632,6 @@ def test_foo():
 """
 
 SCRIPT_SIMPLE_RESULT = '4 * 100%'
-
-
-@pytest.mark.skipif('tuple(map(int, xdist.__version__.split("."))) >= (3, 0, 2)', reason='--boxed option was removed in version 3.0.2')
-@pytest.mark.skipif('sys.platform == "win32"')
-def test_dist_boxed(testdir):
-    script = testdir.makepyfile(SCRIPT_SIMPLE)
-
-    result = testdir.runpytest('-v', '--assert=plain', f'--cov={script.dirpath()}', '--boxed', script)
-
-    result.stdout.fnmatch_lines(['*_ coverage: platform *, python * _*', f'test_dist_boxed* {SCRIPT_SIMPLE_RESULT}*', '*1 passed*'])
-    assert result.ret == 0
 
 
 @pytest.mark.skipif('sys.platform == "win32"')
