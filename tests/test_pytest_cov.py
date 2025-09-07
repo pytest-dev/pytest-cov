@@ -21,7 +21,6 @@ from process_tests import wait_for_strings
 
 import pytest_cov.plugin
 
-coverage, platform  # required for skipif mark on test_cov_min_from_coveragerc
 
 max_worker_restart_0 = '--max-worker-restart=0'
 
@@ -693,7 +692,8 @@ def test_foobar(bad):
     assert result.ret == 0
 
 
-@pytest.mark.skipif('sys.platform == "win32"', reason='No redis server on Windows')
+@pytest.mark.skipif(sys.platform == 'win32', reason='No redis server on Windows')
+@pytest.mark.skipif(sys.platform == 'darwin', reason='No redis server on OSX')
 def test_celery(pytester):
     pytester.makepyfile(
         small_celery="""
@@ -1205,8 +1205,7 @@ def test_funcarg_not_active(testdir):
     assert result.ret == 0
 
 
-@pytest.mark.skipif('sys.platform == "win32"', reason="SIGTERM isn't really supported on Windows")
-@pytest.mark.xfail('platform.python_implementation() == "PyPy"', reason='Interpreter seems buggy')
+@pytest.mark.skipif(sys.platform == 'win32', reason="SIGTERM isn't really supported on Windows")
 def test_cleanup_on_sigterm(testdir):
     testdir.makepyprojecttoml(
         """
@@ -1256,7 +1255,7 @@ if __name__ == "__main__":
     assert result.ret == 0
 
 
-@pytest.mark.skipif('sys.platform != "win32"')
+@pytest.mark.skipif(sys.platform != 'win32', reason='SIGBREAK is Windows only')
 @pytest.mark.parametrize(
     'setup',
     [
