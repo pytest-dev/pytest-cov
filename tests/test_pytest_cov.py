@@ -1,26 +1,20 @@
-# ruff: noqa
 import collections
 import glob
 import os
 import platform
 import re
-import subprocess
 import sys
-from io import StringIO
 from itertools import chain
+from pathlib import Path
+from types import SimpleNamespace
 
 import coverage
-import py
 import pytest
-import virtualenv
-import xdist
-from fields import Namespace
 from process_tests import TestProcess as _TestProcess
 from process_tests import dump_on_error
 from process_tests import wait_for_strings
 
 import pytest_cov.plugin
-
 
 max_worker_restart_0 = '--max-worker-restart=0'
 
@@ -167,7 +161,7 @@ xdist_params = pytest.mark.parametrize(
 def adjust_sys_path():
     """Adjust PYTHONPATH during tests to make "helper" importable in SCRIPT."""
     orig_path = os.environ.get('PYTHONPATH', None)
-    new_path = os.path.dirname(__file__)
+    new_path = str(Path(__file__).parent)
     if orig_path is not None:
         new_path = os.pathsep.join([new_path, orig_path])
     os.environ['PYTHONPATH'] = new_path
@@ -190,7 +184,7 @@ def adjust_sys_path():
     ids=['branch2x', 'branch1c', 'branch1a', 'nobranch'],
 )
 def prop(request):
-    return Namespace(
+    return SimpleNamespace(
         code=SCRIPT,
         code2=SCRIPT2,
         conf=request.param[0],
@@ -347,7 +341,7 @@ def test_xml_output_dir(testdir):
 def test_json_output_dir(testdir):
     script = testdir.makepyfile(SCRIPT)
 
-    result = testdir.runpytest('-v', '--cov=%s' % script.dirpath(), '--cov-report=json:' + JSON_REPORT_NAME, script)
+    result = testdir.runpytest('-v', f'--cov={script.dirpath()}', '--cov-report=json:' + JSON_REPORT_NAME, script)
 
     result.stdout.fnmatch_lines(
         [
@@ -363,7 +357,7 @@ def test_json_output_dir(testdir):
 def test_markdown_output_dir(testdir):
     script = testdir.makepyfile(SCRIPT)
 
-    result = testdir.runpytest('-v', '--cov=%s' % script.dirpath(), '--cov-report=markdown:' + MARKDOWN_REPORT_NAME, script)
+    result = testdir.runpytest('-v', f'--cov={script.dirpath()}', '--cov-report=markdown:' + MARKDOWN_REPORT_NAME, script)
 
     result.stdout.fnmatch_lines(
         [
@@ -379,7 +373,7 @@ def test_markdown_output_dir(testdir):
 def test_markdown_append_output_dir(testdir):
     script = testdir.makepyfile(SCRIPT)
 
-    result = testdir.runpytest('-v', '--cov=%s' % script.dirpath(), '--cov-report=markdown-append:' + MARKDOWN_APPEND_REPORT_NAME, script)
+    result = testdir.runpytest('-v', f'--cov={script.dirpath()}', '--cov-report=markdown-append:' + MARKDOWN_APPEND_REPORT_NAME, script)
 
     result.stdout.fnmatch_lines(
         [
@@ -397,7 +391,7 @@ def test_markdown_and_markdown_append_work_together(testdir):
 
     result = testdir.runpytest(
         '-v',
-        '--cov=%s' % script.dirpath(),
+        f'--cov={script.dirpath()}',
         '--cov-report=markdown:' + MARKDOWN_REPORT_NAME,
         '--cov-report=markdown-append:' + MARKDOWN_APPEND_REPORT_NAME,
         script,
@@ -420,7 +414,7 @@ def test_markdown_and_markdown_append_pointing_to_same_file_throws_error(testdir
 
     result = testdir.runpytest(
         '-v',
-        '--cov=%s' % script.dirpath(),
+        f'--cov={script.dirpath()}',
         '--cov-report=markdown:' + MARKDOWN_REPORT_NAME,
         '--cov-report=markdown-append:' + MARKDOWN_REPORT_NAME,
         script,
@@ -466,7 +460,7 @@ def test_term_missing_output_dir(testdir):
 
     result.stderr.fnmatch_lines(
         [
-            '*argument --cov-report: output specifier not supported for: "term-missing:%s"*' % DEST_DIR,
+            f'*argument --cov-report: output specifier not supported for: "term-missing:{DEST_DIR}"*',
         ]
     )
     assert result.ret != 0
@@ -755,7 +749,7 @@ patch = ["subprocess", "_exit"]
     result.stdout.fnmatch_lines(
         [
             '*_ coverage: platform *, python * _*',
-            f'small_celery* 100%*',
+            'small_celery* 100%*',
         ]
     )
     assert result.ret == 0
@@ -1353,7 +1347,7 @@ if __name__ == "__main__":
         '-v', '--assert=plain', f'--cov={script.dirpath()}', '--cov-report=term-missing', '--cov-report=html', script
     )
 
-    result.stdout.fnmatch_lines(['*_ coverage: platform *, python * _*', f'test_cleanup_on_sigterm* 88% * 18-19', '*1 passed*'])
+    result.stdout.fnmatch_lines(['*_ coverage: platform *, python * _*', 'test_cleanup_on_sigterm* 88% * 18-19', '*1 passed*'])
     assert result.ret == 0
 
 
@@ -1649,7 +1643,7 @@ def test_dist_bare_cov(testdir):
 
 def test_not_started_plugin_does_not_fail(testdir):
     class ns:
-        cov_source = [True]
+        cov_source = (True,)
         cov_report = ''
 
     plugin = pytest_cov.plugin.CovPlugin(ns, None, start=False)
@@ -1697,14 +1691,13 @@ def test_external_data_file(testdir):
     testdir.tmpdir.join('.coveragerc').write(
         """
 [run]
-data_file = %s
-"""
-        % testdir.tmpdir.join('some/special/place/coverage-data').ensure()
+data_file = {}
+""".format(testdir.tmpdir.join('some/special/place/coverage-data').ensure())
     )
 
     result = testdir.runpytest('-v', f'--cov={script.dirpath()}', script)
     assert result.ret == 0
-    assert glob.glob(str(testdir.tmpdir.join('some/special/place/coverage-data*')))
+    assert glob.glob(str(testdir.tmpdir.join('some/special/place/coverage-data*')))  # noqa: PTH207
 
 
 @pytest.mark.skipif('sys.platform == "win32" and platform.python_implementation() == "PyPy"')
@@ -1714,14 +1707,13 @@ def test_external_data_file_xdist(testdir):
         """
 [run]
 parallel = true
-data_file = %s
-"""
-        % testdir.tmpdir.join('some/special/place/coverage-data').ensure()
+data_file = {}
+""".format(testdir.tmpdir.join('some/special/place/coverage-data').ensure())
     )
 
     result = testdir.runpytest('-v', f'--cov={script.dirpath()}', '-n', '1', max_worker_restart_0, script)
     assert result.ret == 0
-    assert glob.glob(str(testdir.tmpdir.join('some/special/place/coverage-data*')))
+    assert glob.glob(str(testdir.tmpdir.join('some/special/place/coverage-data*')))  # noqa: PTH207
 
 
 @pytest.mark.skipif('sys.platform == "win32" and platform.python_implementation() == "PyPy"')
@@ -1748,7 +1740,7 @@ def test_external_data_file_negative(testdir):
 
     result = testdir.runpytest('-v', f'--cov={script.dirpath()}', script)
     assert result.ret == 0
-    assert glob.glob(str(testdir.tmpdir.join('.coverage*')))
+    assert glob.glob(str(testdir.tmpdir.join('.coverage*')))  # noqa: PTH207
 
 
 @xdist_params
@@ -1856,7 +1848,7 @@ def test_do_not_append_coverage(pytester, testdir, opts, prop):
 
 @pytest.mark.skipif('sys.platform == "win32" and platform.python_implementation() == "PyPy"')
 def test_append_coverage_subprocess(testdir):
-    testdir.makepyprojecttoml(f"""
+    testdir.makepyprojecttoml("""
 [tool.coverage.run]
 patch = ["subprocess"]
 """)
@@ -1970,7 +1962,7 @@ EXPECTED_CONTEXTS = {
 
 @xdist_params
 def test_contexts(pytester, testdir, opts):
-    with open(os.path.join(os.path.dirname(__file__), 'contextful.py')) as f:
+    with Path(__file__).parent.joinpath('contextful.py').open() as f:
         contextful_tests = f.read()
     script = testdir.makepyfile(contextful_tests)
     result = testdir.runpytest('-v', f'--cov={script.dirpath()}', '--cov-context=test', script, *opts.split())
@@ -1987,7 +1979,7 @@ def test_contexts(pytester, testdir, opts):
     measured = data.measured_files()
     assert len(measured) == 1
     test_context_path = next(iter(measured))
-    assert test_context_path.lower() == os.path.abspath('test_contexts.py').lower()
+    assert test_context_path.lower() == os.path.abspath('test_contexts.py').lower()  # noqa: PTH100
 
     line_data = find_labels(contextful_tests, r'[crst]\d+(?:-\d+)?')
     for context, label in EXPECTED_CONTEXTS.items():

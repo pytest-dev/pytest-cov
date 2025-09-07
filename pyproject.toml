@@ -52,11 +52,8 @@ dependencies = [
 
 [project.optional-dependencies]
 testing = [
-    "fields",
-    "hunter",
     "process-tests",
     "pytest-xdist",
-    "six",
     "virtualenv",
 ]
 
@@ -64,9 +61,9 @@ testing = [
 pytest_cov = "pytest_cov.plugin"
 
 [project.urls]
-Changelog = "https://pytest-cov.readthedocs.io/en/latest/changelog.html"
-Documentation = "https://pytest-cov.readthedocs.io/"
-Homepage = "https://github.com/pytest-dev/pytest-cov"
+"Sources" = "https://github.com/pytest-dev/pytest-cov"
+"Documentation" = "https://pytest-cov.readthedocs.io/"
+"Changelog" = "https://pytest-cov.readthedocs.io/en/latest/changelog.html"
 "Issue Tracker" = "https://github.com/pytest-dev/pytest-cov/issues"
 
 [tool.hatch.metadata.hooks.fancy-pypi-readme]
@@ -87,30 +84,31 @@ target-version = "py39"
 
 [tool.ruff.lint]
 ignore = [
-    "RUF001", # ruff-specific rules ambiguous-unicode-character-string
-    "S101", # flake8-bandit assert
-    "S308", # flake8-bandit suspicious-mark-safe-usage
-    "E501", # pycodestyle line-too-long
+    "PLC0415", # `import` should be at the top-level of a file
+    "RUF001",  # ruff-specific rules ambiguous-unicode-character-string
+    "S101",    # flake8-bandit assert
+    "S308",    # flake8-bandit suspicious-mark-safe-usage
+    "E501",    # pycodestyle line-too-long
 ]
 select = [
-    "B", # flake8-bugbear
-    "C4", # flake8-comprehensions
+    "B",   # flake8-bugbear
+    "C4",  # flake8-comprehensions
     "DTZ", # flake8-datetimez
-    "E", # pycodestyle errors
+    "E",   # pycodestyle errors
     "EXE", # flake8-executable
-    "F", # pyflakes
-    "I", # isort
+    "F",   # pyflakes
+    "I",   # isort
     "INT", # flake8-gettext
     "PIE", # flake8-pie
     "PLC", # pylint convention
     "PLE", # pylint errors
-    "PT", # flake8-pytest-style
+    "PT",  # flake8-pytest-style
     "PTH", # flake8-use-pathlib
     "RSE", # flake8-raise
     "RUF", # ruff-specific rules
-    "S", # flake8-bandit
-    "UP", # pyupgrade
-    "W", # pycodestyle warnings
+    "S",   # flake8-bandit
+    "UP",  # pyupgrade
+    "W",   # pycodestyle warnings
 ]
 
 [tool.ruff.lint.flake8-pytest-style]
@@ -123,4 +121,3 @@ force-single-line = true
 
 [tool.ruff.format]
 quote-style = "single"
-
