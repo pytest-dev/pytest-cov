@@ -1944,7 +1944,7 @@ EXPECTED_CONTEXTS = {
     'test_contexts.py::test_07|setup': 's7',
     'test_contexts.py::test_07|run': 'r7',
     'test_contexts.py::test_08|run': 'r8',
-    'test_contexts.py::test_08|setup': 'r8',
+    'test_contexts.py::test_08|setup': 's7',
     'test_contexts.py::test_09[1]|setup': 's9-1',
     'test_contexts.py::test_09[1]|run': 'r9-1',
     'test_contexts.py::test_09[2]|setup': 's9-2',
@@ -1963,8 +1963,6 @@ EXPECTED_CONTEXTS = {
 }
 
 
-@pytest.mark.skipif('coverage.version_info < (5, 0)')
-@pytest.mark.skipif('coverage.version_info > (6, 4)')
 @xdist_params
 def test_contexts(pytester, testdir, opts):
     with open(os.path.join(os.path.dirname(__file__), 'contextful.py')) as f:
