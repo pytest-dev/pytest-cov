@@ -20,6 +20,11 @@ Changelog
     patch = subprocess
 
   This release also requires at least coverage 7.10.6.
+* Switched packaging to have metadata completely in ``pyproject.toml`` and use `hatchling <https://pypi.org/project/hatchling/>`_ for
+  building.
+  Contributed by Ofek Lev in `#551 <https://github.com/pytest-dev/pytest-cov/pull/551>`_
+  with some extras in `#716 <https://github.com/pytest-dev/pytest-cov/pull/716>`_.
+* Removed some not really necessary testing deps like ``six``.
 
 6.3.0 (2025-09-06)
 ------------------
