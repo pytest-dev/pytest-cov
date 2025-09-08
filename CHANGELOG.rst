@@ -2,6 +2,25 @@
 Changelog
 =========
 
+7.0.0 (2025-09-09)
+------------------
+
+* Dropped support for subprocesses measurement.
+
+  It was a feature added long time ago when coverage lacked a nice way to measure subprocesses created in tests.
+  It relied on a ``.pth`` file, there was no way to opt-out and it created bad interations
+  with `coverage's new patch system <https://coverage.readthedocs.io/en/latest/config.html#run-patch>`_ added
+  in `7.10 <https://coverage.readthedocs.io/en/7.10.6/changes.html#version-7-10-0-2025-07-24>`_.
+
+  To migrate to this release you might need to enable the suprocess patch, example for ``.coveragerc``:
+
+  .. code-block:: ini
+
+    [run]
+    patch = subprocess
+
+  This release also requires at least coverage 7.10.6.
+
 6.3.0 (2025-09-06)
 ------------------
 
