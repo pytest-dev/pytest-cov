@@ -1259,7 +1259,10 @@ if __name__ == "__main__":
 @pytest.mark.parametrize(
     'setup',
     [
-        ('signal.signal(signal.SIGBREAK, signal.SIG_DFL)', '62%   4, 23-28'),
+        (
+            'signal.signal(signal.SIGBREAK, signal.SIG_DFL)',
+            '*%   4, 2*-28' if platform.python_implementation() == 'PyPy' else '62%   4, 23-28',
+        ),
         ('signal.signal(signal.SIGBREAK, cleanup)', '100%'),
         ('', '*%   4, 2*-28' if platform.python_implementation() == 'PyPy' else '67%   4, 25-28'),
     ],
