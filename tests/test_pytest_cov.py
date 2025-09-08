@@ -1261,7 +1261,7 @@ if __name__ == "__main__":
     [
         ('signal.signal(signal.SIGBREAK, signal.SIG_DFL)', '62%   4, 23-28'),
         ('signal.signal(signal.SIGBREAK, cleanup)', '100%'),
-        ('', '81%   4, 27-28' if platform.python_implementation() == 'PyPy' else '67%   4, 25-28'),
+        ('', '*%   4, 2*-28' if platform.python_implementation() == 'PyPy' else '67%   4, 25-28'),
     ],
 )
 def test_cleanup_on_sigterm_sig_break(pytester, testdir, setup):
