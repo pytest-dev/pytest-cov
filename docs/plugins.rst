@@ -6,19 +6,5 @@ Getting coverage on pytest plugins is a very particular situation. Because of ho
 entrypoints) it doesn't allow controlling the order in which the plugins load.
 See `pytest/issues/935 <https://github.com/pytest-dev/pytest/issues/935#issuecomment-245107960>`_ for technical details.
 
-The current way of dealing with this problem is using the append feature and manually starting ``pytest-cov``'s engine, eg::
-
-    COV_CORE_SOURCE=src COV_CORE_CONFIG=.coveragerc COV_CORE_DATAFILE=.coverage.eager pytest --cov=src --cov-append
-
-Alternatively you can have this in ``tox.ini`` (if you're using `Tox <https://tox.wiki/en/latest/>`_ of course)::
-
-    [testenv]
-    setenv =
-        COV_CORE_SOURCE=
-        COV_CORE_CONFIG={toxinidir}/.coveragerc
-        COV_CORE_DATAFILE={toxinidir}/.coverage
-
-And in ``pytest.ini`` / ``tox.ini`` / ``setup.cfg``::
-
-    [tool:pytest]
-    addopts = --cov --cov-append
+**Currently there is no way to measure your pytest plugin if you use pytest-cov**.
+You should change your test invocations to use ``coverage run -m pytest ...`` instead.
