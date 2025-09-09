@@ -40,9 +40,9 @@ Overview
     :alt: Supported implementations
     :target: https://pypi.org/project/pytest-cov
 
-.. |commits-since| image:: https://img.shields.io/github/commits-since/pytest-dev/pytest-cov/v6.3.0.svg
+.. |commits-since| image:: https://img.shields.io/github/commits-since/pytest-dev/pytest-cov/v7.0.0.svg
     :alt: Commits since latest release
-    :target: https://github.com/pytest-dev/pytest-cov/compare/v6.3.0...master
+    :target: https://github.com/pytest-dev/pytest-cov/compare/v7.0.0...master
 
 .. end-badges
 

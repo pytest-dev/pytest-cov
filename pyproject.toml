@@ -5,7 +5,7 @@ build-backend = "hatchling.build"
 [project]
 name = "pytest-cov"
 dynamic = ["readme"]
-version = "6.3.0"
+version = "7.0.0"
 description = "Pytest plugin for measuring coverage."
 license = "MIT"
 requires-python = ">=3.9"
