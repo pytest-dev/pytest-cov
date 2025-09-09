@@ -13,6 +13,7 @@ Overview
       - |github-actions|
     * - package
       - |version| |conda-forge| |wheel| |supported-versions| |supported-implementations| |commits-since|
+
 .. |docs| image:: https://readthedocs.org/projects/pytest-cov/badge/?style=flat
     :target: https://readthedocs.org/projects/pytest-cov/
     :alt: Documentation Status
@@ -45,10 +46,11 @@ Overview
 
 .. end-badges
 
-This plugin produces coverage reports. Compared to just using ``coverage run`` this plugin does some extras:
+This plugin provides coverage functionality as a pytest plugin. Compared to just using ``coverage run`` this plugin does some extras:
 
-* Subprocess support: you can fork or run stuff in a subprocess and will get covered without any fuss.
-* Xdist support: you can use all of pytest-xdist's features and still get coverage.
+* Automatic erasing and combination of .coverage files and default reporting.
+* Support for detailed coverage contexts (add ``--cov-context=test`` to have the full test name including parametrization as the context).
+* Xdist support: you can use all of pytest-xdist's features including remote interpreters and still get coverage.
 * Consistent pytest behavior. If you run ``coverage run -m pytest`` you will have slightly different ``sys.path`` (CWD will be
   in it, unlike when running ``pytest``).
 
@@ -68,11 +70,10 @@ For distributed testing support install pytest-xdist::
 
     pip install pytest-xdist
 
-Upgrading from ancient pytest-cov
----------------------------------
+Upgrading from pytest-cov 6.3
+-----------------------------
 
-`pytest-cov 2.0` is using a new ``.pth`` file (``pytest-cov.pth``). You may want to manually remove the older
-``init_cov_core.pth`` from site-packages as it's not automatically removed.
+`pytest-cov 6.3` and older were using a ``.pth`` file to enable coverage measurements in subprocesses. This was removed in `pytest-cov 7` - use `coverage's patch options <https://coverage.readthedocs.io/en/latest/config.html#run-patch>`_ to enable subprocess measurements.
 
 Uninstalling
 ------------
@@ -111,10 +112,6 @@ Documentation
 https://pytest-cov.readthedocs.io/en/latest/
 
 
-
-
-
-
 Coverage Data File
 ==================
 
@@ -131,12 +128,6 @@ Limitations
 For distributed testing the workers must have the pytest-cov package installed. This is needed since
 the plugin must be registered through setuptools for pytest to start the plugin on the
 worker.
-
-For subprocess measurement environment variables must make it from the main process to the
-subprocess. The python used by the subprocess must have pytest-cov installed. The subprocess must
-do normal site initialisation so that the environment variables can be detected and coverage
-started. See the `subprocess support docs <https://pytest-cov.readthedocs.io/en/latest/subprocess-support.html>`_
-for more details of how this works.
 
 Security
 ========
