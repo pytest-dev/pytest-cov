@@ -82,7 +82,7 @@ Example for GitHub Actions with ``markdown-append``:
 
 .. code-block:: bash
 
-    pytest --cov-report=markdown-append:${GITHUB_STEP_SUMMARY}.
+    pytest --cov-report markdown-append:$GITHUB_STEP_SUMMARY
            --cov=myproj tests/
 
 To disable the default ``term`` report provide an empty report:
