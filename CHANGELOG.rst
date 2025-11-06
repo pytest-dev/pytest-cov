@@ -2,6 +2,17 @@
 Changelog
 =========
 
+* Improve handling of ResourceWarning from sqlite3.
+
+  The plugin adds warning filter for sqlite3 ``ResourceWarning`` unclosed database (since 6.2.0).
+  It checks if there is already existing plugin for this message by comparing filter regular expression.
+  When filter is specified on command line the message is escaped and does not match an expected message.
+  A check for an escaped regular expression is added to handle this case.
+
+  With this fix one can suppress ``ResourceWarning`` from sqlite3 from command line::
+
+    pytest -W "ignore:unclosed database in <sqlite3.Connection object at:ResourceWarning" ...
+
 7.0.0 (2025-09-09)
 ------------------
 

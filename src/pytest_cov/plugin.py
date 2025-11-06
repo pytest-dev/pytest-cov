@@ -17,7 +17,10 @@ from . import PytestCovWarning
 if TYPE_CHECKING:
     from .engine import CovController
 
+# The message is unescaped if it comes from configuration file, and escaped if
+# it comes from command line option (-W) or PYTHONWARNINGS envvar.
 COVERAGE_SQLITE_WARNING_RE = re.compile('unclosed database in <sqlite3.Connection object at', re.I)
+COVERAGE_SQLITE_WARNING_RE2 = re.compile('unclosed\\ database\\ in\\ <sqlite3\\.Connection\\ object\\ at', re.I)
 
 
 def validate_report(arg):
@@ -325,7 +328,7 @@ class CovPlugin:
 
         # we add default warning configuration to prevent certain warnings to bubble up as errors due to rigid filterwarnings configuration
         for _, message, category, _, _ in warnings.filters:
-            if category is ResourceWarning and message == COVERAGE_SQLITE_WARNING_RE:
+            if category is ResourceWarning and message in (COVERAGE_SQLITE_WARNING_RE, COVERAGE_SQLITE_WARNING_RE2):
                 break
         else:
             warnings.filterwarnings('default', 'unclosed database in <sqlite3.Connection object at', ResourceWarning)
