@@ -1435,8 +1435,8 @@ def test_filterwarnings_error(testdir):
     result.stdout.fnmatch_lines(['* 1 passed *'])
     result.stderr.fnmatch_lines(
         [
-            '* (module-not-measured)',
-            '* (no-data-collected)',
+            '* (module-not-measured)*',
+            '* (no-data-collected)*',
             '* CovReportWarning: Failed to generate report: No data to report.',
         ]
     )
