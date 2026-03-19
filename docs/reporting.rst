@@ -49,7 +49,7 @@ The terminal report with skip covered::
 
 You can use ``skip-covered`` with ``term-missing`` as well. e.g. ``--cov-report term-missing:skip-covered``
 
-If any reporting options are used then the default (``--cov-report=term`` is not added automatically). For example this would not show any
+If any reporting options are used then the default (``--cov-report=term``) is not added automatically. For example this would not show any
 terminal output:
 
 .. code-block:: bash
