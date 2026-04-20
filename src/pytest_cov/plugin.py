@@ -216,7 +216,7 @@ class CovPlugin:
         """Creates a coverage pytest plugin.
 
         We read the rc file that coverage uses to get the data file
-        name.  This is needed since we give coverage through it's API
+        name.  This is needed since we give coverage through its API
         the data file name.
         """
 
