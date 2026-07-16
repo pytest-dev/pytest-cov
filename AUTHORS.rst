@@ -67,3 +67,4 @@ Authors
 * Ofek Lev - https://github.com/ofek
 * Art Pelling - https://github.com/artpelling
 * Markéta Machová - https://github.com/MeggyCal
+* pctablet505 - https://github.com/pctablet505
