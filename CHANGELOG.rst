@@ -2,6 +2,15 @@
 Changelog
 =========
 
+7.1.1 (unreleased)
+------------------
+
+* Fixed a confusing ``AttributeError: 'Central' object has no attribute 'configure_node'`` crash
+  that could happen when another plugin (for example one driven by ``addopts`` in a config file)
+  enables pytest-xdist only after pytest-cov has already decided to run in centralised mode.
+  This now raises a clear ``DistCovError`` instead.
+  See `#740 <https://github.com/pytest-dev/pytest-cov/issues/740>`_.
+
 7.1.0 (2026-03-21)
 ------------------
 

@@ -12,6 +12,7 @@ import pytest
 
 from . import CovDisabledWarning
 from . import CovReportWarning
+from . import DistCovError
 from . import PytestCovWarning
 
 if TYPE_CHECKING:
@@ -304,6 +305,7 @@ class CovPlugin:
         Mark this hook as optional in case xdist is not installed.
         """
         if not self._disabled:
+            self._check_is_distributed()
             self.cov_controller.configure_node(node)
 
     @pytest.hookimpl(optionalhook=True)
@@ -313,7 +315,35 @@ class CovPlugin:
         Mark this hook as optional in case xdist is not installed.
         """
         if not self._disabled:
+            self._check_is_distributed()
             self.cov_controller.testnodedown(node, error)
+
+    def _check_is_distributed(self):
+        """Guard against xdist hooks firing on a non-distributed controller.
+
+        Whether we run centralised or distributed is decided very early on, in
+        ``pytest_load_initial_conftests``, based on the xdist options known at that
+        point. If some other plugin (e.g. one that enables xdist based on
+        ``pyproject.toml``/``addopts``) only adds ``-n``/``--dist`` afterwards, we can
+        end up having already started a centralised controller by the time xdist
+        calls one of its distributed-only hooks. Recovering from that would mean
+        discarding coverage already collected, so we fail with a clear error instead
+        of a confusing AttributeError.
+        """
+        # import engine lazily here to avoid importing
+        # it for unit tests that don't need it
+        from . import engine
+
+        if not isinstance(self.cov_controller, engine.DistMaster):
+            raise DistCovError(
+                'pytest-xdist workers were started but pytest-cov had already initialized itself for '
+                'centralised (non-distributed) coverage measurement. This usually happens when another '
+                'plugin enables pytest-xdist (e.g. via "addopts" coming from a config file or a plugin '
+                'like pytest-enabler) after pytest-cov has already inspected the command line. '
+                'Make sure the xdist options (-n/--dist) are visible on the command line or in the pytest '
+                'configuration file before pytest-cov starts, for example by adding them to the "addopts" '
+                'pytest reads directly, rather than relying on a plugin that injects them later.'
+            )
 
     def _should_report(self):
         needed = self.options.cov_report or self.options.cov_fail_under
