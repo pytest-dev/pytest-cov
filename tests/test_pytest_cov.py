@@ -1,5 +1,6 @@
 import collections
 import glob
+import importlib.util
 import os
 import platform
 import re
@@ -708,8 +709,12 @@ def test_foobar(bad):
     assert result.ret == 0
 
 
+HAS_CELERY = importlib.util.find_spec('celery') is not None and importlib.util.find_spec('testcontainers') is not None
+
+
 @pytest.mark.skipif(sys.platform == 'win32', reason='No redis server on Windows')
 @pytest.mark.skipif(sys.platform == 'darwin', reason='No redis server on OSX')
+@pytest.mark.skipif(not HAS_CELERY, reason='celery and testcontainers are required')
 def test_celery(pytester):
     pytester.makepyfile(
         small_celery="""
