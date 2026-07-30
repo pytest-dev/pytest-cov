@@ -206,6 +206,31 @@ def test_central(pytester, testdir, prop):
     assert result.ret == 0
 
 
+def test_central_explicit_cov_overrides_source_pkgs(testdir):
+    testdir.tmpdir.join('pkga').ensure_dir().join('__init__.py').write('def fa():\n    return 1\n')
+    testdir.tmpdir.join('pkgb').ensure_dir().join('__init__.py').write('def fb():\n    return 2\n')
+    script = testdir.makepyfile("""
+        from pkga import fa
+        from pkgb import fb
+
+        def test_both():
+            assert fa() == 1
+            assert fb() == 2
+    """)
+    testdir.tmpdir.join('.coveragerc').write("""
+[run]
+source_pkgs =
+    pkga
+    pkgb
+""")
+
+    result = testdir.runpytest('-v', '--cov=pkga', '--cov-report=term-missing', script)
+
+    result.stdout.fnmatch_lines(['*_ coverage: platform *, python * _*', 'pkga*100%*'])
+    assert not any(line.startswith('pkgb') for line in result.stdout.lines)
+    assert result.ret == 0
+
+
 def test_annotate(testdir):
     script = testdir.makepyfile(SCRIPT)
 
