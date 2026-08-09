@@ -257,6 +257,27 @@ def test_html(testdir):
     assert result.ret == 0
 
 
+def test_html_ignores_non_python_sources(testdir):
+    template = testdir.makefile('.jinja2', template='{% invalid jinja %}')
+    script = testdir.makepyfile(
+        f"""
+def test_template():
+    exec(compile('value = 1\\n', {str(template)!r}, 'exec'))
+"""
+    )
+
+    result = testdir.runpytest('-v', '--cov', '--cov-report=html', script)
+
+    result.stdout.fnmatch_lines(
+        [
+            '*_ coverage: platform *, python * _*',
+            'Coverage HTML written to dir htmlcov',
+            '*1 passed*',
+        ]
+    )
+    assert result.ret == 0
+
+
 def test_html_output_dir(testdir):
     script = testdir.makepyfile(SCRIPT)
 

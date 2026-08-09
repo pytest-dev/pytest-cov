@@ -186,7 +186,19 @@ class CovController:
         # Produce html report if wanted.
         if 'html' in self.cov_report:
             output = self.cov_report['html']
-            self.cov.html_report(ignore_errors=True, directory=output)
+            html_options = {}
+            if (
+                self.cov.config.source is None
+                and not self.cov.config.source_pkgs
+                and not self.cov.config.run_include
+                and self.cov.config.report_include is None
+            ):
+                # Coverage data can include executable code compiled from
+                # non-Python sources, such as Jinja templates.  Restrict the
+                # default HTML report to Python files so the report generator
+                # does not try to parse those sources as Python.
+                html_options['include'] = ['*.py']
+            self.cov.html_report(ignore_errors=True, directory=output, **html_options)
             stream.write(f'Coverage HTML written to dir {self.cov.config.html_dir if output is None else output}\n')
 
         # Produce xml report if wanted.
