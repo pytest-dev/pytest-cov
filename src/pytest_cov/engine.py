@@ -60,6 +60,7 @@ class CovController:
         self.cov_append = options.cov_append
         self.cov_branch = options.cov_branch
         self.cov_precision = options.cov_precision
+        self.cov_context = getattr(options, 'cov_context', None)
         self.config = config
         self.nodeid = nodeid
 
@@ -71,6 +72,19 @@ class CovController:
         self.topdir = os.fspath(Path.cwd())
         self.is_collocated = None
         self.started = False
+
+    @property
+    def _coverage_core(self):
+        """Return the coverage core to use.
+
+        When dynamic contexts are requested (--cov-context=test),
+        force the ``trace`` core because ``sysmon`` (the default on
+        Python 3.14+) does not support them and coveragepy >= 7.15.3
+        emits a warning.  (#755)
+        """
+        if self.cov_context == 'test':
+            return 'trace'
+        return None
 
     @contextlib.contextmanager
     def ensure_topdir(self):
@@ -234,12 +248,15 @@ class Central(CovController):
 
     @_ensure_topdir
     def start(self):
-        self.cov = coverage.Coverage(
+        cov_kwargs = dict(
             source=self.cov_source,
             branch=self.cov_branch,
             data_suffix=True,
             config_file=self.cov_config,
         )
+        if self._coverage_core is not None:
+            cov_kwargs['core'] = self._coverage_core
+        self.cov = coverage.Coverage(**cov_kwargs)
         if self.cov.config.dynamic_context == 'test_function':
             message = (
                 'Detected dynamic_context=test_function in coverage configuration. '
@@ -284,12 +301,15 @@ class DistMaster(CovController):
 
     @_ensure_topdir
     def start(self):
-        self.cov = coverage.Coverage(
+        cov_kwargs = dict(
             source=self.cov_source,
             branch=self.cov_branch,
             data_suffix=True,
             config_file=self.cov_config,
         )
+        if self._coverage_core is not None:
+            cov_kwargs['core'] = self._coverage_core
+        self.cov = coverage.Coverage(**cov_kwargs)
         if self.cov.config.dynamic_context == 'test_function':
             raise DistCovError(
                 'Detected dynamic_context=test_function in coverage configuration. '
@@ -387,12 +407,15 @@ class DistWorker(CovController):
             self.cov_config = self.cov_config.replace(master_topdir, worker_topdir)
 
         # Erase any previous data and start coverage.
-        self.cov = coverage.Coverage(
+        cov_kwargs = dict(
             source=self.cov_source,
             branch=self.cov_branch,
             data_suffix=True,
             config_file=self.cov_config,
         )
+        if self._coverage_core is not None:
+            cov_kwargs['core'] = self._coverage_core
+        self.cov = coverage.Coverage(**cov_kwargs)
         # Prevent workers from issuing module-not-measured type of warnings (expected for a workers to not have coverage in all the files).
         self.cov._warn_unimported_source = False
         self.cov.start()
