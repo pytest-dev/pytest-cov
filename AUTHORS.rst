@@ -2,6 +2,7 @@
 Authors
 =======
 
+* GruffElixir - https://github.com/GruffElixir
 * Marc Schlaich - https://github.com/schlamar (\http://www.schlamar.org)
 * Rick van Hattem - http://wol.ph
 * Buck Evan - https://github.com/bukzor

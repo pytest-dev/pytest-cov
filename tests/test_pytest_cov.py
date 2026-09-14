@@ -1515,6 +1515,20 @@ def test_basic():
     result.stdout.fnmatch_lines(['mod* 2 * 1 * 50% * 2'])
 
 
+def test_no_cover_marker_with_no_cov(testdir):
+    script = testdir.makepyfile(
+        """
+import pytest
+
+@pytest.mark.no_cover
+def test_basic():
+    pass
+"""
+    )
+    result = testdir.runpytest('-p', 'pytest_cov.plugin', '-v', '--cov=.', '--no-cov', script)
+    assert result.ret == 0
+
+
 def test_no_cover_fixture(testdir):
     testdir.makepyfile(mod=MODULE)
     script = testdir.makepyfile(
