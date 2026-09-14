@@ -2,6 +2,9 @@
 Changelog
 =========
 
+* Fixed no_cover markers and fixtures when coverage is disabled with --no-cov.
+  Fixes #590.
+
 7.1.0 (2026-03-21)
 ------------------
 
