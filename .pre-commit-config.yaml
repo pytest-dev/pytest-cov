@@ -16,6 +16,10 @@ repos:
     hooks:
       - id: taplo-format
       - id: taplo-lint
+        # Skip schema validation until a taplo release includes
+        # https://github.com/tamasfe/taplo/pull/866
+        # (see https://github.com/ComPWA/taplo-pre-commit/issues/35)
+        args: [--no-schema]
   - repo: https://github.com/pre-commit/pre-commit-hooks
     rev: v6.0.0
     hooks:
