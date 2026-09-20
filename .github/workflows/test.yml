@@ -150,6 +150,24 @@ jobs:
             python_arch: 'arm64'
             tox_env: 'py314-pytest90-xdist38-coverage713'
             os: 'macos-latest'
+          - name: 'py315-pytest90-xdist38-coverage713 (ubuntu)'
+            python: '3.15'
+            toxpython: 'python3.15'
+            python_arch: 'x64'
+            tox_env: 'py315-pytest90-xdist38-coverage713'
+            os: 'ubuntu-latest'
+          - name: 'py315-pytest90-xdist38-coverage713 (windows)'
+            python: '3.15'
+            toxpython: 'python3.15'
+            python_arch: 'x64'
+            tox_env: 'py315-pytest90-xdist38-coverage713'
+            os: 'windows-latest'
+          - name: 'py315-pytest90-xdist38-coverage713 (macos)'
+            python: '3.15'
+            toxpython: 'python3.15'
+            python_arch: 'arm64'
+            tox_env: 'py315-pytest90-xdist38-coverage713'
+            os: 'macos-latest'
           - name: 'pypy310-pytest90-xdist38-coverage713 (ubuntu)'
             python: 'pypy-3.10'
             toxpython: 'pypy3.10'
@@ -230,6 +248,7 @@ jobs:
       with:
         python-version: ${{ matrix.python }}
         architecture: ${{ matrix.python_arch }}
+        allow-prereleases: true
     - name: install dependencies
       run: |
         python -mpip install --progress-bar=off -r ci/requirements.txt
