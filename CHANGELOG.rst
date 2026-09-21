@@ -296,7 +296,7 @@ Changelog
 * Fixed internal failures that are caused by tests that change the current working directory by
   ensuring a consistent working directory when coverage is called.
   See `#306 <https://github.com/pytest-dev/pytest-cov/issues/306>`_ and
-  `coveragepy#881 <https://github.com/nedbat/coveragepy/issues/881>`_
+  `coveragepy#881 <https://github.com/coveragepy/coveragepy/issues/881>`_
 
 2.8.1 (2019-10-05)
 ------------------
