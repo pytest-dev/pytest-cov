@@ -95,6 +95,7 @@ jobs:
       with:
         python-version: {{ '${{ matrix.python }}' }}
         architecture: {{ '${{ matrix.python_arch }}' }}
+        allow-prereleases: true
     - name: install dependencies
       run: |
         python -mpip install --progress-bar=off -r ci/requirements.txt

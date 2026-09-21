@@ -10,7 +10,6 @@ import socket
 import sys
 import warnings
 from pathlib import Path
-from typing import Union
 
 import coverage
 from coverage.data import CoverageData
@@ -52,7 +51,7 @@ def _ensure_topdir(meth):
 class CovController:
     """Base class for different plugin implementations."""
 
-    def __init__(self, options: argparse.Namespace, config: Union[None, object], nodeid: Union[None, str]):
+    def __init__(self, options: argparse.Namespace, config: object | None, nodeid: str | None):
         """Get some common config used by multiple derived classes."""
         self.cov_source = options.cov_source
         self.cov_report = options.cov_report
