@@ -2,6 +2,9 @@
 Changelog
 =========
 
+* Avoid HTML coverage reports trying to parse non-Python source files such as
+  Jinja templates. See `#748 <https://github.com/pytest-dev/pytest-cov/issues/748>`_.
+
 7.1.0 (2026-03-21)
 ------------------
 
