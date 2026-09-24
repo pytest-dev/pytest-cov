@@ -55,6 +55,10 @@ class CovController:
     def __init__(self, options: argparse.Namespace, config: Union[None, object], nodeid: Union[None, str]):
         """Get some common config used by multiple derived classes."""
         self.cov_source = options.cov_source
+        # An explicit --cov=... must narrow measurement to exactly what was asked for.
+        # Passing source_pkgs=[] overrides any source_pkgs in the coverage config, which
+        # would otherwise be added to the sources and widen the report again.
+        self.cov_source_pkgs = None if options.cov_source is None else []
         self.cov_report = options.cov_report
         self.cov_config = options.cov_config
         self.cov_append = options.cov_append
@@ -236,6 +240,7 @@ class Central(CovController):
     def start(self):
         self.cov = coverage.Coverage(
             source=self.cov_source,
+            source_pkgs=self.cov_source_pkgs,
             branch=self.cov_branch,
             data_suffix=True,
             config_file=self.cov_config,
@@ -249,6 +254,7 @@ class Central(CovController):
 
         self.combining_cov = coverage.Coverage(
             source=self.cov_source,
+            source_pkgs=self.cov_source_pkgs,
             branch=self.cov_branch,
             data_suffix=f'{filename_suffix(True)}.combine',
             data_file=os.path.abspath(self.cov.config.data_file),  # noqa: PTH100
@@ -286,6 +292,7 @@ class DistMaster(CovController):
     def start(self):
         self.cov = coverage.Coverage(
             source=self.cov_source,
+            source_pkgs=self.cov_source_pkgs,
             branch=self.cov_branch,
             data_suffix=True,
             config_file=self.cov_config,
@@ -301,6 +308,7 @@ class DistMaster(CovController):
         self.cov._warn_preimported_source = False
         self.combining_cov = coverage.Coverage(
             source=self.cov_source,
+            source_pkgs=self.cov_source_pkgs,
             branch=self.cov_branch,
             data_suffix=f'{filename_suffix(True)}.combine',
             data_file=os.path.abspath(self.cov.config.data_file),  # noqa: PTH100
@@ -389,6 +397,7 @@ class DistWorker(CovController):
         # Erase any previous data and start coverage.
         self.cov = coverage.Coverage(
             source=self.cov_source,
+            source_pkgs=self.cov_source_pkgs,
             branch=self.cov_branch,
             data_suffix=True,
             config_file=self.cov_config,
