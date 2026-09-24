@@ -1833,6 +1833,29 @@ dynamic_context = "test_function"
         )
 
 
+def test_xdist_enabled_after_initial_conftests(pytester, testdir):
+    """A plugin that only enables xdist after pytest-cov looked at the command
+    line (e.g. one that reacts to "addopts" from a config file) used to crash
+    with a cryptic ``AttributeError: 'Central' object has no attribute
+    'configure_node'``. See #740.
+    """
+    testdir.makepyfile(test_1='def test_1():\n    assert True\n')
+    testdir.makepyfile(
+        late_xdist_plugin="""
+        def pytest_load_initial_conftests(early_config, parser, args):
+            # Simulate a plugin that decides to enable xdist only after
+            # pytest-cov's own `tryfirst=True` pytest_load_initial_conftests
+            # has already run and started coverage measurement centrally.
+            args.extend(['-n', '2'])
+        """
+    )
+    testdir.syspathinsert()
+    result = testdir.runpytest('-v', '--cov=.', '--cov-report=', '-p', 'late_xdist_plugin')
+    output = '\n'.join(result.outlines + result.errlines)
+    assert 'pytest_cov.DistCovError: pytest-xdist workers were started' in output
+    assert 'AttributeError' not in output
+
+
 @xdist_params
 def test_simple(pytester, testdir, opts, prop):
     script = testdir.makepyfile(test_1=prop.code)
