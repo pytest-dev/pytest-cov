@@ -409,8 +409,14 @@ class CovPlugin:
             terminalreporter.write(report)
 
         if self.options.cov_fail_under is not None and self.options.cov_fail_under > 0:
+            # import coverage lazily here to avoid importing
+            # it for unit tests that don't need it
+            from coverage.results import should_fail_under
+
             self.write_heading(terminalreporter)
-            failed = self.cov_total < self.options.cov_fail_under
+            # Use the same predicate that decided the exit code in
+            # pytest_sessionfinish, so this banner cannot contradict it.
+            failed = should_fail_under(self.cov_total, self.options.cov_fail_under, self.options.cov_precision)
             markup = {'red': True, 'bold': True} if failed else {'green': True}
             message = '{fail}Required test coverage of {required}% {reached}. Total coverage: {actual:.2f}%\n'.format(
                 required=self.options.cov_fail_under,

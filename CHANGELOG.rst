@@ -2,6 +2,17 @@
 Changelog
 =========
 
+* Fixed the terminal summary contradicting the exit code when ``--cov-fail-under`` is used.
+
+  The exit code is decided with coverage.py's ``should_fail_under``, which compares the total rounded to
+  ``[report] precision``, but the summary banner compared the raw total. When the raw total was below the
+  threshold and rounded up to meet it, the run exited 0 while printing a red
+  ``FAIL Required test coverage of N% not reached``.
+  The banner now uses the same predicate as the exit code, so ``[report] precision`` is honoured in both.
+  See `#638 <https://github.com/pytest-dev/pytest-cov/issues/638>`_
+  (`#728 <https://github.com/pytest-dev/pytest-cov/issues/728>`_ reports the same inconsistency
+  from the opposite direction).
+
 7.1.0 (2026-03-21)
 ------------------
 

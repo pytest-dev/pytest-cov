@@ -535,6 +535,31 @@ precision = 3
     result.stdout.fnmatch_lines(['FAIL Required test coverage of 88.89% not reached. Total coverage: 88.89%'])
 
 
+def test_cov_min_float_value_rounds_up_to_threshold(testdir):
+    # The summary banner must agree with the exit code. SCRIPT covers
+    # 88.888...%, which rounds to 89% at the default precision of 0, so the
+    # run passes. The banner used to compare the raw total instead and
+    # printed a red FAIL on a passing run. See #638 and #728.
+    script = testdir.makepyfile(SCRIPT)
+
+    result = testdir.runpytest('-v', f'--cov={script.dirpath()}', '--cov-report=term-missing', '--cov-fail-under=88.9', script)
+    assert result.ret == 0
+    result.stdout.fnmatch_lines(['Required test coverage of 88.9% reached. Total coverage: 88.89%'])
+
+
+def test_cov_min_float_value_rounds_up_to_threshold_with_precision(testdir):
+    # Same divergence, driven by an explicit [report] precision as in #638.
+    script = testdir.makepyfile(SCRIPT)
+    testdir.tmpdir.join('.coveragerc').write("""
+[report]
+precision = 1
+""")
+
+    result = testdir.runpytest('-v', f'--cov={script.dirpath()}', '--cov-report=term-missing', '--cov-fail-under=88.9', script)
+    assert result.ret == 0
+    result.stdout.fnmatch_lines(['Required test coverage of 88.9% reached. Total coverage: 88.89%'])
+
+
 def test_cov_min_float_value_not_reached_cli(testdir):
     script = testdir.makepyfile(SCRIPT)
     result = testdir.runpytest(
