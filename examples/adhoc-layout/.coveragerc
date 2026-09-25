@@ -5,9 +5,7 @@ source =
 
 [run]
 branch = true
-source =
-    example
-    .
+source_pkgs = example
 
 [report]
 precision = 2
