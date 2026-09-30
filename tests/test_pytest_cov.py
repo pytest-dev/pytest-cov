@@ -1112,6 +1112,30 @@ patch = subprocess
     assert result.ret == 0
 
 
+def test_dist_option_without_numprocesses_uses_central_controller(monkeypatch):
+    started = []
+    monkeypatch.setattr(
+        pytest_cov.plugin.CovPlugin,
+        'start',
+        lambda self, controller_cls, config=None, nodeid=None: started.append(
+            controller_cls.__name__
+        ),
+    )
+    options = SimpleNamespace(
+        cov_report={},
+        cov_source=['.'],
+        dist='loadgroup',
+        distload=False,
+        no_cov=False,
+        numprocesses=None,
+        tx=[],
+    )
+
+    pytest_cov.plugin.CovPlugin(options, None)
+
+    assert started == ['Central']
+
+
 @pytest.mark.skipif('sys.platform == "win32" and platform.python_implementation() == "PyPy"')
 def test_dist_subprocess_collocated(testdir):
     testdir.makepyprojecttoml(
