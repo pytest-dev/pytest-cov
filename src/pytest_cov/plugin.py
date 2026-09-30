@@ -232,7 +232,15 @@ class CovPlugin:
         self.options = options
         self._wrote_heading = False
 
-        is_dist = getattr(options, 'numprocesses', False) or getattr(options, 'distload', False) or getattr(options, 'dist', 'no') != 'no'
+        # The distribution mode only takes effect when xdist has execution
+        # environments. ``--dist`` may be configured without ``-n``; in that
+        # case pytest still runs in the current process and needs the central
+        # controller to configure subprocess coverage.
+        is_dist = (
+            bool(getattr(options, 'numprocesses', False))
+            or getattr(options, 'distload', False)
+            or (getattr(options, 'dist', 'no') != 'no' and bool(getattr(options, 'tx', ())))
+        )
         if getattr(options, 'no_cov', False):
             self._disabled = True
             return
