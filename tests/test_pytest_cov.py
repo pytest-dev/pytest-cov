@@ -1638,6 +1638,20 @@ def test_pyproject_toml(testdir):
     result.stdout.fnmatch_lines([f'test_pyproject_toml* {EXCLUDED_RESULT}'])
 
 
+def test_config_at_rootdir_used_from_subdirectory(testdir, monkeypatch):
+    # The project's coverage config lives at the rootdir; running pytest from a
+    # subdirectory must still pick it up, instead of looking only in the cwd
+    # (#692).
+    testdir.makefile('.toml', pyproject=PYPROJECTTOML)
+    subdir = testdir.mkdir('subdir')
+    script = subdir.join('test_in_subdir.py')
+    script.write(EXCLUDED_TEST)
+    monkeypatch.chdir(subdir)
+    result = testdir.runpytest('-v', f'--cov={subdir}', '--cov-report=term-missing', 'test_in_subdir.py')
+    assert result.ret == 0
+    result.stdout.fnmatch_lines([f'*test_in_subdir* {EXCLUDED_RESULT}'])
+
+
 @pytest.mark.skipif('sys.platform == "win32" and platform.python_implementation() == "PyPy"')
 def test_coveragerc_dist(testdir):
     testdir.makefile('', coveragerc=COVERAGERC)

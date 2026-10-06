@@ -200,7 +200,11 @@ def pytest_load_initial_conftests(early_config, parser, args):
             break
 
     if early_config.known_args_namespace.cov_source:
-        plugin = CovPlugin(options, early_config.pluginmanager)
+        plugin = CovPlugin(
+            options,
+            early_config.pluginmanager,
+            rootdir=getattr(early_config, 'rootpath', None),
+        )
         early_config.pluginmanager.register(plugin, '_cov')
 
 
@@ -212,7 +216,14 @@ class CovPlugin:
     distributed worker.
     """
 
-    def __init__(self, options: argparse.Namespace, pluginmanager, start=True, no_cov_should_warn=False):
+    def __init__(
+        self,
+        options: argparse.Namespace,
+        pluginmanager,
+        start=True,
+        no_cov_should_warn=False,
+        rootdir=None,
+    ):
         """Creates a coverage pytest plugin.
 
         We read the rc file that coverage uses to get the data file
@@ -231,6 +242,10 @@ class CovPlugin:
         self._disabled = False
         self.options = options
         self._wrote_heading = False
+        # pytest's rootdir, used by the controllers to anchor coverage's
+        # config/data file lookup to the project root rather than the current
+        # working directory (#692).
+        self.rootdir = rootdir
 
         # The distribution mode only takes effect when xdist has execution
         # environments. ``--dist`` may be configured without ``-n``; in that
@@ -270,7 +285,7 @@ class CovPlugin:
 
             config = Config()
 
-        self.cov_controller = controller_cls(self.options, config, nodeid)
+        self.cov_controller = controller_cls(self.options, config, nodeid, self.rootdir)
         self.cov_controller.start()
         self._started = True
         self._start_path = Path.cwd()

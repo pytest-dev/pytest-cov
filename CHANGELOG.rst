@@ -11,6 +11,11 @@ Unreleased
   Contributed by xuu33030.
 * Fixed ``--cov=`` being interpreted as an empty module name, which collected no coverage data.
   An empty value now behaves like bare ``--cov`` and preserves sources configured in coverage's configuration file.
+* Coverage's configuration file (and the data file) are now resolved relative to
+  pytest's rootdir instead of the current working directory, so running pytest
+  from a subdirectory no longer ignores the project's ``pyproject.toml`` /
+  ``setup.cfg`` / ``tox.ini`` / ``.coveragerc``.
+  See `#692 <https://github.com/pytest-dev/pytest-cov/issues/692>`_.
 
 7.1.0 (2026-03-21)
 ------------------
