@@ -51,8 +51,14 @@ def _ensure_topdir(meth):
 class CovController:
     """Base class for different plugin implementations."""
 
-    def __init__(self, options: argparse.Namespace, config: object | None, nodeid: str | None):
-        """Get some common config used by multiple derived classes."""
+    def __init__(
+        self,
+        options: argparse.Namespace,
+        config: Union[None, object],
+        nodeid: Union[None, str],
+        rootdir: Union[None, str, Path] = None,
+    ):
+        """Get some common config used to get to the various derived classes."""
         self.cov_source = options.cov_source
         self.cov_report = options.cov_report
         self.cov_config = options.cov_config
@@ -67,7 +73,14 @@ class CovController:
         self.data_file = None
         self.node_descs = set()
         self.failed_workers = []
-        self.topdir = os.fspath(Path.cwd())
+        # Coverage resolves a relative ``config_file`` (the default
+        # ``.coveragerc``, and the ``pyproject.toml`` / ``setup.cfg`` /
+        # ``tox.ini`` fallbacks) and a relative ``data_file`` against the
+        # current working directory. pytest's rootdir is what the user means by
+        # "the project", so anchor to it when we know it -- otherwise running
+        # from a subdirectory silently ignores the project's coverage config
+        # (#692). It only differs from ``cwd`` in exactly that case.
+        self.topdir = os.fspath(rootdir) if rootdir is not None else os.fspath(Path.cwd())
         self.is_collocated = None
         self.started = False
 
