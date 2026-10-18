@@ -1548,7 +1548,7 @@ def test_basic():
     pass
 """
     )
-    result = testdir.runpytest('-p', 'pytest_cov.plugin', '-v', '--cov=.', '--no-cov', script)
+    result = testdir.runpytest('-v', '--cov=.', '--no-cov', script)
     assert result.ret == 0
 
 
