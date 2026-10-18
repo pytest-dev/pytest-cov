@@ -2,6 +2,9 @@
 Changelog
 =========
 
+* Fixed ``--cov=`` being interpreted as an empty module name, which collected no coverage data.
+  An empty value now behaves like bare ``--cov`` and preserves sources configured in coverage's configuration file.
+
 * Fixed no_cover markers and fixtures when coverage is disabled with --no-cov.
   Fixes #590.
 
