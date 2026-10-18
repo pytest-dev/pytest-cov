@@ -2020,7 +2020,7 @@ def find_labels(text, pattern):
     return all_labels
 
 
-# The contexts and their labels in contextual.py
+# The contexts and their labels in contextful.py
 EXPECTED_CONTEXTS = {
     '': 'c0',
     'test_contexts.py::test_01|run': 'r1',
@@ -2057,7 +2057,7 @@ EXPECTED_CONTEXTS = {
 
 @xdist_params
 def test_contexts(pytester, testdir, opts):
-    with Path(__file__).parent.joinpath('contextual.py').open() as f:
+    with Path(__file__).parent.joinpath('contextful.py').open() as f:
         contextual_tests = f.read()
     script = testdir.makepyfile(contextual_tests)
     testdir.tmpdir.join('.coveragerc').write("""[run]
