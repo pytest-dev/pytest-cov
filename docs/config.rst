@@ -59,7 +59,7 @@ CLI options:
     pointless to set those options in your :file:`.coveragerc`.
 
     If you use the ``--cov=something`` option (with a value) then coverage's ``source`` option will also get overridden.
-    If you have multiple sources it might be easier to set those in :file:`.coveragerc` and always use ``--cov`` (without a value)
+    If you have multiple sources it might be easier to set those in :file:`.coveragerc` and always use ``--cov=`` (with an empty value)
     instead of having a long command line with ``--cov=pkg1 --cov=pkg2 --cov=pkg3 ...``.
 
     If you use the ``--cov-branch`` option then coverage's ``branch`` option will also get overridden.
