@@ -6,16 +6,20 @@ exclude: '^(\.tox|ci/templates|\.bumpversion\.cfg)(/|$)'
 # Note the order is intentional to avoid multiple passes of the hooks
 repos:
   - repo: https://github.com/astral-sh/ruff-pre-commit
-    rev: v0.15.4
+    rev: v0.17.1
     hooks:
-      - id: ruff
-        args: [--fix, --exit-non-zero-on-fix, --show-fixes, --unsafe-fixes]
+      - id: ruff-check
+        # Using --unsafe-fixes can change code behavior
+        args: [--fix, --unsafe-fixes, --exit-non-zero-on-fix, --show-fixes]
       - id: ruff-format
-  - repo: https://github.com/ComPWA/taplo-pre-commit
-    rev: v0.9.3
+  - repo: https://github.com/tombi-toml/tombi-pre-commit
+    rev: v1.8.7
     hooks:
-      - id: taplo-format
-      - id: taplo-lint
+      - id: tombi-format
+        # args: [ "--offline" ]
+      - id: tombi-lint
+        # args: [ "--offline" ]
+    # Should you use this offline, uncomment those args
   - repo: https://github.com/pre-commit/pre-commit-hooks
     rev: v6.0.0
     hooks:
@@ -24,3 +28,7 @@ repos:
       - id: mixed-line-ending
         args: [--fix=lf]
       - id: debug-statements
+  - repo: https://github.com/crate-ci/typos
+    rev: v1.51.1
+    hooks:
+      - id: typos

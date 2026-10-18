@@ -689,7 +689,7 @@ source = mod
 
 
 @xdist_params
-def test_borken_cwd(pytester, testdir, monkeypatch, opts):
+def test_broken_cwd(pytester, testdir, monkeypatch, opts):
     testdir.makepyfile(
         mod="""
 def foobar(a, b):
@@ -706,7 +706,7 @@ import mod
 
 @pytest.fixture
 def bad():
-    path = tempfile.mkdtemp('test_borken_cwd')
+    path = tempfile.mkdtemp('test_broken_cwd')
     os.chdir(path)
     yield
     try:
@@ -1140,9 +1140,7 @@ def test_dist_option_without_numprocesses_uses_central_controller(monkeypatch):
     monkeypatch.setattr(
         pytest_cov.plugin.CovPlugin,
         'start',
-        lambda self, controller_cls, config=None, nodeid=None: started.append(
-            controller_cls.__name__
-        ),
+        lambda self, controller_cls, config=None, nodeid=None: started.append(controller_cls.__name__),
     )
     options = SimpleNamespace(
         cov_report={},
@@ -2022,7 +2020,7 @@ def find_labels(text, pattern):
     return all_labels
 
 
-# The contexts and their labels in contextful.py
+# The contexts and their labels in contextual.py
 EXPECTED_CONTEXTS = {
     '': 'c0',
     'test_contexts.py::test_01|run': 'r1',
@@ -2059,9 +2057,9 @@ EXPECTED_CONTEXTS = {
 
 @xdist_params
 def test_contexts(pytester, testdir, opts):
-    with Path(__file__).parent.joinpath('contextful.py').open() as f:
-        contextful_tests = f.read()
-    script = testdir.makepyfile(contextful_tests)
+    with Path(__file__).parent.joinpath('contextual.py').open() as f:
+        contextual_tests = f.read()
+    script = testdir.makepyfile(contextual_tests)
     testdir.tmpdir.join('.coveragerc').write("""[run]
 core = ctrace""")
 
@@ -2081,7 +2079,7 @@ core = ctrace""")
     test_context_path = next(iter(measured))
     assert test_context_path.lower() == os.path.abspath('test_contexts.py').lower()  # noqa: PTH100
 
-    line_data = find_labels(contextful_tests, r'[crst]\d+(?:-\d+)?')
+    line_data = find_labels(contextual_tests, r'[crst]\d+(?:-\d+)?')
     for context, label in EXPECTED_CONTEXTS.items():
         if context == '':
             continue

@@ -49,7 +49,7 @@ Unreleased
 * Dropped support for subprocesses measurement.
 
   It was a feature added long time ago when coverage lacked a nice way to measure subprocesses created in tests.
-  It relied on a ``.pth`` file, there was no way to opt-out and it created bad interations
+  It relied on a ``.pth`` file, there was no way to opt-out and it created bad interactions
   with `coverage's new patch system <https://coverage.readthedocs.io/en/latest/config.html#run-patch>`_ added
   in `7.10 <https://coverage.readthedocs.io/en/7.10.6/changes.html#version-7-10-0-2025-07-24>`_.
 

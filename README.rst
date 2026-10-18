@@ -2,7 +2,6 @@
 Overview
 ========
 
-.. start-badges
 
 .. list-table::
     :stub-columns: 1
@@ -44,7 +43,6 @@ Overview
     :alt: Commits since latest release
     :target: https://github.com/pytest-dev/pytest-cov/compare/v7.1.0...master
 
-.. end-badges
 
 This plugin provides coverage functionality as a pytest plugin. Compared to just using ``coverage run`` this plugin does some extras:
 

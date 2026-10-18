@@ -54,9 +54,9 @@ class CovController:
     def __init__(
         self,
         options: argparse.Namespace,
-        config: Union[None, object],
-        nodeid: Union[None, str],
-        rootdir: Union[None, str, Path] = None,
+        config: object | None,
+        nodeid: str | None,
+        rootdir: str | Path | None = None,
     ):
         """Get some common config used to get to the various derived classes."""
         self.cov_source = options.cov_source

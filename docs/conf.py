@@ -18,7 +18,7 @@ if os.getenv('SPELLCHECK'):
 source_suffix = '.rst'
 master_doc = 'index'
 project = 'pytest-cov'
-year = '2010-2024'
+year = '2010-2026'
 author = 'pytest-cov contributors'
 copyright = f'{year}, {author}'
 version = release = '7.1.0'
@@ -26,14 +26,21 @@ version = release = '7.1.0'
 pygments_style = 'trac'
 templates_path = ['.']
 extlinks = {
-    'issue': ('https://github.com/pytest-dev/pytest-cov/issues/%s', '#'),
-    'pr': ('https://github.com/pytest-dev/pytest-cov/pull/%s', 'PR #'),
+    'issue': ('https://github.com/pytest-dev/pytest-cov/issues/%s', '#%s'),
+    'pr': ('https://github.com/pytest-dev/pytest-cov/pull/%s', 'PR #%s'),
 }
+
 html_theme = 'furo'
 html_theme_options = {
     'source_repository': 'https://github.com/pytest-dev/pytest-cov/',
     'source_branch': 'master',
     'source_directory': 'docs/',
+    'footer_icons': [
+        {
+            'url': 'https://github.com/pytest-dev/pytest-cov/',
+            'html': 'github.com/pytest-dev/pytest-cov',
+        },
+    ],
 }
 
 html_use_smartypants = True
