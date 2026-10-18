@@ -629,6 +629,29 @@ def test_central_coveragerc(pytester, testdir, prop):
     assert result.ret == 0
 
 
+@pytest.mark.parametrize('configured_source', [False, True])
+@pytest.mark.parametrize('options', [('--cov=',), ('--cov=missing', '--cov='), ('--cov=', '--cov=missing')])
+def test_empty_cov_source(testdir, configured_source, options):
+    testdir.makepyfile(
+        target='value = 42',
+        test_selected='import target\ndef test_value():\n    assert target.value == 42',
+        test_other='def test_other():\n    assert False',
+    )
+    testdir.tmpdir.join('.coveragerc').write('[run]\nsource = target\n' if configured_source else '[run]\n')
+
+    result = testdir.runpytest(*options, '--cov-report=', 'test_selected.py')
+
+    result.assert_outcomes(passed=1)
+    assert result.ret == 0
+    data = coverage.CoverageData(str(testdir.tmpdir.join('.coverage')))
+    data.read()
+    measured_files = {Path(filename).name for filename in data.measured_files()}
+    if configured_source:
+        assert measured_files == {'target.py'}
+    else:
+        assert {'target.py', 'test_selected.py'} <= measured_files
+
+
 @xdist_params
 def test_central_with_path_aliasing(pytester, testdir, monkeypatch, opts, prop):
     mod1 = testdir.mkdir('src').join('mod.py')

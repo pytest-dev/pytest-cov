@@ -181,10 +181,10 @@ def _prepare_cov_source(cov_source):
     """
     Prepare cov_source so that:
 
-     --cov --cov=foobar is equivalent to --cov (cov_source=None)
+     --cov --cov=foobar and --cov= --cov=foobar are equivalent to --cov (cov_source=None)
      --cov=foo --cov=bar is equivalent to cov_source=['foo', 'bar']
     """
-    return None if True in cov_source else [path for path in cov_source if path is not True]
+    return None if True in cov_source or '' in cov_source else [path for path in cov_source if path is not True]
 
 
 @pytest.hookimpl(tryfirst=True)
