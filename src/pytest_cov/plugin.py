@@ -287,6 +287,18 @@ class CovPlugin:
 
         self.cov_controller = controller_cls(self.options, config, nodeid, self.rootdir)
         self.cov_controller.start()
+        if self.options.cov_context == 'test':
+            core = self.cov_controller.cov._core
+            supports_contexts = getattr(core, 'supports_dynamic_contexts', None)
+            if supports_contexts is None:
+                # Older coverage versions only support contexts with the sys.settrace cores.
+                supports_contexts = core.systrace
+            if not supports_contexts:
+                self.cov_controller.pause()
+                raise pytest.UsageError(
+                    '--cov-context=test requires a coverage core that supports dynamic contexts.\n'
+                    'Configure [run] core = ctrace in .coveragerc (or [tool.coverage.run] core = "ctrace" in pyproject.toml).'
+                )
         self._started = True
         self._start_path = Path.cwd()
         cov_config = self.cov_controller.cov.config
