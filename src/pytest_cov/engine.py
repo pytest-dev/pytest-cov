@@ -355,6 +355,7 @@ class DistMaster(CovController):
             )
 
             cov_data = CoverageData(
+                basename=self.combining_cov.config.data_file,
                 suffix=data_suffix,
             )
             cov_data.loads(output['cov_worker_data'])

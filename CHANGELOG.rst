@@ -16,6 +16,7 @@ Unreleased
   from a subdirectory no longer ignores the project's ``pyproject.toml`` /
   ``setup.cfg`` / ``tox.ini`` / ``.coveragerc``.
   See `#692 <https://github.com/pytest-dev/pytest-cov/issues/692>`_.
+* Fixed coverage data from non-collocated xdist workers being ignored when a custom ``data_file`` is configured.
 
 7.1.0 (2026-03-21)
 ------------------

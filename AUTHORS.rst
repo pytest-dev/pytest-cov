@@ -70,3 +70,4 @@ Authors
 * Markéta Machová - https://github.com/MeggyCal
 * xuu33030 - https://github.com/xuu33030
 * dly - https://github.com/xlyy1
+* AryanRG - https://github.com/AryanRG
