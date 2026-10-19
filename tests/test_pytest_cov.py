@@ -180,14 +180,14 @@ def adjust_sys_path():
         ('branch=true', '', '9 * 85%', '3 * 100%'),
         ('', '--cov-branch', '9 * 85%', '3 * 100%'),
         ('', '', '9 * 89%', '3 * 100%'),
-        ('data_file=.cov/custom/data\nbranch=true', '--cov-branch', '9 * 85%', '3 * 100%'),
-        ('data_file=.cov/custom/data\nbranch=true', '', '9 * 85%', '3 * 100%'),
-        ('data_file=.cov/custom/data', '--cov-branch', '9 * 85%', '3 * 100%'),
-        ('data_file=.cov/custom/data', '', '9 * 89%', '3 * 100%'),
-        ('data_file=.coverage\nbranch=true', '--cov-branch', '9 * 85%', '3 * 100%'),
-        ('data_file=.coverage\nbranch=true', '', '9 * 85%', '3 * 100%'),
-        ('data_file=.coverage', '--cov-branch', '9 * 85%', '3 * 100%'),
-        ('data_file=.coverage', '', '9 * 89%', '3 * 100%'),
+        ('data_file=".cov/custom/data"\nbranch=true', '--cov-branch', '9 * 85%', '3 * 100%'),
+        ('data_file=".cov/custom/data"\nbranch=true', '', '9 * 85%', '3 * 100%'),
+        ('data_file=".cov/custom/data"', '--cov-branch', '9 * 85%', '3 * 100%'),
+        ('data_file=".cov/custom/data"', '', '9 * 89%', '3 * 100%'),
+        ('data_file=".coverage"\nbranch=true', '--cov-branch', '9 * 85%', '3 * 100%'),
+        ('data_file=".coverage"\nbranch=true', '', '9 * 85%', '3 * 100%'),
+        ('data_file=".coverage"', '--cov-branch', '9 * 85%', '3 * 100%'),
+        ('data_file=".coverage"', '', '9 * 89%', '3 * 100%'),
     ],
     ids=[
         'branch2x',
@@ -205,11 +205,13 @@ def adjust_sys_path():
     ],
 )
 def prop(request):
+    iniconf = request.param[0].replace('"', '')
     return SimpleNamespace(
         code=SCRIPT,
         code2=SCRIPT2,
         conf=request.param[0],
-        fullconf=f'[run]\n{request.param[0]}\n',
+        fullconf=f'[run]\n{iniconf}\n',
+        tomlconf=f'[run]\n{request.param[0]}\n',
         prefixedfullconf=f'[coverage:run]\n{request.param[0]}\n',
         args=request.param[1].split(),
         result=request.param[2],
@@ -1897,7 +1899,7 @@ def coverage_init(reg, options):
 [tool.coverage.run]
 plugins = ["coverageplugin"]
 concurrency = ["thread", "multiprocessing"]
-{prop.conf}
+{prop.tomlconf}
 """)
     result = testdir.runpytest('-v', f'--cov={script.dirpath()}', script, *opts.split() + prop.args)
     result.stdout.fnmatch_lines(
@@ -1913,7 +1915,7 @@ def test_dynamic_context(pytester, testdir, opts, prop):
     testdir.makepyprojecttoml(f"""
 [tool.coverage.run]
 dynamic_context = "test_function"
-{prop.conf}
+{prop.tomlconf}
 """)
     result = testdir.runpytest('-v', f'--cov={script.dirpath()}', script, *opts.split() + prop.args)
     if opts:
@@ -1932,7 +1934,7 @@ def test_simple(pytester, testdir, opts, prop):
     script = testdir.makepyfile(test_1=prop.code)
     testdir.makepyprojecttoml(f"""
 [tool.coverage.run]
-{prop.conf}
+{prop.tomlconf}
 """)
     result = testdir.runpytest('-v', f'--cov={script.dirpath()}', script, *opts.split() + prop.args)
     result.stdout.fnmatch_lines(
