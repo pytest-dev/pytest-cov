@@ -3,6 +3,13 @@ Reporting
 
 It is possible to generate any combination of the reports for a single test run.
 
+To measure branch coverage in addition to line coverage, pass ``--cov-branch``::
+
+    pytest --cov=myproj --cov-branch tests/
+
+This reports whether each conditional branch was exercised. The option can also be
+enabled in the coverage configuration; see :doc:`config` for details.
+
 The available reports are terminal (with or without missing line numbers shown), HTML, XML, JSON, Markdown (either in 'write' or 'append'
 mode to file), LCOV and annotated source code.
 
