@@ -6,6 +6,20 @@ Coverage.py 5.0 can record separate coverage data for `different contexts`_ duri
 one run of a test suite.  Pytest-cov can use this feature to record coverage
 data for each test individually, with the ``--cov-context=test`` option.
 
+This requires a coverage core that supports dynamic contexts. If the selected
+core does not support them, pytest-cov reports a usage error before running
+tests. For example, coverage.py's ``sysmon`` core currently does not support
+dynamic contexts and is the default on Python 3.14 and newer. Select a compatible
+core in ``.coveragerc``::
+
+    [run]
+    core = ctrace
+
+Or in ``pyproject.toml``::
+
+    [tool.coverage.run]
+    core = "ctrace"
+
 .. _different contexts: https://coverage.readthedocs.io/en/latest/contexts.html
 
 The context name recorded in the coverage.py database is the pytest test id,

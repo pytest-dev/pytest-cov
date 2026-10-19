@@ -2056,14 +2056,15 @@ EXPECTED_CONTEXTS = {
 
 
 @xdist_params
-def test_contexts(pytester, testdir, opts):
+@pytest.mark.parametrize('core', ['ctrace', 'pytrace'])
+def test_contexts(pytester, testdir, opts, core):
     with Path(__file__).parent.joinpath('contextful.py').open() as f:
         contextual_tests = f.read()
     script = testdir.makepyfile(contextual_tests)
-    testdir.tmpdir.join('.coveragerc').write("""[run]
-core = ctrace""")
+    testdir.tmpdir.join('.coveragerc').write(f"""[run]
+core = {core}""")
 
-    result = testdir.runpytest('-v', f'--cov={script.dirpath()}', '--cov-context=test', script, *opts.split())
+    result = testdir.runpytest('-v', '-Werror', f'--cov={script.dirpath()}', '--cov-context=test', script, *opts.split())
     assert result.ret == 0
     result.stdout.fnmatch_lines(
         [
@@ -2088,7 +2089,68 @@ core = ctrace""")
         assert line_data[label] == actual, f'Wrong lines for context {context!r}'
 
 
+@pytest.mark.skipif(sys.version_info < (3, 14), reason='Requires the sys.monitoring core')
+@pytest.mark.parametrize('core', ['sysmon', None])
+@pytest.mark.parametrize('opts', ['', '-n 2'])
+def test_contexts_unsupported_core(testdir, core, opts):
+    script = testdir.makepyfile('def test_example(): pass')
+    if core:
+        testdir.tmpdir.join('.coveragerc').write(f'[run]\ncore = {core}\n')
+    result = testdir.runpytest('-Werror', '--cov=.', '--cov-context=test', script, *opts.split())
+    assert result.ret == pytest.ExitCode.USAGE_ERROR
+    result.stderr.fnmatch_lines(
+        [
+            'ERROR: --cov-context=test requires a coverage core that supports dynamic contexts.*',
+            '*core = ctrace*',
+        ]
+    )
+    assert 'no-sysmon-context' not in result.stdout.str() + result.stderr.str()
+
+
+@pytest.mark.parametrize(
+    ('core', 'supported'),
+    [
+        (SimpleNamespace(supports_dynamic_contexts=True), True),
+        (SimpleNamespace(supports_dynamic_contexts=False, systrace=True), False),
+        (SimpleNamespace(systrace=True), True),
+        (SimpleNamespace(systrace=False), False),
+    ],
+)
+def test_contexts_core_capability(core, supported):
+    paused = []
+
+    class Controller:
+        def __init__(self, *args):
+            self.cov = SimpleNamespace(_core=core, config=SimpleNamespace())
+
+        def start(self):
+            pass
+
+        def pause(self):
+            paused.append(True)
+
+    options = SimpleNamespace(cov_source=['.'], cov_report=['term'], cov_context='test', cov_fail_under=None, cov_precision=None)
+    plugin = pytest_cov.plugin.CovPlugin(options, None, start=False)
+    if supported:
+        plugin.start(Controller)
+        assert plugin._started
+        assert not paused
+    else:
+        with pytest.raises(pytest.UsageError, match='requires a coverage core that supports dynamic contexts'):
+            plugin.start(Controller)
+        assert not plugin._started
+        assert paused == [True]
+
+
+def test_contexts_disabled(testdir):
+    script = testdir.makepyfile('def test_example(): pass')
+    result = testdir.runpytest('--cov=.', '--cov-context=test', '--no-cov', script)
+    result.assert_outcomes(passed=1)
+    assert 'requires a coverage core' not in result.stderr.str()
+
+
 def test_contexts_no_cover(testdir):
+    testdir.tmpdir.join('.coveragerc').write('[run]\ncore = ctrace\n')
     script = testdir.makepyfile("""
 import pytest
 

@@ -5,6 +5,10 @@ Changelog
 Unreleased
 ----------
 
+* Report an actionable usage error for ``--cov-context=test`` when the selected
+  coverage core does not support dynamic contexts, instead of losing context
+  data or issuing warnings during tests. Fixes #755.
+
 * Fixed no_cover markers and fixtures when coverage is disabled with --no-cov.
   Fixes #590.
 * Document the import-path difference between ``coverage run -m pytest`` and ``pytest --cov`` for users migrating from coverage.py.
