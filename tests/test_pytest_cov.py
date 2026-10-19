@@ -180,8 +180,29 @@ def adjust_sys_path():
         ('branch=true', '', '9 * 85%', '3 * 100%'),
         ('', '--cov-branch', '9 * 85%', '3 * 100%'),
         ('', '', '9 * 89%', '3 * 100%'),
+        ('data_file=.cov/custom/data\nbranch=true', '--cov-branch', '9 * 85%', '3 * 100%'),
+        ('data_file=.cov/custom/data\nbranch=true', '', '9 * 85%', '3 * 100%'),
+        ('data_file=.cov/custom/data', '--cov-branch', '9 * 85%', '3 * 100%'),
+        ('data_file=.cov/custom/data', '', '9 * 89%', '3 * 100%'),
+        ('data_file=.coverage\nbranch=true', '--cov-branch', '9 * 85%', '3 * 100%'),
+        ('data_file=.coverage\nbranch=true', '', '9 * 85%', '3 * 100%'),
+        ('data_file=.coverage', '--cov-branch', '9 * 85%', '3 * 100%'),
+        ('data_file=.coverage', '', '9 * 89%', '3 * 100%'),
     ],
-    ids=['branch2x', 'branch1c', 'branch1a', 'nobranch'],
+    ids=[
+        'branch2x',
+        'branch1c',
+        'branch1a',
+        'nobranch',
+        'cdfs-branch2x',  # `cdfs` as in `custom data file subdir`
+        'cdfs-branch1c',
+        'cdfs-branch1a',
+        'cdfs-nobranch',
+        'cdf-branch2x',
+        'cdf-branch1c',
+        'cdf-branch1a',
+        'cdf-nobranch',
+    ],
 )
 def prop(request):
     return SimpleNamespace(
@@ -964,8 +985,7 @@ def test_dist_collocated(pytester, testdir, prop):
 
 
 @pytest.mark.skipif('sys.platform == "win32" and platform.python_implementation() == "PyPy"')
-@pytest.mark.parametrize('data_file', ['.coverage', 'nested/coverage-data'])
-def test_dist_not_collocated(pytester, testdir, prop, data_file):
+def test_dist_not_collocated(pytester, testdir, prop):
     script = testdir.makepyfile(prop.code)
     dir1 = testdir.mkdir('dir1')
     dir2 = testdir.mkdir('dir2')
@@ -973,7 +993,6 @@ def test_dist_not_collocated(pytester, testdir, prop, data_file):
         f"""
 [run]
 {prop.conf}
-data_file = {data_file}
 [paths]
 source =
     .
@@ -998,9 +1017,6 @@ source =
 
     result.stdout.fnmatch_lines(['*_ coverage: platform *, python * _*', f'test_dist_not_collocated* {prop.result} *', '*10 passed*'])
     assert result.ret == 0
-    data = coverage.CoverageData(str(testdir.tmpdir.join(data_file)))
-    data.read()
-    assert data.lines(str(script))
 
 
 @pytest.mark.skipif('sys.platform == "win32" and platform.python_implementation() == "PyPy"')
