@@ -2,7 +2,6 @@
 Overview
 ========
 
-.. start-badges
 
 .. list-table::
     :stub-columns: 1
@@ -44,7 +43,6 @@ Overview
     :alt: Commits since latest release
     :target: https://github.com/pytest-dev/pytest-cov/compare/v7.1.0...master
 
-.. end-badges
 
 This plugin provides coverage functionality as a pytest plugin. Compared to just using ``coverage run`` this plugin does some extras:
 
@@ -69,6 +67,18 @@ Install with pip::
 For distributed testing support install pytest-xdist::
 
     pip install pytest-xdist
+
+Migrating from coverage.py
+--------------------------
+
+``coverage run -m pytest`` and ``pytest --cov`` do not necessarily import code the same way. The former starts pytest with
+``python -m``, which adds the current working directory to ``sys.path``. The latter uses the ``pytest`` command, which does
+not add it automatically. If coverage drops unexpectedly after switching, check that the package under test is installed
+in your environment (for example, with ``pip install -e .``) rather than relying on the working directory being importable.
+Run ``pytest --cov=myproj tests/`` from the same environment to confirm that tests still import your package.
+
+For subprocess coverage, pytest-cov 7 no longer installs the ``.pth`` file used by earlier releases; see
+`Upgrading from pytest-cov 6.3`_ below for the replacement.
 
 Upgrading from pytest-cov 6.3
 -----------------------------

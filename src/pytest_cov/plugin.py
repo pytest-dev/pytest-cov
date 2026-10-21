@@ -182,10 +182,10 @@ def _prepare_cov_source(cov_source):
     """
     Prepare cov_source so that:
 
-     --cov --cov=foobar is equivalent to --cov (cov_source=None)
+     --cov --cov=foobar and --cov= --cov=foobar are equivalent to --cov (cov_source=None)
      --cov=foo --cov=bar is equivalent to cov_source=['foo', 'bar']
     """
-    return None if True in cov_source else [path for path in cov_source if path is not True]
+    return None if True in cov_source or '' in cov_source else [path for path in cov_source if path is not True]
 
 
 @pytest.hookimpl(tryfirst=True)
@@ -201,7 +201,11 @@ def pytest_load_initial_conftests(early_config, parser, args):
             break
 
     if early_config.known_args_namespace.cov_source:
-        plugin = CovPlugin(options, early_config.pluginmanager)
+        plugin = CovPlugin(
+            options,
+            early_config.pluginmanager,
+            rootdir=getattr(early_config, 'rootpath', None),
+        )
         early_config.pluginmanager.register(plugin, '_cov')
 
 
@@ -213,7 +217,14 @@ class CovPlugin:
     distributed worker.
     """
 
-    def __init__(self, options: argparse.Namespace, pluginmanager, start=True, no_cov_should_warn=False):
+    def __init__(
+        self,
+        options: argparse.Namespace,
+        pluginmanager,
+        start=True,
+        no_cov_should_warn=False,
+        rootdir=None,
+    ):
         """Creates a coverage pytest plugin.
 
         We read the rc file that coverage uses to get the data file
@@ -232,8 +243,20 @@ class CovPlugin:
         self._disabled = False
         self.options = options
         self._wrote_heading = False
+        # pytest's rootdir, used by the controllers to anchor coverage's
+        # config/data file lookup to the project root rather than the current
+        # working directory (#692).
+        self.rootdir = rootdir
 
-        is_dist = getattr(options, 'numprocesses', False) or getattr(options, 'distload', False) or getattr(options, 'dist', 'no') != 'no'
+        # The distribution mode only takes effect when xdist has execution
+        # environments. ``--dist`` may be configured without ``-n``; in that
+        # case pytest still runs in the current process and needs the central
+        # controller to configure subprocess coverage.
+        is_dist = (
+            bool(getattr(options, 'numprocesses', False))
+            or getattr(options, 'distload', False)
+            or (getattr(options, 'dist', 'no') != 'no' and bool(getattr(options, 'tx', ())))
+        )
         if getattr(options, 'no_cov', False):
             self._disabled = True
             return
@@ -263,7 +286,7 @@ class CovPlugin:
 
             config = Config()
 
-        self.cov_controller = controller_cls(self.options, config, nodeid)
+        self.cov_controller = controller_cls(self.options, config, nodeid, self.rootdir)
         self.cov_controller.start()
         self._started = True
         self._start_path = Path.cwd()
@@ -452,6 +475,9 @@ class CovPlugin:
 
     @pytest.hookimpl(hookwrapper=True)
     def pytest_runtest_call(self, item):
+        if self._disabled or self.cov_controller is None:
+            yield
+            return
         if item.get_closest_marker('no_cover') or 'no_cover' in getattr(item, 'fixturenames', ()):
             self.cov_controller.pause()
             yield

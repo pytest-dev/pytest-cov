@@ -2,9 +2,20 @@
 Changelog
 =========
 
-7.1.1 (unreleased)
-------------------
+Unreleased
+----------
 
+* Fixed no_cover markers and fixtures when coverage is disabled with --no-cov.
+  Fixes #590.
+* Document the import-path difference between ``coverage run -m pytest`` and ``pytest --cov`` for users migrating from coverage.py.
+  Contributed by xuu33030.
+* Fixed ``--cov=`` being interpreted as an empty module name, which collected no coverage data.
+  An empty value now behaves like bare ``--cov`` and preserves sources configured in coverage's configuration file.
+* Coverage's configuration file (and the data file) are now resolved relative to
+  pytest's rootdir instead of the current working directory, so running pytest
+  from a subdirectory no longer ignores the project's ``pyproject.toml`` /
+  ``setup.cfg`` / ``tox.ini`` / ``.coveragerc``.
+  See `#692 <https://github.com/pytest-dev/pytest-cov/issues/692>`_.
 * Fixed a confusing ``AttributeError: 'Central' object has no attribute 'configure_node'`` crash
   that could happen when another plugin (for example one driven by ``addopts`` in a config file)
   enables pytest-xdist only after pytest-cov has already decided to run in centralised mode.
@@ -43,7 +54,7 @@ Changelog
 * Dropped support for subprocesses measurement.
 
   It was a feature added long time ago when coverage lacked a nice way to measure subprocesses created in tests.
-  It relied on a ``.pth`` file, there was no way to opt-out and it created bad interations
+  It relied on a ``.pth`` file, there was no way to opt-out and it created bad interactions
   with `coverage's new patch system <https://coverage.readthedocs.io/en/latest/config.html#run-patch>`_ added
   in `7.10 <https://coverage.readthedocs.io/en/7.10.6/changes.html#version-7-10-0-2025-07-24>`_.
 

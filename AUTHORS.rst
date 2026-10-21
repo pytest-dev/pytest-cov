@@ -2,6 +2,7 @@
 Authors
 =======
 
+* GruffElixir - https://github.com/GruffElixir
 * Marc Schlaich - https://github.com/schlamar (\http://www.schlamar.org)
 * Rick van Hattem - http://wol.ph
 * Buck Evan - https://github.com/bukzor
@@ -67,4 +68,6 @@ Authors
 * Ofek Lev - https://github.com/ofek
 * Art Pelling - https://github.com/artpelling
 * Markéta Machová - https://github.com/MeggyCal
+* xuu33030 - https://github.com/xuu33030
+* dly - https://github.com/xlyy1
 * pctablet505 - https://github.com/pctablet505

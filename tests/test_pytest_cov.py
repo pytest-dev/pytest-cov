@@ -629,6 +629,29 @@ def test_central_coveragerc(pytester, testdir, prop):
     assert result.ret == 0
 
 
+@pytest.mark.parametrize('configured_source', [False, True])
+@pytest.mark.parametrize('options', [('--cov=',), ('--cov=missing', '--cov='), ('--cov=', '--cov=missing')])
+def test_empty_cov_source(testdir, configured_source, options):
+    testdir.makepyfile(
+        target='value = 42',
+        test_selected='import target\ndef test_value():\n    assert target.value == 42',
+        test_other='def test_other():\n    assert False',
+    )
+    testdir.tmpdir.join('.coveragerc').write('[run]\nsource = target\n' if configured_source else '[run]\n')
+
+    result = testdir.runpytest(*options, '--cov-report=', 'test_selected.py')
+
+    result.assert_outcomes(passed=1)
+    assert result.ret == 0
+    data = coverage.CoverageData(str(testdir.tmpdir.join('.coverage')))
+    data.read()
+    measured_files = {Path(filename).name for filename in data.measured_files()}
+    if configured_source:
+        assert measured_files == {'target.py'}
+    else:
+        assert {'target.py', 'test_selected.py'} <= measured_files
+
+
 @xdist_params
 def test_central_with_path_aliasing(pytester, testdir, monkeypatch, opts, prop):
     mod1 = testdir.mkdir('src').join('mod.py')
@@ -666,7 +689,7 @@ source = mod
 
 
 @xdist_params
-def test_borken_cwd(pytester, testdir, monkeypatch, opts):
+def test_broken_cwd(pytester, testdir, monkeypatch, opts):
     testdir.makepyfile(
         mod="""
 def foobar(a, b):
@@ -683,7 +706,7 @@ import mod
 
 @pytest.fixture
 def bad():
-    path = tempfile.mkdtemp('test_borken_cwd')
+    path = tempfile.mkdtemp('test_broken_cwd')
     os.chdir(path)
     yield
     try:
@@ -1112,6 +1135,28 @@ patch = subprocess
     assert result.ret == 0
 
 
+def test_dist_option_without_numprocesses_uses_central_controller(monkeypatch):
+    started = []
+    monkeypatch.setattr(
+        pytest_cov.plugin.CovPlugin,
+        'start',
+        lambda self, controller_cls, config=None, nodeid=None: started.append(controller_cls.__name__),
+    )
+    options = SimpleNamespace(
+        cov_report={},
+        cov_source=['.'],
+        dist='loadgroup',
+        distload=False,
+        no_cov=False,
+        numprocesses=None,
+        tx=[],
+    )
+
+    pytest_cov.plugin.CovPlugin(options, None)
+
+    assert started == ['Central']
+
+
 @pytest.mark.skipif('sys.platform == "win32" and platform.python_implementation() == "PyPy"')
 def test_dist_subprocess_collocated(testdir):
     testdir.makepyprojecttoml(
@@ -1515,6 +1560,20 @@ def test_basic():
     result.stdout.fnmatch_lines(['mod* 2 * 1 * 50% * 2'])
 
 
+def test_no_cover_marker_with_no_cov(testdir):
+    script = testdir.makepyfile(
+        """
+import pytest
+
+@pytest.mark.no_cover
+def test_basic():
+    pass
+"""
+    )
+    result = testdir.runpytest('-v', '--cov=.', '--no-cov', script)
+    assert result.ret == 0
+
+
 def test_no_cover_fixture(testdir):
     testdir.makepyfile(mod=MODULE)
     script = testdir.makepyfile(
@@ -1575,6 +1634,20 @@ def test_pyproject_toml(testdir):
     result = testdir.runpytest('-v', f'--cov={script.dirpath()}', '--cov-report=term-missing', script)
     assert result.ret == 0
     result.stdout.fnmatch_lines([f'test_pyproject_toml* {EXCLUDED_RESULT}'])
+
+
+def test_config_at_rootdir_used_from_subdirectory(testdir, monkeypatch):
+    # The project's coverage config lives at the rootdir; running pytest from a
+    # subdirectory must still pick it up, instead of looking only in the cwd
+    # (#692).
+    testdir.makefile('.toml', pyproject=PYPROJECTTOML)
+    subdir = testdir.mkdir('subdir')
+    script = subdir.join('test_in_subdir.py')
+    script.write(EXCLUDED_TEST)
+    monkeypatch.chdir(subdir)
+    result = testdir.runpytest('-v', f'--cov={subdir}', '--cov-report=term-missing', 'test_in_subdir.py')
+    assert result.ret == 0
+    result.stdout.fnmatch_lines([f'*test_in_subdir* {EXCLUDED_RESULT}'])
 
 
 @pytest.mark.skipif('sys.platform == "win32" and platform.python_implementation() == "PyPy"')
@@ -2008,8 +2081,8 @@ EXPECTED_CONTEXTS = {
 @xdist_params
 def test_contexts(pytester, testdir, opts):
     with Path(__file__).parent.joinpath('contextful.py').open() as f:
-        contextful_tests = f.read()
-    script = testdir.makepyfile(contextful_tests)
+        contextual_tests = f.read()
+    script = testdir.makepyfile(contextual_tests)
     testdir.tmpdir.join('.coveragerc').write("""[run]
 core = ctrace""")
 
@@ -2029,7 +2102,7 @@ core = ctrace""")
     test_context_path = next(iter(measured))
     assert test_context_path.lower() == os.path.abspath('test_contexts.py').lower()  # noqa: PTH100
 
-    line_data = find_labels(contextful_tests, r'[crst]\d+(?:-\d+)?')
+    line_data = find_labels(contextual_tests, r'[crst]\d+(?:-\d+)?')
     for context, label in EXPECTED_CONTEXTS.items():
         if context == '':
             continue

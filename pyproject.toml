@@ -1,14 +1,9 @@
-[build-system]
-requires = ["hatchling", "hatch-fancy-pypi-readme"]
-build-backend = "hatchling.build"
-
 [project]
 name = "pytest-cov"
-dynamic = ["readme"]
 version = "7.1.0"
 description = "Pytest plugin for measuring coverage."
+requires-python = ">=3.10"
 license = "MIT"
-requires-python = ">=3.9"
 authors = [
     { name = "Marc Schlaich", email = "marc.schlaich@gmail.com" },
 ]
@@ -34,12 +29,12 @@ classifiers = [
     "Programming Language :: Python",
     "Programming Language :: Python :: 3",
     "Programming Language :: Python :: 3 :: Only",
-    "Programming Language :: Python :: 3.9",
     "Programming Language :: Python :: 3.10",
     "Programming Language :: Python :: 3.11",
     "Programming Language :: Python :: 3.12",
     "Programming Language :: Python :: 3.13",
     "Programming Language :: Python :: 3.14",
+    "Programming Language :: Python :: 3.15",
     "Programming Language :: Python :: Implementation :: CPython",
     "Programming Language :: Python :: Implementation :: PyPy",
     "Topic :: Software Development :: Testing",
@@ -47,9 +42,19 @@ classifiers = [
 ]
 dependencies = [
     "coverage[toml]>=7.10.6",
-    "pytest>=7",
     "pluggy>=1.2",
+    "pytest>=7",
 ]
+dynamic = ["readme"]
+
+[project.urls]
+"Changelog" = "https://pytest-cov.readthedocs.io/en/latest/changelog.html"
+"Documentation" = "https://pytest-cov.readthedocs.io/"
+"Issue Tracker" = "https://github.com/pytest-dev/pytest-cov/issues"
+"Sources" = "https://github.com/pytest-dev/pytest-cov"
+
+[project.entry-points.pytest11]
+pytest_cov = "pytest_cov.plugin"
 
 [project.optional-dependencies]
 testing = [
@@ -58,14 +63,9 @@ testing = [
     "virtualenv",
 ]
 
-[project.entry-points.pytest11]
-pytest_cov = "pytest_cov.plugin"
-
-[project.urls]
-"Sources" = "https://github.com/pytest-dev/pytest-cov"
-"Documentation" = "https://pytest-cov.readthedocs.io/"
-"Changelog" = "https://pytest-cov.readthedocs.io/en/latest/changelog.html"
-"Issue Tracker" = "https://github.com/pytest-dev/pytest-cov/issues"
+[build-system]
+requires = ["hatch-fancy-pypi-readme", "hatchling"]
+build-backend = "hatchling.build"
 
 [tool.hatch.metadata.hooks.fancy-pypi-readme]
 content-type = "text/x-rst"
@@ -78,39 +78,39 @@ fragments = [
 extend-exclude = ["static", "ci/templates"]
 line-length = 140
 src = ["src", "tests"]
-target-version = "py39"
-
-[tool.ruff.lint.per-file-ignores]
-"ci/*" = ["S"]
+target-version = "py310"
 
 [tool.ruff.lint]
 ignore = [
-    "PLC0415", # `import` should be at the top-level of a file
+    "PLC0415",  # `import` should be at the top-level of a file
     "RUF001",  # ruff-specific rules ambiguous-unicode-character-string
-    "S101",    # flake8-bandit assert
-    "S308",    # flake8-bandit suspicious-mark-safe-usage
-    "E501",    # pycodestyle line-too-long
+    "S101",  # flake8-bandit assert
+    "S308",  # flake8-bandit suspicious-mark-safe-usage
+    "E501",  # pycodestyle line-too-long
 ]
 select = [
-    "B",   # flake8-bugbear
+    "B",  # flake8-bugbear
     "C4",  # flake8-comprehensions
-    "DTZ", # flake8-datetimez
-    "E",   # pycodestyle errors
-    "EXE", # flake8-executable
-    "F",   # pyflakes
-    "I",   # isort
-    "INT", # flake8-gettext
-    "PIE", # flake8-pie
-    "PLC", # pylint convention
-    "PLE", # pylint errors
+    "DTZ",  # flake8-datetimez
+    "E",  # pycodestyle errors
+    "EXE",  # flake8-executable
+    "F",  # pyflakes
+    "I",  # isort
+    "INT",  # flake8-gettext
+    "PIE",  # flake8-pie
+    "PLC",  # pylint convention
+    "PLE",  # pylint errors
     "PT",  # flake8-pytest-style
-    "PTH", # flake8-use-pathlib
-    "RSE", # flake8-raise
-    "RUF", # ruff-specific rules
-    "S",   # flake8-bandit
+    "PTH",  # flake8-use-pathlib
+    "RSE",  # flake8-raise
+    "RUF",  # ruff-specific rules
+    "S",  # flake8-bandit
     "UP",  # pyupgrade
-    "W",   # pycodestyle warnings
+    "W",  # pycodestyle warnings
 ]
+
+[tool.ruff.lint.per-file-ignores]
+"ci/*" = ["S"]
 
 [tool.ruff.lint.flake8-pytest-style]
 fixture-parentheses = false

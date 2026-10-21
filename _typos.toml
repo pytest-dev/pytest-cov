@@ -1,0 +1,8 @@
+[files]
+extend-exclude = []
+
+[default.extend-identifiers]
+contextful = "contextful"
+
+[default.extend-words]
+Ned = "Ned"
