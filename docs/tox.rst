@@ -30,7 +30,7 @@ To prevent this problem you need to use ``--cov-append``. It's still recommended
 have consistent output. A ``tox.ini`` like this should be enough for sequential runs::
 
     [tox]
-    envlist = clean,py27,py36,...
+    envlist = clean,py39,py312,...
 
     [testenv]
     commands = pytest --cov --cov-append --cov-report=term-missing ...
@@ -46,7 +46,7 @@ have consistent output. A ``tox.ini`` like this should be enough for sequential 
 For parallel runs we need to set some dependencies and have an extra report env like so::
 
     [tox]
-    envlist = clean,py27,py36,report
+    envlist = clean,py39,py312,report
 
     [testenv]
     commands = pytest --cov --cov-append --cov-report=term-missing
@@ -54,8 +54,8 @@ For parallel runs we need to set some dependencies and have an extra report env 
         pytest
         pytest-cov
     depends =
-        {py27,py36}: clean
-        report: py27,py36
+        {py39,py312}: clean
+        report: py39,py312
 
     [testenv:report]
     deps = coverage
