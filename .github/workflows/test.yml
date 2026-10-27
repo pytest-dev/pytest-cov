@@ -16,7 +16,7 @@ jobs:
           - {python-version: "pypy-3.11", tox-python-version: "pypy11"}
           - {python-version: "3.11", tox-python-version: "py311"}
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v6
 
       - name: Set up Python ${{ matrix.python-version }}
         uses: actions/setup-python@v6
