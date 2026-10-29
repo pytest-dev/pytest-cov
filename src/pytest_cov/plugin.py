@@ -312,6 +312,11 @@ class CovPlugin:
 
         self.pid = os.getpid()
         if self._is_worker(session):
+            if self.cov_controller is not None:
+                # xdist builds the worker config from the master's args (it resets numprocesses only afterwards),
+                # so __init__ has already started a DistMaster here. Stop it or it would be left on coverage's
+                # collector stack and get resumed whenever the worker's coverage is paused (eg: no_cover).
+                self.cov_controller.cov.stop()
             nodeid = session.config.workerinput.get('workerid', session.nodeid)
             self.start(engine.DistWorker, session.config, nodeid)
         elif not self._started:

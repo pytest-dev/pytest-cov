@@ -1560,6 +1560,31 @@ def test_basic():
     result.stdout.fnmatch_lines(['mod* 2 * 1 * 50% * 2'])
 
 
+@xdist_params
+def test_no_cover_marker_stops_tracing(testdir, opts):
+    script = testdir.makepyfile(
+        """
+import pytest
+from coverage.collector import Collector
+
+def record(name):
+    with open(name + '.txt', 'w') as fh:
+        fh.write(str(len(Collector._collectors)))
+
+def test_normal():
+    record('normal')
+
+@pytest.mark.no_cover
+def test_no_cover():
+    record('no_cover')
+"""
+    )
+    result = testdir.runpytest('-v', f'--cov={script.dirpath()}', script, *opts.split())
+    assert result.ret == 0
+    assert testdir.tmpdir.join('normal.txt').read() == '1'
+    assert testdir.tmpdir.join('no_cover.txt').read() == '0'
+
+
 def test_no_cover_marker_with_no_cov(testdir):
     script = testdir.makepyfile(
         """

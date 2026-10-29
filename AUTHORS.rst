@@ -70,3 +70,4 @@ Authors
 * Markéta Machová - https://github.com/MeggyCal
 * xuu33030 - https://github.com/xuu33030
 * dly - https://github.com/xlyy1
+* Jean-Francois Paquin - https://github.com/jf-paquin-web

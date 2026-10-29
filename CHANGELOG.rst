@@ -16,6 +16,8 @@ Unreleased
   from a subdirectory no longer ignores the project's ``pyproject.toml`` /
   ``setup.cfg`` / ``tox.ini`` / ``.coveragerc``.
   See `#692 <https://github.com/pytest-dev/pytest-cov/issues/692>`_.
+* Fixed xdist workers leaving a stray coverage collector running (started because workers inherit the master's ``-n`` option).
+  It got resumed whenever the worker's coverage was paused, so ``no_cover`` tests still ran under a tracer.
 
 7.1.0 (2026-03-21)
 ------------------
