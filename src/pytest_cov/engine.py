@@ -198,7 +198,7 @@ class CovController:
         # Produce html report if wanted.
         if 'html' in self.cov_report:
             output = self.cov_report['html']
-            self.cov.html_report(ignore_errors=True, directory=output)
+            self.cov.html_report(ignore_errors=True, directory=output, precision=self.cov_precision)
             stream.write(f'Coverage HTML written to dir {self.cov.config.html_dir if output is None else output}\n')
 
         # Produce xml report if wanted.
@@ -217,14 +217,14 @@ class CovController:
         if 'markdown' in self.cov_report:
             output = self.cov_report['markdown']
             with Path(output).open('w') as output_file:
-                self.cov.report(ignore_errors=True, file=output_file, output_format='markdown')
+                self.cov.report(ignore_errors=True, file=output_file, output_format='markdown', precision=self.cov_precision)
             stream.write(f'Coverage Markdown information written to file {output}\n')
 
         # Produce Markdown report if wanted, appending to output file
         if 'markdown-append' in self.cov_report:
             output = self.cov_report['markdown-append']
             with Path(output).open('a') as output_file:
-                self.cov.report(ignore_errors=True, file=output_file, output_format='markdown')
+                self.cov.report(ignore_errors=True, file=output_file, output_format='markdown', precision=self.cov_precision)
             stream.write(f'Coverage Markdown information appended to file {output}\n')
 
         # Produce lcov report if wanted.
