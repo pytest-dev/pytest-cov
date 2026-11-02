@@ -577,6 +577,16 @@ precision = 6""")
     )
 
 
+@pytest.mark.parametrize(
+    ('report', 'output'), [('markdown', 'coverage.md'), ('markdown-append', 'coverage.md'), ('html', 'htmlcov/index.html')]
+)
+def test_cov_precision_file_report(testdir, report, output):
+    script = testdir.makepyfile(SCRIPT)
+    result = testdir.runpytest('-v', f'--cov={script.dirpath()}', f'--cov-report={report}', '--cov-precision=6', script)
+    assert result.ret == 0
+    assert '88.888889%' in testdir.tmpdir.join(output).read()
+
+
 def test_cov_min_no_report(testdir):
     script = testdir.makepyfile(SCRIPT)
 
