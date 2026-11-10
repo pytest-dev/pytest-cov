@@ -466,6 +466,34 @@ def test_term_missing_output_dir(testdir):
     assert result.ret != 0
 
 
+@pytest.mark.parametrize('threshold', ['nan', 'NaN', '-nan', '-inf', '-Infinity', '-1', '-0.01', '101', 'inf'])
+def test_cov_min_invalid_before_collection(testdir, threshold):
+    script = testdir.makepyfile("""
+from pathlib import Path
+
+Path('collected').touch()
+
+def test_foo():
+    pass
+""")
+
+    result = testdir.runpytest(f'--cov={script.dirpath()}', f'--cov-fail-under={threshold}', script)
+
+    assert result.ret == pytest.ExitCode.USAGE_ERROR
+    result.stderr.fnmatch_lines(['*argument --cov-fail-under:*'])
+    assert not testdir.tmpdir.join('collected').exists()
+
+
+@pytest.mark.parametrize('threshold', ['0', '0.0', '-0', '100', '100.0'])
+def test_cov_min_boundaries(testdir, threshold):
+    script = testdir.makepyfile(SCRIPT2)
+
+    result = testdir.runpytest(f'--cov={script.dirpath()}', f'--cov-fail-under={threshold}', script)
+
+    result.assert_outcomes(passed=1)
+    assert result.ret == 0
+
+
 def test_cov_min_100(testdir):
     script = testdir.makepyfile(SCRIPT)
 
