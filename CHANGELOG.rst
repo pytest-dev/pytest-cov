@@ -5,6 +5,8 @@ Changelog
 Unreleased
 ----------
 
+* Reject negative and NaN ``--cov-fail-under`` values before running tests instead of raising an internal error afterward.
+
 * Fixed no_cover markers and fixtures when coverage is disabled with --no-cov.
   Fixes #590.
 * Document the import-path difference between ``coverage run -m pytest`` and ``pytest --cov`` for users migrating from coverage.py.

@@ -34,7 +34,7 @@ CLI options:
 
 .. option:: --cov-fail-under MIN
 
-    Fail if the total coverage is less than MIN.
+    Fail if the total coverage is less than MIN. MIN must be a number between 0 and 100, inclusive.
 
 .. option:: --cov-append
 

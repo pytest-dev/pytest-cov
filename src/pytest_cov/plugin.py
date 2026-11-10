@@ -60,6 +60,8 @@ def validate_fail_under(num_str):
         raise argparse.ArgumentTypeError(
             'Your desire for over-achievement is admirable but misplaced. The maximum value is 100. Perhaps write more integration tests?'
         )
+    if not 0 <= value <= 100:
+        raise argparse.ArgumentTypeError('A value between 0 and 100 is required.')
     return value
 
 
