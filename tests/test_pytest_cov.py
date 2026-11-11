@@ -386,6 +386,42 @@ def test_markdown_append_output_dir(testdir):
     assert result.ret == 0
 
 
+@pytest.mark.parametrize('report', ['markdown', 'markdown-append'])
+def test_markdown_unicode_filenames(testdir, monkeypatch, report):
+    monkeypatch.setenv('PYTHONIOENCODING', 'utf-8')
+    script = testdir.makepyfile(test_unicode_é=SCRIPT2)
+    testdir.makeconftest(
+        """
+from pathlib import Path
+
+original_open = Path.open
+
+def ascii_default_open(self, mode='r', buffering=-1, encoding=None, errors=None, newline=None):
+    if self.name == 'coverage.md' and 'b' not in mode and encoding is None:
+        encoding = 'ascii'
+    return original_open(self, mode, buffering, encoding, errors, newline)
+
+def pytest_configure():
+    Path.open = ascii_default_open
+
+def pytest_unconfigure():
+    Path.open = original_open
+"""
+    )
+    output = Path(str(testdir.tmpdir)) / 'coverage.md'
+    prefix = 'Existing report\n'
+    if report == 'markdown-append':
+        output.write_text(prefix, encoding='utf-8')
+
+    result = testdir.runpytest('-v', f'--cov={script.dirpath()}', f'--cov-report={report}:coverage.md', script)
+
+    assert result.ret == 0
+    content = output.read_text(encoding='utf-8')
+    assert r'test\_unicode\_é.py' in content
+    if report == 'markdown-append':
+        assert content.startswith(prefix)
+
+
 def test_markdown_and_markdown_append_work_together(testdir):
     script = testdir.makepyfile(SCRIPT)
 
