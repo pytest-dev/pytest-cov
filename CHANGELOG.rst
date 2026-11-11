@@ -5,6 +5,9 @@ Changelog
 Unreleased
 ----------
 
+* Write Markdown reports as UTF-8 so Unicode source filenames work on systems
+  with other default text encodings.
+
 * Fixed no_cover markers and fixtures when coverage is disabled with --no-cov.
   Fixes #590.
 * Document the import-path difference between ``coverage run -m pytest`` and ``pytest --cov`` for users migrating from coverage.py.

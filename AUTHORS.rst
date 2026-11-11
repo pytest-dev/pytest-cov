@@ -2,6 +2,7 @@
 Authors
 =======
 
+* anticipate218 - https://github.com/anticipate218
 * GruffElixir - https://github.com/GruffElixir
 * Marc Schlaich - https://github.com/schlamar (\http://www.schlamar.org)
 * Rick van Hattem - http://wol.ph

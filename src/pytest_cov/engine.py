@@ -216,14 +216,14 @@ class CovController:
         # Produce Markdown report if wanted.
         if 'markdown' in self.cov_report:
             output = self.cov_report['markdown']
-            with Path(output).open('w') as output_file:
+            with Path(output).open('w', encoding='utf-8') as output_file:
                 self.cov.report(ignore_errors=True, file=output_file, output_format='markdown')
             stream.write(f'Coverage Markdown information written to file {output}\n')
 
         # Produce Markdown report if wanted, appending to output file
         if 'markdown-append' in self.cov_report:
             output = self.cov_report['markdown-append']
-            with Path(output).open('a') as output_file:
+            with Path(output).open('a', encoding='utf-8') as output_file:
                 self.cov.report(ignore_errors=True, file=output_file, output_format='markdown')
             stream.write(f'Coverage Markdown information appended to file {output}\n')
 
