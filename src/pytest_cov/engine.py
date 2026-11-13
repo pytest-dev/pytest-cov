@@ -291,6 +291,62 @@ class Central(CovController):
         self.node_descs.add(node_desc)
 
 
+def _discard_unexecuted_files(data: CoverageData) -> bool:
+    """Exclude source-discovery placeholders from distributed master coverage.
+
+    coverage.py marks unexecuted source files as measured with an empty tracer.
+    If a worker uses a custom tracer for the same file, the empty master record
+    causes coverage.py to reject the merge (issue #642). Preserve genuine
+    master measurements, including their contexts and file tracer metadata.
+    """
+    files = data.measured_files()
+    has_arcs = data.has_arcs()
+    executed = {filename for filename in files if (data.arcs(filename) if has_arcs else data.lines(filename))}
+
+    if not executed:
+        # The data object may have written a parallel database during flush.
+        # Erase only that file, never the other workers' parallel databases.
+        data.erase()
+        return False
+
+    if executed == files:
+        return True
+
+    tracers = {}
+    for filename in executed:
+        tracer = data.file_tracer(filename)
+        if tracer:
+            tracers[filename] = tracer
+
+    # CoverageData has no public method to remove a file record. Rebuild
+    # the master data using its public API, retaining each recorded context.
+    contexts = []
+    try:
+        for context in data.measured_contexts():
+            data.set_query_context(context)
+            values = {}
+            for filename in executed:
+                recorded = data.arcs(filename) if has_arcs else data.lines(filename)
+                if recorded:
+                    values[filename] = recorded
+            if values:
+                contexts.append((context, values))
+    finally:
+        data.set_query_context(None)
+
+    data.erase()
+    for context, values in contexts:
+        data.set_context(context)
+        if has_arcs:
+            data.add_arcs(values)
+        else:
+            data.add_lines(values)
+    if tracers:
+        data.add_file_tracers(tracers)
+
+    return True
+
+
 class DistMaster(CovController):
     """Implementation for distributed master."""
 
@@ -370,9 +426,9 @@ class DistMaster(CovController):
     def finish(self):
         """Combines coverage data and sets the list of coverage objects to report on."""
 
-        # Combine all the suffix files into the data file.
         self.cov.stop()
-        self.cov.save()
+        if _discard_unexecuted_files(self.cov.get_data()):
+            self.cov.save()
         self.cov = self.combining_cov
         self.cov.load()
         self.cov.combine()
