@@ -5,6 +5,11 @@ Changelog
 Unreleased
 ----------
 
+* Fixed pytest-xdist coverage merging with custom file tracers when the master
+  process records unexecuted source files without tracer metadata. Actual
+  master coverage and contexts are preserved.
+  See `#642 <https://github.com/pytest-dev/pytest-cov/issues/642>`_.
+
 * Fixed no_cover markers and fixtures when coverage is disabled with --no-cov.
   Fixes #590.
 * Document the import-path difference between ``coverage run -m pytest`` and ``pytest --cov`` for users migrating from coverage.py.
@@ -232,7 +237,7 @@ Unreleased
 -------------------
 
 * Changed the `toml` requirement to be always be directly required (instead of being required through a coverage extra).
-  This fixes issues with pip-compile (`pip-tools#1300 <https://github.com/jazzband/pip-tools/issues/1300>`_).
+  This fixes issues with pip-compile (`pip-tools#1300 <https://github.com/pypa/pip-tools/issues/1300>`_).
   Contributed by Sorin Sbarnea in `#472 <https://github.com/pytest-dev/pytest-cov/pull/472>`_.
 * Documented ``show_contexts``.
   Contributed by Brian Rutledge in `#473 <https://github.com/pytest-dev/pytest-cov/pull/473>`_.
