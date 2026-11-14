@@ -10,7 +10,7 @@ See `pytest/issues/935 <https://github.com/pytest-dev/pytest/issues/935#issuecom
 You should change your test invocations to use ``coverage run -m pytest ...`` instead.
 
 Warning filters can import code before coverage starts
------------------------------------------------------
+------------------------------------------------------
 
 Pytest resolves warning classes in ``-W`` options and ``filterwarnings``
 settings during startup. If a filter names a warning class from the package
