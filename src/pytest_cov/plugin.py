@@ -286,7 +286,13 @@ class CovPlugin:
             config = Config()
 
         self.cov_controller = controller_cls(self.options, config, nodeid, self.rootdir)
-        self.cov_controller.start()
+        from coverage.exceptions import ConfigError
+
+        try:
+            self.cov_controller.start()
+        except ConfigError as exc:
+            # an unreadable --cov-config used to surface as a traceback
+            raise pytest.UsageError(f'Failed to start coverage: {exc}') from exc
         self._started = True
         self._start_path = Path.cwd()
         cov_config = self.cov_controller.cov.config

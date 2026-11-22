@@ -206,6 +206,20 @@ def test_central(pytester, testdir, prop):
     assert result.ret == 0
 
 
+def test_broken_cov_config(testdir):
+    script = testdir.makepyfile(SCRIPT)
+
+    result = testdir.runpytest(
+        '-v',
+        f'--cov={script.dirpath()}',
+        '--cov-config=does-not-exist.ini',
+        script,
+    )
+
+    result.stderr.fnmatch_lines(['*Failed to start coverage: *does-not-exist.ini*'])
+    assert result.ret == pytest.ExitCode.USAGE_ERROR
+
+
 def test_annotate(testdir):
     script = testdir.makepyfile(SCRIPT)
 
